@@ -1,25 +1,41 @@
-// Master list of skills used across the platform
-// Users can only select from here (prevents spelling mistakes)
+/* =====================================================
+   MASTER SKILL SOURCE
+   Single source of truth for entire app
+===================================================== */
 
-export const SKILLS = [
+export const MASTER_SKILLS = [
+  "JavaScript",
+  "TypeScript",
   "React",
   "React Native",
   "Node.js",
   "Express.js",
   "MongoDB",
-  "JavaScript",
-  "TypeScript",
+  "MySQL",
   "Python",
   "Java",
   "C++",
   "Data Structures",
+  "Algorithms",
   "System Design",
+  "UI/UX",
   "Machine Learning",
-  "UI/UX Design",
+  "AI",
   "Cloud Computing",
   "DevOps",
-  "Cybersecurity",
-  "Blockchain",
-  "Android Development",
-  "iOS Development",
+  "Docker",
+  "AWS",
+];
+
+export const MASTER_INTERESTS = [
+  "Mentorship",
+  "Internships",
+  "Startups",
+  "Open Source",
+  "Networking",
+  "Hackathons",
+  "Career Guidance",
+  "Research",
+  "Freelancing",
+  "Entrepreneurship",
 ];
