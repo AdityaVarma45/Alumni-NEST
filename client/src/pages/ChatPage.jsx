@@ -45,7 +45,7 @@ export default function ChatPage() {
   } = useChatMessages(conversationId, user);
 
   return (
-    <div className="relative flex flex-col h-screen bg-linear-to-b from-gray-100 to-gray-200">
+    <div className="flex flex-col h-full bg-gray-100">
 
       <ChatHeader
         userName={otherUser?.username || "User"}
