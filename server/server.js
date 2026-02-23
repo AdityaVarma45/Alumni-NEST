@@ -7,6 +7,7 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import mentorshipRoutes from "./routes/mentorshipRoutes.js";
+import skillRoutes from "./routes/skillRoutes.js";
 import { initSocket } from "./socket/socket.js";
 
 dotenv.config();
@@ -21,7 +22,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/mentorship", mentorshipRoutes);
-
+app.use("/api/meta", skillRoutes);
 
 const server = http.createServer(app);
 
