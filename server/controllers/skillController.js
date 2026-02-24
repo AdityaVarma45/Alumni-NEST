@@ -1,33 +1,36 @@
 import { MASTER_SKILLS, MASTER_INTERESTS } from "../constants/skills.js";
 
-/* =====================================================
-   Skill Autocomplete Engine
-   Returns matching skills based on search text
-===================================================== */
-
+/*
+  Search skills
+  Used for autocomplete dropdown
+*/
 export const searchSkills = async (req, res) => {
   try {
     const query = (req.query.q || "").toLowerCase();
 
-    // if empty → return top skills
+    // if no query → return default top skills
     if (!query) {
       return res.json(MASTER_SKILLS.slice(0, 15));
     }
 
-    const results = MASTER_SKILLS.filter((skill) =>
-      skill.toLowerCase().includes(query)
-    ).slice(0, 10);
+    const results = MASTER_SKILLS
+      .filter((skill) =>
+        skill.toLowerCase().includes(query)
+      )
+      .slice(0, 10);
 
     res.json(results);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
-/* =====================================================
-   Interest Autocomplete (same idea)
-===================================================== */
-
+/*
+  Search interests
+  Same logic as skills
+*/
 export const searchInterests = async (req, res) => {
   try {
     const query = (req.query.q || "").toLowerCase();
@@ -36,12 +39,16 @@ export const searchInterests = async (req, res) => {
       return res.json(MASTER_INTERESTS.slice(0, 15));
     }
 
-    const results = MASTER_INTERESTS.filter((interest) =>
-      interest.toLowerCase().includes(query)
-    ).slice(0, 10);
+    const results = MASTER_INTERESTS
+      .filter((interest) =>
+        interest.toLowerCase().includes(query)
+      )
+      .slice(0, 10);
 
     res.json(results);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };

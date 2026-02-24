@@ -1,36 +1,38 @@
 import { useEffect, useState, useRef } from "react";
-import { searchSkills } from "../services/skillService";
+import {
+  searchSkills,
+  searchInterests,
+} from "../services/skillService";
 
-/* =====================================================
-   LinkedIn Style Skill Picker
-   - live autocomplete
-   - chip system
-   - controlled by parent
-===================================================== */
-
-export default function SkillPicker({ value = [], onChange }) {
+export default function SkillPicker({
+  value = [],
+  onChange,
+  type = "skills",
+}) {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
   const wrapperRef = useRef(null);
 
-  /* ---------------------------------------
-     fetch suggestions when user types
-  --------------------------------------- */
+  // fetch suggestions
   useEffect(() => {
     if (!query.trim()) {
       setSuggestions([]);
       return;
     }
 
-    const fetchSkills = async () => {
+    const fetchData = async () => {
       try {
-        const res = await searchSkills(query);
+        const api =
+          type === "interests"
+            ? searchInterests
+            : searchSkills;
 
-        // remove already selected skills
+        const res = await api(query);
+
         const filtered = res.data.filter(
-          (skill) => !value.includes(skill)
+          (item) => !value.includes(item)
         );
 
         setSuggestions(filtered);
@@ -39,12 +41,10 @@ export default function SkillPicker({ value = [], onChange }) {
       }
     };
 
-    fetchSkills();
-  }, [query, value]);
+    fetchData();
+  }, [query, value, type]);
 
-  /* ---------------------------------------
-     close dropdown when clicking outside
-  --------------------------------------- */
+  // close dropdown outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (!wrapperRef.current?.contains(e.target)) {
@@ -55,86 +55,64 @@ export default function SkillPicker({ value = [], onChange }) {
     document.addEventListener("mousedown", handleClickOutside);
 
     return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
   }, []);
 
-  /* ---------------------------------------
-     add skill
-  --------------------------------------- */
-  const addSkill = (skill) => {
-    if (value.includes(skill)) return;
+  const addItem = (item) => {
+    if (value.includes(item)) return;
 
-    onChange([...value, skill]);
+    onChange([...value, item]);
     setQuery("");
     setSuggestions([]);
     setShowDropdown(false);
   };
 
-  /* ---------------------------------------
-     remove skill
-  --------------------------------------- */
-  const removeSkill = (skill) => {
-    onChange(value.filter((s) => s !== skill));
+  const removeItem = (item) => {
+    onChange(value.filter((v) => v !== item));
   };
 
   return (
     <div ref={wrapperRef} className="w-full">
-
-      {/* ---------- selected chips ---------- */}
+      {/* selected chips */}
       <div className="flex flex-wrap gap-2 mb-2">
-        {value.map((skill) => (
+        {value.map((item) => (
           <div
-            key={skill}
-            className="
-              bg-blue-100 text-blue-700
-              px-3 py-1 rounded-full
-              text-sm flex items-center gap-2
-            "
+            key={item}
+            className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm flex items-center gap-2"
           >
-            {skill}
+            {item}
 
-            <button
-              onClick={() => removeSkill(skill)}
-              className="text-blue-500 hover:text-red-500"
-            >
+            <button onClick={() => removeItem(item)}>
               ✕
             </button>
           </div>
         ))}
       </div>
 
-      {/* ---------- input ---------- */}
+      {/* input */}
       <input
         value={query}
         onChange={(e) => {
           setQuery(e.target.value);
           setShowDropdown(true);
         }}
-        placeholder="Search skills..."
-        className="
-          w-full border rounded-lg px-3 py-2
-          focus:outline-none focus:ring-2 focus:ring-blue-500
-        "
+        placeholder={`Search ${type}...`}
+        className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
 
-      {/* ---------- dropdown ---------- */}
+      {/* dropdown */}
       {showDropdown && suggestions.length > 0 && (
-        <div
-          className="
-            mt-2 bg-white border rounded-lg shadow-lg
-            max-h-52 overflow-y-auto z-20
-          "
-        >
-          {suggestions.map((skill) => (
+        <div className="mt-2 bg-white border rounded-lg shadow max-h-52 overflow-y-auto">
+          {suggestions.map((item) => (
             <button
-              key={skill}
-              onClick={() => addSkill(skill)}
-              className="
-                w-full text-left px-3 py-2
-                hover:bg-blue-50 transition
-              "
+              key={item}
+              onClick={() => addItem(item)}
+              className="w-full text-left px-3 py-2 hover:bg-blue-50"
             >
-              {skill}
+              {item}
             </button>
           ))}
         </div>

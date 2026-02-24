@@ -134,3 +134,27 @@ export const getRecommendedAlumni = async (req, res) => {
     });
   }
 };
+
+// update profile setup (skills + interests)
+export const updateProfileSetup = async (req, res) => {
+  try {
+    const { skills, interests } = req.body;
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // update profile fields
+    user.skills = skills || [];
+    user.interests = interests || [];
+    user.profileCompleted = true;
+
+    await user.save();
+
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

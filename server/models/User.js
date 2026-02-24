@@ -69,10 +69,16 @@ const userSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+
+    /* ---------- PROFILE SETUP FLOW ---------- */
+    profileCompleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true, // createdAt + updatedAt
-  }
+  },
 );
 
 /* =====================================================

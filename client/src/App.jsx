@@ -6,6 +6,8 @@ import Dashboard from "./pages/Dashboard";
 import ChatPage from "./pages/ChatPage";
 import Users from "./pages/Users";
 import MentorshipRequests from "./pages/MentorshipRequests";
+import ProfileSetup from "./pages/ProfileSetup";
+import ProfileGuard from "./components/ProfileGuard";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import DashboardLayout from "./layouts/DashboardLayout";
@@ -14,25 +16,37 @@ function App() {
   return (
     <Router>
       <Routes>
-
-        {/* PUBLIC */}
+        {/* public routes */}
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* PROTECTED DASHBOARD SHELL */}
+        {/* profile setup after registration/login */}
+        <Route
+          path="/profile-setup"
+          element={
+            <ProtectedRoute>
+              <ProfileSetup />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* dashboard shell (sidebar + layout stays) */}
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <DashboardLayout />
+              <ProfileGuard>
+                <DashboardLayout />
+              </ProfileGuard>
             </ProtectedRoute>
           }
         >
-          {/* right-side pages */}
+          {/* right side pages inside dashboard */}
           <Route index element={<Dashboard />} />
           <Route path="chat/:conversationId" element={<ChatPage />} />
         </Route>
 
+        {/* other protected pages */}
         <Route
           path="/users"
           element={
@@ -50,7 +64,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
       </Routes>
     </Router>
   );

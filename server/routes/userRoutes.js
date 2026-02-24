@@ -1,6 +1,7 @@
 import express from "express";
 import protect from "../middleware/authMiddleware.js";
 import { getRecommendedAlumni } from "../controllers/userController.js";
+import { updateProfileSetup } from "../controllers/userController.js";
 
 import {
   getAllUsers,
@@ -32,5 +33,6 @@ router.post("/block", protect, blockUser);
 
 router.get("/matches", protect, getSkillMatches);
 router.get("/recommended", protect, getRecommendedAlumni);
+router.put("/profile/setup", protect, updateProfileSetup);
 
 export default router;
