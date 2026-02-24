@@ -9,6 +9,7 @@ import chatRoutes from "./routes/chatRoutes.js";
 import mentorshipRoutes from "./routes/mentorshipRoutes.js";
 import skillRoutes from "./routes/skillRoutes.js";
 import { initSocket } from "./socket/socket.js";
+import recommendationRoutes from "./routes/recommendationRoutes.js";
 
 dotenv.config();
 connectDB();
@@ -23,6 +24,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/mentorship", mentorshipRoutes);
 app.use("/api/meta", skillRoutes);
+app.use("/api/recommendations", recommendationRoutes);
 
 const server = http.createServer(app);
 

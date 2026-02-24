@@ -1,20 +1,11 @@
-// conversationReducer.js
-// global brain for sidebar conversations
-
 export const conversationReducer = (state, action) => {
   switch (action.type) {
+    case "SET_CONVERSATIONS": {
+      return sortConversations(action.payload);
+    }
 
-    /* -----------------------------------------
-       Initial load from backend
-    ------------------------------------------*/
-    case "SET_CONVERSATIONS":
-      return action.payload;
-
-    /* -----------------------------------------
-       Online users update
-    ------------------------------------------*/
-    case "ONLINE_USERS_UPDATED":
-      return state.map((conv) => {
+    case "ONLINE_USERS_UPDATED": {
+      const updated = state.map((conv) => {
         const other = conv.participants.find(
           (p) => p._id !== action.userId
         );
@@ -25,48 +16,33 @@ export const conversationReducer = (state, action) => {
         };
       });
 
-    /* -----------------------------------------
-       New message received
-       → update preview
-       → update unread
-       → move to top
-    ------------------------------------------*/
+      return sortConversations(updated);
+    }
+
     case "CONVERSATION_UPDATED": {
       const { conversationId, message, userId } = action.payload;
 
-      const existing = state.find(
-        (conv) => conv._id === conversationId
-      );
+      const updated = state.map((conv) => {
+        if (conv._id !== conversationId) return conv;
 
-      if (!existing) return state;
+        const isMine =
+          message.sender?.toString() === userId;
 
-      const isMine =
-        message.sender?.toString() === userId;
+        return {
+          ...conv,
+          lastMessage: message.content,
+          updatedAt: message.createdAt || new Date(),
+          unreadCount: isMine
+            ? conv.unreadCount || 0
+            : (conv.unreadCount || 0) + 1,
+        };
+      });
 
-      const updatedConversation = {
-        ...existing,
-        lastMessage: message.content,
-        updatedAt: message.createdAt || new Date(),
-
-        // unread increases ONLY if message not mine
-        unreadCount: isMine
-          ? existing.unreadCount
-          : (existing.unreadCount || 0) + 1,
-      };
-
-      // move active conversation to top
-      const others = state.filter(
-        (conv) => conv._id !== conversationId
-      );
-
-      return [updatedConversation, ...others];
+      return sortConversations(updated);
     }
 
-    /* -----------------------------------------
-       Reset unread count (when chat opened)
-    ------------------------------------------*/
-    case "UNREAD_UPDATED":
-      return state.map((conv) =>
+    case "UNREAD_UPDATED": {
+      const updated = state.map((conv) =>
         conv._id === action.payload.conversationId
           ? {
               ...conv,
@@ -75,7 +51,48 @@ export const conversationReducer = (state, action) => {
           : conv
       );
 
+      return sortConversations(updated);
+    }
+
+    case "CONVERSATION_TYPING": {
+      const updated = state.map((conv) =>
+        conv._id === action.conversationId
+          ? { ...conv, typing: action.typing }
+          : conv
+      );
+
+      return sortConversations(updated);
+    }
+
     default:
       return state;
   }
+};
+
+/* ----------------------------------
+   AI SORT ENGINE
+----------------------------------- */
+
+const sortConversations = (conversations = []) => {
+  return [...conversations].sort((a, b) => {
+    // 1. typing has highest priority
+    if (a.typing && !b.typing) return -1;
+    if (!a.typing && b.typing) return 1;
+
+    // 2. unread priority
+    if ((a.unreadCount || 0) > 0 && (b.unreadCount || 0) === 0)
+      return -1;
+    if ((a.unreadCount || 0) === 0 && (b.unreadCount || 0) > 0)
+      return 1;
+
+    // 3. online users priority
+    if (a.online && !b.online) return -1;
+    if (!a.online && b.online) return 1;
+
+    // 4. latest activity fallback
+    return (
+      new Date(b.updatedAt || 0) -
+      new Date(a.updatedAt || 0)
+    );
+  });
 };

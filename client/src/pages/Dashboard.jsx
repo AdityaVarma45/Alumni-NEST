@@ -8,39 +8,75 @@ import { useConversations } from "../hooks/useConversations";
 import { useRecommendedAlumni } from "../hooks/useRecommendedAlumni";
 
 /*
-  Dashboard page
-  ------------------------------------------------
-  Responsibilities:
-  1. Show conversations
-  2. Show smart alumni recommendations
-  (UI composition only — logic stays in hooks)
+  small helper
+  greeting based on time
 */
+const getGreeting = () => {
+  const hour = new Date().getHours();
+
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+};
 
 export default function Dashboard() {
   const { user } = useContext(AuthContext);
 
-  // conversations (chat system)
   const conversations = useConversations(user);
 
-  // smart recommendation engine
-  const recommendedAlumni = useRecommendedAlumni();
+  const {
+    recommended,
+    loading,
+    error,
+  } = useRecommendedAlumni();
 
   return (
-    <div className="h-full overflow-y-auto p-6 space-y-6">
-      {/* ===============================
-          Conversations Section
-      =============================== */}
-      <ConversationsList
-        conversations={conversations}
-        user={user}
-      />
+    <div className="h-full overflow-y-auto p-6 space-y-8">
 
-      {/* ===============================
-          Recommended Alumni Section
-      =============================== */}
-      <RecommendedAlumniSection
-        alumni={recommendedAlumni}
-      />
+      {/* ===== Greeting ===== */}
+      <section>
+        <h1 className="text-2xl font-bold text-gray-800">
+          {getGreeting()}, {user?.username} 👋
+        </h1>
+
+        <p className="text-sm text-gray-500 mt-1">
+          Stay connected with your alumni network.
+        </p>
+      </section>
+
+      {/* ===== Conversations ===== */}
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-gray-800">
+            Conversations
+          </h2>
+
+          <span className="text-xs text-gray-400">
+            {conversations.length} chats
+          </span>
+        </div>
+
+        {conversations.length === 0 ? (
+          <div className="bg-white rounded-xl p-6 text-center text-gray-500 shadow-sm">
+            Start your first conversation with alumni 🚀
+          </div>
+        ) : (
+          <ConversationsList
+            conversations={conversations}
+            user={user}
+          />
+        )}
+      </section>
+
+      {/* ===== Recommended Alumni ===== */}
+      <section>
+        <RecommendedAlumniSection
+          alumni={recommended}
+          loading={loading}
+          error={error}
+        />
+      </section>
+
     </div>
   );
 }
