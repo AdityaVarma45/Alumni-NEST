@@ -158,3 +158,36 @@ export const updateProfileSetup = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const setupProfile = async (req, res) => {
+  try {
+    const { skills, interests } = req.body;
+
+    // fetch real mongoose document
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    // update fields
+    user.skills = skills || [];
+    user.interests = interests || [];
+    user.profileCompleted = true;
+
+    // save to DB
+    await user.save();
+
+    res.json({
+      message: "Profile updated successfully",
+      user,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};

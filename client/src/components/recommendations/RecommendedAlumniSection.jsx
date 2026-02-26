@@ -1,18 +1,20 @@
 import RecommendedAlumniCard from "./RecommendedAlumniCard";
 
 /*
-  Section wrapper
-  shows recommendation list
+  Recommendation section
+  - receives alumni array
+  - safely handles empty or invalid data
 */
 
-export default function RecommendedAlumniSection({
-  alumni = [],
-}) {
-  if (!alumni.length) return null;
+export default function RecommendedAlumniSection({ alumni }) {
+  // safety check (prevents map errors)
+  if (!Array.isArray(alumni) || alumni.length === 0) {
+    return null;
+  }
 
   return (
-    <div>
-      <h2 className="text-lg font-semibold text-gray-800 mb-3">
+    <div className="mt-6">
+      <h2 className="text-lg font-bold text-gray-800 mb-3">
         Recommended Alumni
       </h2>
 

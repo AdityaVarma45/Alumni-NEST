@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../api/axios";
 
 import SkillPicker from "../components/SkillPicker";
+import InterestDropdown from "../components/profile/InterestDropdown";
+import { AuthContext } from "../context/AuthContext";
 
 export default function ProfileSetup() {
   const navigate = useNavigate();
+  const { updateUser } = useContext(AuthContext);
 
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [selectedInterests, setSelectedInterests] = useState([]);
@@ -17,11 +20,20 @@ export default function ProfileSetup() {
     try {
       setLoading(true);
 
+      // save skills + interests to backend
       await axios.put("/users/profile/setup", {
         skills: selectedSkills,
         interests: selectedInterests,
       });
 
+      // update auth state so profile guard stops redirecting
+      updateUser({
+        profileCompleted: true,
+        skills: selectedSkills,
+        interests: selectedInterests,
+      });
+
+      // go to dashboard
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
@@ -37,31 +49,29 @@ export default function ProfileSetup() {
           Complete Your Profile
         </h1>
 
-        {/* Skills picker */}
+        {/* Skills */}
         <div>
           <h2 className="font-semibold mb-2">Select Skills</h2>
-
           <SkillPicker
             value={selectedSkills}
             onChange={setSelectedSkills}
           />
         </div>
 
-        {/* Interests picker (same component reuse) */}
+        {/* Interests */}
         <div>
           <h2 className="font-semibold mb-2">Select Interests</h2>
-
-          <SkillPicker
+          <InterestDropdown
             value={selectedInterests}
             onChange={setSelectedInterests}
-            type="interests"
           />
         </div>
 
+        {/* Save button */}
         <button
           onClick={handleSave}
           disabled={loading}
-          className="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700"
+          className="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 disabled:opacity-60"
         >
           {loading ? "Saving..." : "Finish Setup"}
         </button>

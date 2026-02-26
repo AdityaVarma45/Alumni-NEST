@@ -7,6 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // fetch profile when app loads
   useEffect(() => {
     const fetchProfile = async () => {
       const token = localStorage.getItem("token");
@@ -23,7 +24,7 @@ export const AuthProvider = ({ children }) => {
           ...res.data,
           id: res.data._id,
         });
-      } catch (error) {
+      } catch {
         localStorage.removeItem("token");
       } finally {
         setLoading(false);
@@ -33,18 +34,30 @@ export const AuthProvider = ({ children }) => {
     fetchProfile();
   }, []);
 
+  // login handler
   const login = (data) => {
     localStorage.setItem("token", data.token);
     setUser(data.user);
   };
 
+  // logout handler
   const logout = () => {
     localStorage.removeItem("token");
     setUser(null);
   };
 
+  // NEW: update user manually (used after profile setup)
+  const updateUser = (newData) => {
+    setUser((prev) => ({
+      ...prev,
+      ...newData,
+    }));
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider
+      value={{ user, login, logout, updateUser, loading }}
+    >
       {children}
     </AuthContext.Provider>
   );
