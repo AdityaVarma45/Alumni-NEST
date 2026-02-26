@@ -51,6 +51,19 @@ export const requestMentorship = async (req, res) => {
       status: "pending",
     });
 
+    // ---------- LIVE COUNT UPDATE ----------
+    const io = getIO();
+
+    const pendingCount = await Mentorship.countDocuments({
+      alumni: alumniId,
+      status: "pending",
+    });
+
+    io.to(alumniId.toString()).emit(
+      "mentorshipRequestCount",
+      pendingCount
+    );
+
     res.status(201).json(mentorship);
   } catch (error) {
     res.status(500).json({ message: error.message });

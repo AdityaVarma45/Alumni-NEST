@@ -1,8 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 
-/* ---------- helpers ---------- */
-
-// time preview
+/* format time preview */
 const formatPreviewTime = (date) => {
   if (!date) return "";
 
@@ -12,11 +10,11 @@ const formatPreviewTime = (date) => {
   });
 };
 
-// activity label
+/* last seen label */
 const getActivityLabel = (conv) => {
   if (conv.online) return "Active now";
 
-  if (!conv.updatedAt) return "Inactive";
+  if (!conv.updatedAt) return "Offline";
 
   const diff =
     (Date.now() - new Date(conv.updatedAt)) / 1000;
@@ -26,140 +24,77 @@ const getActivityLabel = (conv) => {
     return `Active ${Math.floor(diff / 60)}m ago`;
   if (diff < 86400) return "Active today";
 
-  return "Inactive";
-};
-
-// detect emoji-only message
-const isEmojiOnly = (text = "") => {
-  const emojiRegex = /^(\p{Extended_Pictographic}|\s)+$/u;
-  return emojiRegex.test(text.trim());
-};
-
-// 🔥 preview intelligence
-const getPreviewText = (conv, userId) => {
-  if (conv.typing) return "typing...";
-
-  const text = conv.lastMessage || "";
-
-  if (!text) return "Start chatting";
-
-  // if current user sent message
-  const isMine =
-    conv.lastMessageSender?.toString?.() === userId;
-
-  // emoji message
-  if (isEmojiOnly(text)) {
-    return `${isMine ? "You: " : ""}${text}`;
-  }
-
-  // link preview
-  if (/(https?:\/\/[^\s]+)/g.test(text)) {
-    return `${isMine ? "You: " : ""}🔗 Link`;
-  }
-
-  // attachment style future-safe
-  if (text.startsWith("[file]")) {
-    return `${isMine ? "You: " : ""}📎 Attachment`;
-  }
-
-  return `${isMine ? "You: " : ""}${text}`;
+  return "Offline";
 };
 
 export default function ConversationCard({ conv, user }) {
   const location = useLocation();
 
-  const otherUser = conv.participants.find(
-    (p) => p._id !== user?.id
-  );
+  /* -----------------------------
+     SAFE participant detection
+  ----------------------------- */
+  const otherUser = conv.participants?.find((p) => {
+    // if populated object
+    if (typeof p === "object") {
+      return p._id?.toString() !== user?.id;
+    }
+
+    // if string id
+    return p.toString() !== user?.id;
+  });
 
   const isActive = location.pathname.includes(conv._id);
 
-  const previewText = getPreviewText(conv, user?.id);
-
   return (
-    <Link
-      to={`/dashboard/chat/${conv._id}`}
-      className="block"
-    >
+    <Link to={`/dashboard/chat/${conv._id}`} className="block">
       <div
         className={`
-          relative overflow-hidden
-          rounded-2xl p-4
-          transition-all duration-300 ease-out
+          rounded-2xl p-4 transition-all
           shadow-sm hover:shadow-md
-          hover:scale-[1.01]
-          group
           ${
             isActive
-              ? "bg-blue-50 border-l-4 border-blue-500 shadow-md"
+              ? "bg-blue-50 border-l-4 border-blue-500"
               : "bg-white hover:bg-gray-50"
           }
         `}
       >
-        {/* soft hover glow */}
-        <div
-          className="
-            absolute inset-0 opacity-0 group-hover:opacity-100
-            bg-gradient-to-r from-blue-50/40 to-transparent
-            transition-opacity duration-300 pointer-events-none
-          "
-        />
-
         {/* top row */}
-        <div className="relative flex items-center justify-between">
+        <div className="flex items-center justify-between">
           <h3 className="font-semibold text-gray-800">
-            {otherUser?.username}
+            {otherUser?.username || "User"}
           </h3>
 
-          <div className="flex items-center gap-2">
-            <span
-              className={`
-                w-2 h-2 rounded-full
-                ${conv.online ? "bg-green-500" : "bg-gray-400"}
-                ${conv.online ? "animate-pulse" : ""}
-              `}
-            />
-
-            <span className="text-xs text-gray-400">
-              {getActivityLabel(conv)}
-            </span>
-          </div>
+          <span className="text-xs text-gray-500">
+            {getActivityLabel(conv)}
+          </span>
         </div>
 
-        {/* preview row */}
-        <div className="relative mt-1 flex items-center justify-between gap-2">
+        {/* message preview */}
+        <div className="mt-1 flex justify-between items-center">
           <p
-            className={`
-              text-sm truncate
-              ${
-                conv.typing
-                  ? "text-blue-500 italic animate-pulse"
-                  : "text-gray-500"
-              }
-            `}
+            className={`text-sm truncate ${
+              conv.typing
+                ? "text-blue-500 italic"
+                : "text-gray-500"
+            }`}
           >
-            {previewText}
+            {conv.typing
+              ? "typing..."
+              : conv.lastMessage || "Start chatting"}
           </p>
 
-          <span className="text-[10px] text-gray-400 shrink-0">
+          <span className="text-[10px] text-gray-400">
             {formatPreviewTime(conv.updatedAt)}
           </span>
         </div>
 
         {/* unread badge */}
         {conv.unreadCount > 0 && (
-          <div
-            className="
-              mt-2 inline-flex items-center
-              bg-blue-600 text-white
-              text-xs px-2.5 py-1 rounded-full
-              animate-[popIn_0.25s_ease]
-            "
-          >
+          <div className="mt-2 inline-flex bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
             {conv.unreadCount}
           </div>
         )}
       </div>
     </Link>
   );
-}
+} 

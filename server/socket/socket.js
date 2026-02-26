@@ -3,7 +3,12 @@ import Message from "../models/Message.js";
 import User from "../models/User.js";
 
 let io;
-const onlineUsers = new Map(); // userId -> socketId
+
+/*
+  userId -> Set of socketIds
+  supports multiple tabs/devices
+*/
+const onlineUsers = new Map();
 
 export const initSocket = (server) => {
   io = new Server(server, {
@@ -17,10 +22,19 @@ export const initSocket = (server) => {
        USER ONLINE
     ============================== */
     socket.on("userOnline", async (userId) => {
-      onlineUsers.set(userId.toString(), socket.id);
-      socket.join(userId.toString());
+      const id = userId.toString();
 
-      // Mark undelivered messages TO this user as delivered
+      // create set if not exists
+      if (!onlineUsers.has(id)) {
+        onlineUsers.set(id, new Set());
+      }
+
+      // add this socket
+      onlineUsers.get(id).add(socket.id);
+
+      socket.join(id);
+
+      // mark messages delivered
       await Message.updateMany(
         {
           conversation: { $exists: true },
@@ -31,55 +45,60 @@ export const initSocket = (server) => {
       );
 
       io.emit("onlineUsers", Array.from(onlineUsers.keys()));
+
+      console.log("ONLINE USERS:", Array.from(onlineUsers.keys()));
     });
 
     /* ==============================
-       JOIN CONVERSATION ROOM
+       JOIN CONVERSATION
     ============================== */
     socket.on("joinConversation", (conversationId) => {
       socket.join(conversationId.toString());
     });
 
     /* ==============================
-       TYPING INDICATOR
+       TYPING
     ============================== */
     socket.on("typing", ({ conversationId, userId }) => {
-      socket.to(conversationId.toString()).emit("userTyping", {
+      socket.to(conversationId).emit("userTyping", {
         conversationId,
         userId,
       });
     });
 
     socket.on("stopTyping", ({ conversationId, userId }) => {
-      socket.to(conversationId.toString()).emit("userStoppedTyping", {
+      socket.to(conversationId).emit("userStoppedTyping", {
         conversationId,
         userId,
       });
     });
 
     /* ==============================
-       MESSAGE READ LIVE UPDATE
+       READ STATUS
     ============================== */
     socket.on("messagesRead", ({ conversationId, readerId }) => {
-      socket
-        .to(conversationId.toString())
-        .emit("messagesReadUpdate", {
-          conversationId,
-          readerId,
-        });
+      socket.to(conversationId).emit("messagesReadUpdate", {
+        conversationId,
+        readerId,
+      });
     });
 
     /* ==============================
        DISCONNECT
     ============================== */
     socket.on("disconnect", async () => {
-      for (let [userId, socketId] of onlineUsers.entries()) {
-        if (socketId === socket.id) {
-          onlineUsers.delete(userId);
+      for (const [userId, sockets] of onlineUsers.entries()) {
+        if (sockets.has(socket.id)) {
+          sockets.delete(socket.id);
 
-          await User.findByIdAndUpdate(userId, {
-            lastSeen: new Date(),
-          });
+          // only remove user when NO tabs left
+          if (sockets.size === 0) {
+            onlineUsers.delete(userId);
+
+            await User.findByIdAndUpdate(userId, {
+              lastSeen: new Date(),
+            });
+          }
 
           break;
         }
@@ -97,9 +116,7 @@ export const initSocket = (server) => {
 ============================== */
 
 export const getIO = () => {
-  if (!io) {
-    throw new Error("Socket.io not initialized!");
-  }
+  if (!io) throw new Error("Socket.io not initialized!");
   return io;
 };
 
