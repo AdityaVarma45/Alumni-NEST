@@ -4,7 +4,9 @@ import Notification from "../models/Notification.js";
 import Conversation from "../models/Conversation.js";
 import User from "../models/User.js";
 
-// Student sends request
+/*
+  Student sends mentorship request
+*/
 export const requestMentorship = async (req, res) => {
   try {
     const { alumniId, message } = req.body;
@@ -15,7 +17,6 @@ export const requestMentorship = async (req, res) => {
       });
     }
 
-    //  CHECK BLOCK STATUS
     const alumniUser = await User.findById(alumniId);
 
     if (!alumniUser) {
@@ -24,23 +25,22 @@ export const requestMentorship = async (req, res) => {
       });
     }
 
-    // If alumni has blocked this student
     if (alumniUser.blockedUsers.includes(req.user._id)) {
       return res.status(403).json({
         message: "You are blocked by this user",
       });
     }
 
-    // Prevent duplicate pending request
     const existing = await Mentorship.findOne({
       student: req.user._id,
       alumni: alumniId,
-      status: "pending",
+      status: { $in: ["pending", "accepted"] },
     });
 
     if (existing) {
       return res.status(400).json({
-        message: "You already have a pending request",
+        message: "Mentorship already exists",
+        mentorship: existing,
       });
     }
 
@@ -48,6 +48,7 @@ export const requestMentorship = async (req, res) => {
       student: req.user._id,
       alumni: alumniId,
       message,
+      status: "pending",
     });
 
     res.status(201).json(mentorship);
@@ -56,7 +57,9 @@ export const requestMentorship = async (req, res) => {
   }
 };
 
-// Alumni responds
+/*
+  Alumni responds to request
+*/
 export const respondMentorship = async (req, res) => {
   try {
     const { id } = req.params;
@@ -64,7 +67,7 @@ export const respondMentorship = async (req, res) => {
 
     if (!["accepted", "rejected"].includes(status)) {
       return res.status(400).json({
-        message: "Invalid status value",
+        message: "Invalid status",
       });
     }
 
@@ -76,7 +79,6 @@ export const respondMentorship = async (req, res) => {
       });
     }
 
-    // Only assigned alumni can respond
     if (mentorship.alumni.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         message: "Not authorized",
@@ -86,11 +88,22 @@ export const respondMentorship = async (req, res) => {
     mentorship.status = status;
     await mentorship.save();
 
+    // create conversation once
+    let conversation = null;
+
     if (status === "accepted") {
-      await Conversation.create({
-        participants: [mentorship.student, mentorship.alumni],
-        mentorship: mentorship._id,
+      conversation = await Conversation.findOne({
+        participants: {
+          $all: [mentorship.student, mentorship.alumni],
+        },
       });
+
+      if (!conversation) {
+        conversation = await Conversation.create({
+          participants: [mentorship.student, mentorship.alumni],
+          mentorship: mentorship._id,
+        });
+      }
     }
 
     await Notification.create({
@@ -100,50 +113,49 @@ export const respondMentorship = async (req, res) => {
       relatedId: mentorship._id,
     });
 
-    // Notifying student in real-time
     const io = getIO();
 
-    const unreadCount = await Notification.countDocuments({
-      recipient: mentorship.student,
-      isRead: false,
-    });
-
+    // LIVE STATUS EVENT
     io.to(mentorship.student.toString()).emit(
-      "unreadNotificationCount",
-      unreadCount,
+      "mentorshipStatusUpdated",
+      {
+        mentorshipId: mentorship._id,
+        alumniId: mentorship.alumni.toString(),
+        status,
+        conversationId: conversation?._id || null,
+      }
     );
 
-    io.to(mentorship.student.toString()).emit("mentorshipResponse", {
-      message: `Your mentorship request was ${status}`,
-      mentorshipId: mentorship._id,
-    });
-
-    const populatedMentorship = await mentorship.populate([
+    const populated = await mentorship.populate([
       { path: "student", select: "username email" },
       { path: "alumni", select: "username email" },
     ]);
 
-    res.json(populatedMentorship);
+    res.json(populated);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
+/*
+  Get mentorship requests
+*/
 export const getMentorshipRequests = async (req, res) => {
   try {
     let mentorships;
 
     if (req.user.role === "alumni") {
-      // Alumni sees requests sent to them
       mentorships = await Mentorship.find({
         alumni: req.user._id,
-        status: "pending",
-      }).populate("student", "username email");
+      })
+        .populate("student", "username email")
+        .sort({ createdAt: -1 });
     } else {
-      // Student sees requests they sent
       mentorships = await Mentorship.find({
         student: req.user._id,
-      }).populate("alumni", "username email status");
+      })
+        .populate("alumni", "username email")
+        .sort({ createdAt: -1 });
     }
 
     res.json(mentorships);

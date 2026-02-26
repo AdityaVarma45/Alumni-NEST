@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import { calculateSkillMatch } from "../utils/skillMatcher.js";
+import Mentorship from "../models/Mentorship.js";
 
 export const blockUser = async (req, res) => {
   try {
@@ -40,7 +41,6 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
-
 /* ===================================================
    Find best alumni matches for student
 =================================================== */
@@ -61,10 +61,7 @@ export const getSkillMatches = async (req, res) => {
     });
 
     const matches = alumniUsers.map((alumni) => {
-      const result = calculateSkillMatch(
-        currentUser.skills,
-        alumni.skills
-      );
+      const result = calculateSkillMatch(currentUser.skills, alumni.skills);
 
       return {
         _id: alumni._id,
@@ -90,11 +87,11 @@ export const getSkillMatches = async (req, res) => {
    Recommended Alumni Engine
    finds best mentors for current student
 =================================================== */
+
 export const getRecommendedAlumni = async (req, res) => {
   try {
     const currentUser = req.user;
 
-    // only students need recommendations
     if (currentUser.role !== "student") {
       return res.status(400).json({
         message: "Only students can get recommendations",
@@ -106,26 +103,40 @@ export const getRecommendedAlumni = async (req, res) => {
       role: "alumni",
     }).select("-password");
 
-    // calculate match score for each alumni
+    // fetch mentorships for this student
+    const Mentorship = (await import("../models/Mentorship.js")).default;
+
+    const mentorships = await Mentorship.find({
+      student: currentUser._id,
+    });
+
+    // helper map -> fast lookup
+    const mentorshipMap = {};
+    mentorships.forEach((m) => {
+      mentorshipMap[m.alumni.toString()] = m;
+    });
+
     const scoredAlumni = alumniUsers.map((alumni) => {
       const match = calculateSkillMatch(
         currentUser.skills || [],
-        alumni.skills || []
+        alumni.skills || [],
       );
+
+      const mentorship = mentorshipMap[alumni._id.toString()];
 
       return {
         ...alumni.toObject(),
         matchScore: match.score,
         commonSkills: match.commonSkills,
+
+        // 🔥 AUTO STATUS SYNC
+        mentorshipStatus: mentorship?.status || null,
+        mentorshipId: mentorship?._id || null,
       };
     });
 
-    // sort by best match
-    scoredAlumni.sort(
-      (a, b) => b.matchScore - a.matchScore
-    );
+    scoredAlumni.sort((a, b) => b.matchScore - a.matchScore);
 
-    // return top 10 (clean UI)
     res.json(scoredAlumni.slice(0, 10));
   } catch (error) {
     console.error(error);
@@ -133,7 +144,8 @@ export const getRecommendedAlumni = async (req, res) => {
       message: "Failed to get recommendations",
     });
   }
-};
+}; 
+
 
 // update profile setup (skills + interests)
 export const updateProfileSetup = async (req, res) => {

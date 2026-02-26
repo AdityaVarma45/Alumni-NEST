@@ -1,93 +1,96 @@
 import { useEffect, useState, useContext } from "react";
-import axios from "../api/axios";
 import { AuthContext } from "../context/AuthContext";
+import {
+  getMentorshipRequests,
+  respondMentorship,
+} from "../services/mentorshipService";
 
 export default function MentorshipRequests() {
   const { user } = useContext(AuthContext);
-  const [requests, setRequests] = useState([]);
 
-  const fetchRequests = async () => {
-    try {
-      const res = await axios.get("/mentorship");
-      setRequests(res.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const [requests, setRequests] = useState([]);
 
   useEffect(() => {
     fetchRequests();
   }, []);
 
-  const handleRespond = async (id, status) => {
+  const fetchRequests = async () => {
     try {
-      await axios.put(`/mentorship/respond/${id}`, {
-        status,
-      });
+      const res = await getMentorshipRequests();
+      setRequests(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-      fetchRequests();
-    } catch (error) {
-      alert(error.response?.data?.message || "Action failed");
+  const handleResponse = async (id, status) => {
+    try {
+      await respondMentorship(id, status);
+
+      // update UI instantly
+      setRequests((prev) =>
+        prev.map((r) =>
+          r._id === id ? { ...r, status } : r
+        )
+      );
+    } catch (err) {
+      console.error(err);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <h2 className="text-2xl font-bold mb-6">
+    <div className="p-6">
+      <h1 className="text-xl font-semibold mb-4">
         Mentorship Requests
-      </h2>
+      </h1>
 
-      {requests.length === 0 && (
-        <p className="text-gray-500">No requests found</p>
+      {!requests.length && (
+        <p className="text-gray-500">No requests yet</p>
       )}
 
-      <div className="space-y-4">
-        {requests.map((req) => (
-          <div
-            key={req._id}
-            className="bg-white p-4 rounded shadow"
-          >
-            {user.role === "alumni" ? (
-              <>
-                <p>
-                  <strong>{req.student?.username}</strong>
-                </p>
-                <p className="text-sm text-gray-600">
-                  {req.student?.email}
-                </p>
+      <div className="space-y-3">
+        {requests.map((req) => {
+          const student = req.student || req.alumni;
 
-                <div className="mt-4 space-x-2">
-                  <button
-                    onClick={() => handleRespond(req._id, "accepted")}
-                    className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600"
-                  >
-                    Accept
-                  </button>
+          return (
+            <div
+              key={req._id}
+              className="bg-white rounded-xl p-4 shadow-sm"
+            >
+              <h3 className="font-medium">
+                {student?.username}
+              </h3>
 
-                  <button
-                    onClick={() => handleRespond(req._id, "rejected")}
-                    className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
-                  >
-                    Reject
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <p>
-                  <strong>{req.alumni?.username}</strong>
-                </p>
+              <p className="text-sm text-gray-500 mt-1">
+                Status: {req.status}
+              </p>
 
-                <p className="mt-2">
-                  Status:{" "}
-                  <span className="font-semibold">
-                    {req.status}
-                  </span>
-                </p>
-              </>
-            )}
-          </div>
-        ))}
+              {/* alumni actions */}
+              {user?.role === "alumni" &&
+                req.status === "pending" && (
+                  <div className="mt-3 flex gap-2">
+                    <button
+                      onClick={() =>
+                        handleResponse(req._id, "accepted")
+                      }
+                      className="bg-green-600 text-white px-3 py-1 rounded"
+                    >
+                      Accept
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        handleResponse(req._id, "rejected")
+                      }
+                      className="bg-red-600 text-white px-3 py-1 rounded"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

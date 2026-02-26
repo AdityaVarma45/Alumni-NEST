@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useReducer } from "react";
+import { createContext, useContext, useEffect, useReducer, useState } from "react";
 import socket from "../socket";
 import { getConversations } from "../services/chatService";
 import { conversationReducer } from "../reducers/conversationReducer";
@@ -11,21 +11,15 @@ export const ChatContext = createContext();
 export const ChatProvider = ({ children }) => {
   const { user } = useContext(AuthContext);
 
-  const [conversations, dispatch] = useReducer(
-    conversationReducer,
-    []
-  );
+  const [conversations, dispatch] = useReducer(conversationReducer, []);
+  const [mentorshipUpdates, setMentorshipUpdates] = useState({});
 
   useEffect(() => {
     if (!user) return;
 
-    /* ===============================
-       INITIAL LOAD
-    =============================== */
     const fetchConversations = async () => {
       try {
         const res = await getConversations();
-
         dispatch({
           type: "SET_CONVERSATIONS",
           payload: res.data,
@@ -37,11 +31,6 @@ export const ChatProvider = ({ children }) => {
 
     fetchConversations();
 
-    /* ===============================
-       SOCKET EVENTS
-    =============================== */
-
-    // online users update
     const handleOnlineUsers = (users) => {
       dispatch({
         type: "ONLINE_USERS_UPDATED",
@@ -50,7 +39,6 @@ export const ChatProvider = ({ children }) => {
       });
     };
 
-    // 🔥 NEW MESSAGE EVENT
     const handleConversationUpdated = (payload) => {
       dispatch({
         type: "CONVERSATION_UPDATED",
@@ -60,89 +48,55 @@ export const ChatProvider = ({ children }) => {
         },
       });
 
-      // check if user already inside this chat
       const activeConversationId =
         window.location.pathname.split("/").pop();
 
-      const isCurrentChat =
-        payload.conversationId === activeConversationId;
-
-      // only notify if NOT inside active chat
-      if (!isCurrentChat) {
-        // 🔊 play sound
+      if (payload.conversationId !== activeConversationId) {
         playNotificationSound();
 
-        // 🔥 toast notification
-        toast.custom(
-          (t) => (
-            <div
-              className="bg-white shadow-lg rounded-xl px-4 py-3 cursor-pointer border"
-              onClick={() => {
-                toast.dismiss(t.id);
-                window.location.href = `/dashboard/chat/${payload.conversationId}`;
-              }}
-            >
-              <p className="font-semibold text-sm">
-                New message
-              </p>
-              <p className="text-xs text-gray-600 truncate">
-                {payload.message?.content}
-              </p>
-            </div>
-          ),
-          { duration: 3000 }
-        );
+        toast.custom((t) => (
+          <div
+            className="bg-white shadow-lg rounded-xl px-4 py-3 border cursor-pointer"
+            onClick={() => {
+              toast.dismiss(t.id);
+              window.location.href = `/dashboard/chat/${payload.conversationId}`;
+            }}
+          >
+            <p className="font-semibold text-sm">New message</p>
+            <p className="text-xs text-gray-600 truncate">
+              {payload.message?.content}
+            </p>
+          </div>
+        ));
       }
     };
 
-    // unread sync
-    const handleUnreadUpdated = (payload) => {
-      dispatch({
-        type: "UNREAD_UPDATED",
-        payload,
-      });
+    const handleMentorshipStatus = (payload) => {
+      setMentorshipUpdates((prev) => ({
+        ...prev,
+        [payload.alumniId]: payload,
+      }));
     };
 
-    // typing indicators
-    const handleUserTyping = ({ conversationId }) => {
-      dispatch({
-        type: "CONVERSATION_TYPING",
-        conversationId,
-        typing: true,
-      });
-    };
-
-    const handleStopTyping = ({ conversationId }) => {
-      dispatch({
-        type: "CONVERSATION_TYPING",
-        conversationId,
-        typing: false,
-      });
-    };
-
-    /* ===============================
-       REGISTER LISTENERS
-    =============================== */
     socket.on("onlineUsers", handleOnlineUsers);
     socket.on("conversationUpdated", handleConversationUpdated);
-    socket.on("conversationUnreadUpdated", handleUnreadUpdated);
-    socket.on("userTyping", handleUserTyping);
-    socket.on("userStoppedTyping", handleStopTyping);
+    socket.on("mentorshipStatusUpdated", handleMentorshipStatus);
 
-    /* ===============================
-       CLEANUP
-    =============================== */
     return () => {
       socket.off("onlineUsers", handleOnlineUsers);
       socket.off("conversationUpdated", handleConversationUpdated);
-      socket.off("conversationUnreadUpdated", handleUnreadUpdated);
-      socket.off("userTyping", handleUserTyping);
-      socket.off("userStoppedTyping", handleStopTyping);
+      socket.off("mentorshipStatusUpdated", handleMentorshipStatus);
     };
   }, [user]);
 
   return (
-    <ChatContext.Provider value={{ conversations, dispatch }}>
+    <ChatContext.Provider
+      value={{
+        conversations,
+        dispatch,
+        mentorshipUpdates,
+      }}
+    >
       {children}
     </ChatContext.Provider>
   );
