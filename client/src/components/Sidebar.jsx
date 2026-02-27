@@ -1,14 +1,15 @@
 import { Link, useLocation } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, memo } from "react";
 import { AuthContext } from "../context/AuthContext";
 import socket from "../socket";
 
-export default function Sidebar({ user }) {
+function Sidebar({ user }) {
   const { logout } = useContext(AuthContext);
   const location = useLocation();
 
   const [requestCount, setRequestCount] = useState(0);
 
+  // mentorship request count (alumni only)
   useEffect(() => {
     if (user?.role !== "alumni") return;
 
@@ -52,7 +53,8 @@ export default function Sidebar({ user }) {
           to="/dashboard"
           className={`block px-3 py-2 rounded-lg text-sm ${
             isActive("/dashboard") &&
-            !location.pathname.includes("/dashboard/users")
+            !location.pathname.includes("/dashboard/users") &&
+            !location.pathname.includes("/dashboard/profile-setup")
               ? "bg-blue-50 text-blue-600"
               : "hover:bg-gray-100 text-gray-700"
           }`}
@@ -82,17 +84,7 @@ export default function Sidebar({ user }) {
           Update Profile Skills
         </Link>
 
-        <Link
-          to="/dashboard/blocked-users"
-          className={`block px-3 py-2 rounded-lg text-sm ${
-            isActive("/dashboard/blocked-users")
-              ? "bg-blue-50 text-blue-600"
-              : "hover:bg-gray-100 text-gray-700"
-          }`}
-        >
-          Blocked Users
-        </Link>
-
+        {/* alumni only */}
         {user?.role === "alumni" && (
           <Link
             to="/dashboard/mentorship"
@@ -125,3 +117,5 @@ export default function Sidebar({ user }) {
     </div>
   );
 }
+
+export default memo(Sidebar);

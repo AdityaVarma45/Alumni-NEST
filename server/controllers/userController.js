@@ -101,7 +101,6 @@ export const getSkillMatches = async (req, res) => {
 
 export const getRecommendedAlumni = async (req, res) => {
   try {
-    // always fetch fresh user from DB
     const currentUser = await User.findById(req.user._id);
 
     if (!currentUser) {
@@ -110,55 +109,52 @@ export const getRecommendedAlumni = async (req, res) => {
       });
     }
 
-    // only students get recommendations
     if (currentUser.role !== "student") {
       return res.status(400).json({
         message: "Only students can get recommendations",
       });
     }
 
-    // fetch alumni (block filter applied both sides)
     const alumniUsers = await User.find({
       role: "alumni",
       _id: { $nin: currentUser.blockedUsers || [] },
       blockedUsers: { $nin: [currentUser._id] },
     }).select("-password");
 
-    // load mentorship model
-    const Mentorship =
-      (await import("../models/Mentorship.js")).default;
-
-    // get existing mentorships for student
     const mentorships = await Mentorship.find({
       student: currentUser._id,
     });
 
-    // fast lookup map
     const mentorshipMap = {};
     mentorships.forEach((m) => {
       mentorshipMap[m.alumni.toString()] = m;
     });
 
-    // build recommendation result
-    const scoredAlumni = alumniUsers.map((alumni) => {
-      const match = calculateSkillMatch(
-        currentUser.skills || [],
-        alumni.skills || []
-      );
+    const scoredAlumni = alumniUsers
+      .map((alumni) => {
+        const match = calculateSkillMatch(
+          currentUser.skills || [],
+          alumni.skills || [],
+          currentUser.interests || [],
+          alumni.interests || []
+        );
 
-      const mentorship =
-        mentorshipMap[alumni._id.toString()];
+        const mentorship =
+          mentorshipMap[alumni._id.toString()];
 
-      return {
-        ...alumni.toObject(),
-        matchScore: match.score,
-        commonSkills: match.commonSkills,
-        mentorshipStatus: mentorship?.status || null,
-        mentorshipId: mentorship?._id || null,
-      };
-    });
+        return {
+          ...alumni.toObject(),
+          matchScore: match.score,
+          matchLabel: match.label,
+          commonSkills: match.commonSkills,
+          commonInterests: match.commonInterests,
+          mentorshipStatus: mentorship?.status || null,
+          mentorshipId: mentorship?._id || null,
+        };
+      })
+      // hide weak matches (product polish)
+      .filter((a) => a.matchScore >= 25);
 
-    // best match first
     scoredAlumni.sort(
       (a, b) => b.matchScore - a.matchScore
     );

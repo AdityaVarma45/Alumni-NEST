@@ -15,7 +15,9 @@ import { useRecommendedAlumni } from "../hooks/useRecommendedAlumni";
 export default function Dashboard() {
   const { user } = useContext(AuthContext);
 
-  const conversations = useConversations(user);
+  // 🔥 updated (hook now returns object)
+  const { conversations, loading } = useConversations(user);
+
   const recommendedAlumni = useRecommendedAlumni();
 
   return (
@@ -24,6 +26,7 @@ export default function Dashboard() {
       <ConversationsList
         conversations={conversations}
         user={user}
+        loading={loading}
       />
 
       {/* smart recommendation feed */}

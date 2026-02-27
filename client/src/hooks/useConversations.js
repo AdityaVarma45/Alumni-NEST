@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 import socket from "../socket";
 import { getConversations } from "../services/chatService";
 import { conversationReducer } from "../reducers/conversationReducer";
@@ -9,11 +9,16 @@ export const useConversations = (user) => {
     []
   );
 
+  // 🟢 NEW loading state
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     if (!user) return;
 
     const fetchConversations = async () => {
       try {
+        setLoading(true);
+
         const res = await getConversations();
 
         dispatch({
@@ -22,6 +27,9 @@ export const useConversations = (user) => {
         });
       } catch (error) {
         console.error(error);
+      } finally {
+        // 🔥 important
+        setLoading(false);
       }
     };
 
@@ -66,5 +74,6 @@ export const useConversations = (user) => {
     };
   }, [user]);
 
-  return conversations;
+  //  return BOTH now
+  return { conversations, loading };
 };

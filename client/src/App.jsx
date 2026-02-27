@@ -11,19 +11,19 @@ import ProfileSetup from "./pages/ProfileSetup";
 import UserProfile from "./pages/UserProfile";
 import BlockedUsers from "./pages/BlockedUsers";
 
-import ProtectedRoute from "./components/ProtectedRoute";
 import ProfileGuard from "./components/ProfileGuard";
+import ProtectedRoute from "./components/ProtectedRoute";
 import DashboardLayout from "./layouts/DashboardLayout";
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* PUBLIC ROUTES */}
+        {/* public */}
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* PROTECTED APP SHELL */}
+        {/* protected dashboard shell */}
         <Route
           path="/dashboard"
           element={
@@ -34,24 +34,13 @@ function App() {
             </ProtectedRoute>
           }
         >
-          {/* Dashboard home */}
           <Route index element={<Dashboard />} />
-
-          {/* Chat */}
           <Route path="chat/:conversationId" element={<ChatPage />} />
-
-          {/* Users */}
           <Route path="users" element={<Users />} />
           <Route path="users/:id" element={<UserProfile />} />
-
-          {/* Mentorship */}
-          <Route path="mentorship" element={<MentorshipRequests />} />
-
-          {/* Profile */}
           <Route path="profile-setup" element={<ProfileSetup />} />
-
-          {/* Blocked users */}
           <Route path="blocked-users" element={<BlockedUsers />} />
+          <Route path="mentorship" element={<MentorshipRequests />} />
         </Route>
       </Routes>
     </Router>

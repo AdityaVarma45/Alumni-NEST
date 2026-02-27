@@ -12,28 +12,39 @@ import {
 
 const router = express.Router();
 
-/* users list */
+/* ===============================
+   USERS LIST
+=============================== */
 router.get("/", protect, getAllUsers);
 
-/* current user profile */
+/* ===============================
+   CURRENT USER PROFILE
+=============================== */
 router.get("/profile", protect, (req, res) => {
   res.json(req.user);
 });
 
-/* profile setup */
+/* ===============================
+   PROFILE SETUP
+=============================== */
 router.put("/profile/setup", protect, setupProfile);
 
-/* recommended alumni (NEW) */
+/* ===============================
+   RECOMMENDED ALUMNI
+=============================== */
 router.get("/recommended", protect, getRecommendedAlumni);
 
-/* block user */
+/* ===============================
+   BLOCK / UNBLOCK
+=============================== */
 router.post("/block", protect, blockUser);
-
-/* get specific user profile */
-router.get("/:id", protect, getUserProfile);
-
-// blocked users routes
 router.get("/blocked", protect, getBlockedUsers);
 router.post("/unblock", protect, unblockUser);
+
+/* ===============================
+   SINGLE USER PROFILE
+   (KEEP THIS LAST)
+=============================== */
+router.get("/:id", protect, getUserProfile);
 
 export default router;
