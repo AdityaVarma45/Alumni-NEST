@@ -35,7 +35,7 @@ export const ChatProvider = ({ children }) => {
       dispatch({
         type: "ONLINE_USERS_UPDATED",
         users,
-        userId: user.id,
+        userId: user.id, 
       });
     };
 

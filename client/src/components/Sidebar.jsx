@@ -82,6 +82,18 @@ export default function Sidebar({ user }) {
           Update Profile Skills
         </Link>
 
+        {/* blocked users */}
+        <Link
+          to="/blocked-users"
+          className={`block px-3 py-2 rounded-lg text-sm ${
+            isActive("/blocked-users")
+              ? "bg-blue-50 text-blue-600"
+              : "hover:bg-gray-100 text-gray-700"
+          }`}
+        >
+          Blocked Users
+        </Link>
+
         {/* alumni only */}
         {user?.role === "alumni" && (
           <Link

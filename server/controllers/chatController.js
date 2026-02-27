@@ -3,7 +3,7 @@ import Message from "../models/Message.js";
 import { getIO, isUserOnline } from "../socket/socket.js";
 import User from "../models/User.js";
 
-// SEND MESSAGE
+/* SEND MESSAGE */
 export const sendMessage = async (req, res) => {
   try {
     const { conversationId } = req.params;
@@ -23,17 +23,45 @@ export const sendMessage = async (req, res) => {
       });
     }
 
-    // Find receiver
+    // find receiver
     const receiverId = conversation.participants.find(
-      (p) => p.toString() !== req.user._id.toString(),
+      (p) => p.toString() !== req.user._id.toString()
     );
 
+    if (!receiverId) {
+      return res.status(400).json({
+        message: "Invalid conversation",
+      });
+    }
+
+    const senderUser = await User.findById(req.user._id);
     const receiverUser = await User.findById(receiverId);
 
-    // Block check
-    if (receiverUser.blockedUsers.includes(req.user._id)) {
+    if (!receiverUser) {
+      return res.status(404).json({
+        message: "Receiver not found",
+      });
+    }
+
+    // receiver blocked sender
+    if (
+      receiverUser.blockedUsers.some(
+        (id) => id.toString() === req.user._id.toString()
+      )
+    ) {
       return res.status(403).json({
         message: "You are blocked by this user",
+      });
+    }
+
+    // sender blocked receiver
+    if (
+      senderUser.blockedUsers.some(
+        (id) => id.toString() === receiverId.toString()
+      )
+    ) {
+      return res.status(403).json({
+        message: "You blocked this user",
       });
     }
 
@@ -50,8 +78,8 @@ export const sendMessage = async (req, res) => {
       updatedAt: new Date(),
     });
 
-    //  Real-time emit
     const io = getIO();
+
     io.to(conversationId.toString()).emit("receiveMessage", message);
 
     io.to(conversationId.toString()).emit("conversationUpdated", {
@@ -65,8 +93,7 @@ export const sendMessage = async (req, res) => {
   }
 };
 
-// GET USER CONVERSATIONS WITH UNREAD COUNT AND ONLINE STATUS
-
+/* GET USER CONVERSATIONS */
 export const getUserConversations = async (req, res) => {
   try {
     const conversations = await Conversation.find({
@@ -84,7 +111,7 @@ export const getUserConversations = async (req, res) => {
         });
 
         const otherParticipant = conversation.participants.find(
-          (p) => p._id.toString() !== req.user._id.toString(),
+          (p) => p._id.toString() !== req.user._id.toString()
         );
 
         const online = isUserOnline(otherParticipant._id);
@@ -95,7 +122,7 @@ export const getUserConversations = async (req, res) => {
           online,
           lastSeen: otherParticipant.lastSeen,
         };
-      }),
+      })
     );
 
     res.json(conversationsWithMeta);
@@ -104,7 +131,7 @@ export const getUserConversations = async (req, res) => {
   }
 };
 
-// GET MESSAGES FOR A CONVERSATION
+/* GET MESSAGES */
 export const getMessages = async (req, res) => {
   try {
     const { conversationId } = req.params;
@@ -115,10 +142,10 @@ export const getMessages = async (req, res) => {
 
     const messages = await Message.find({
       conversation: conversationId,
-      deletedFor: { $nin: [req.user._id] }, // 🔥 FIXED
+      deletedFor: { $nin: [req.user._id] },
     })
       .populate("sender", "username")
-      .sort({ createdAt: 1 }) // oldest first
+      .sort({ createdAt: 1 })
       .skip(skip)
       .limit(limit);
 
@@ -128,7 +155,7 @@ export const getMessages = async (req, res) => {
   }
 };
 
-// MARK MESSAGES AS READ
+/* MARK READ */
 export const markMessagesAsRead = async (req, res) => {
   try {
     const { conversationId } = req.params;
@@ -139,7 +166,7 @@ export const markMessagesAsRead = async (req, res) => {
         sender: { $ne: req.user._id },
         isRead: false,
       },
-      { isRead: true },
+      { isRead: true }
     );
 
     const io = getIO();
@@ -149,25 +176,13 @@ export const markMessagesAsRead = async (req, res) => {
       readerId: req.user._id,
     });
 
-    const unreadCount = await Message.countDocuments({
-      conversation: conversationId,
-      sender: { $ne: req.user._id },
-      isRead: false,
-    });
-
-    io.to(conversationId.toString()).emit("conversationUnreadUpdated", {
-      conversationId,
-      unreadCount,
-    });
-
     res.json({ message: "Messages marked as read" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// DELETE MESSAGE
-
+/* DELETE MESSAGE */
 export const deleteMessage = async (req, res) => {
   try {
     const { messageId } = req.params;
@@ -181,10 +196,8 @@ export const deleteMessage = async (req, res) => {
       });
     }
 
-    // Delete for everyone
     if (deleteForEveryone) {
-      const timeLimit = 5 * 60 * 1000; // 5 minutes
-      const now = Date.now();
+      const timeLimit = 5 * 60 * 1000;
 
       if (message.sender.toString() !== req.user._id.toString()) {
         return res.status(403).json({
@@ -192,7 +205,7 @@ export const deleteMessage = async (req, res) => {
         });
       }
 
-      if (now - message.createdAt.getTime() > timeLimit) {
+      if (Date.now() - message.createdAt.getTime() > timeLimit) {
         return res.status(400).json({
           message: "Delete time window expired",
         });
@@ -202,15 +215,13 @@ export const deleteMessage = async (req, res) => {
       message.content = "This message was deleted";
       await message.save();
 
-      const io = getIO();
-      io.to(message.conversation.toString()).emit("messageDeletedForEveryone", {
-        messageId,
-      });
+      getIO()
+        .to(message.conversation.toString())
+        .emit("messageDeletedForEveryone", { messageId });
 
       return res.json({ message: "Deleted for everyone" });
     }
 
-    // Delete for me
     if (!message.deletedFor.includes(req.user._id)) {
       message.deletedFor.push(req.user._id);
       await message.save();

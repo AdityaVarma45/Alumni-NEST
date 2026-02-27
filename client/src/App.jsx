@@ -8,6 +8,8 @@ import Users from "./pages/Users";
 import MentorshipRequests from "./pages/MentorshipRequests";
 import ProfileSetup from "./pages/ProfileSetup";
 import ProfileGuard from "./components/ProfileGuard";
+import UserProfile from "./pages/UserProfile";
+import BlockedUsers from "./pages/BlockedUsers";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import DashboardLayout from "./layouts/DashboardLayout";
@@ -61,6 +63,22 @@ function App() {
           element={
             <ProtectedRoute>
               <MentorshipRequests />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/users/:id"
+          element={
+            <ProtectedRoute>
+              <UserProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/blocked-users"
+          element={
+            <ProtectedRoute>
+              <BlockedUsers />
             </ProtectedRoute>
           }
         />

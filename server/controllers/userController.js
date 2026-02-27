@@ -1,7 +1,9 @@
 import User from "../models/User.js";
 import { calculateSkillMatch } from "../utils/skillMatcher.js";
 import Mentorship from "../models/Mentorship.js";
+import { isUserOnline } from "../socket/socket.js";
 
+// block user
 export const blockUser = async (req, res) => {
   try {
     const { userIdToBlock } = req.body;
@@ -31,8 +33,13 @@ export const blockUser = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
   try {
+    const currentUser = await User.findById(req.user._id);
+
     const users = await User.find({
-      _id: { $ne: req.user._id },
+      _id: {
+        $ne: req.user._id,
+        $nin: currentUser.blockedUsers,
+      },
     }).select("-password");
 
     res.json(users);
@@ -101,6 +108,7 @@ export const getRecommendedAlumni = async (req, res) => {
     // fetch all alumni
     const alumniUsers = await User.find({
       role: "alumni",
+      _id: { $nin: currentUser.blockedUsers },
     }).select("-password");
 
     // fetch mentorships for this student
@@ -144,8 +152,7 @@ export const getRecommendedAlumni = async (req, res) => {
       message: "Failed to get recommendations",
     });
   }
-}; 
-
+};
 
 // update profile setup (skills + interests)
 export const updateProfileSetup = async (req, res) => {
@@ -198,6 +205,65 @@ export const setupProfile = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+// get specific user profile (for viewing other users)
+export const getUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    res.json({
+      ...user.toObject(),
+      online: isUserOnline(user._id),
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+// get blocked users list
+export const getBlockedUsers = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).populate(
+      "blockedUsers",
+      "username email role lastSeen",
+    );
+
+    res.json(user.blockedUsers);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+// unblock user
+export const unblockUser = async (req, res) => {
+  try {
+    const { userIdToUnblock } = req.body;
+
+    const user = await User.findById(req.user._id);
+
+    user.blockedUsers = user.blockedUsers.filter(
+      (id) => id.toString() !== userIdToUnblock,
+    );
+
+    await user.save();
+
+    res.json({ message: "User unblocked successfully" });
+  } catch (error) {
     res.status(500).json({
       message: error.message,
     });
