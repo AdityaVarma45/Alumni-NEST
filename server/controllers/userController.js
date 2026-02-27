@@ -31,6 +31,7 @@ export const blockUser = async (req, res) => {
   }
 };
 
+//
 export const getAllUsers = async (req, res) => {
   try {
     const currentUser = await User.findById(req.user._id);
@@ -39,6 +40,9 @@ export const getAllUsers = async (req, res) => {
       _id: {
         $ne: req.user._id,
         $nin: currentUser.blockedUsers,
+      },
+      blockedUsers: {
+        $nin: [req.user._id],
       },
     }).select("-password");
 
@@ -97,53 +101,67 @@ export const getSkillMatches = async (req, res) => {
 
 export const getRecommendedAlumni = async (req, res) => {
   try {
-    const currentUser = req.user;
+    // always fetch fresh user from DB
+    const currentUser = await User.findById(req.user._id);
 
+    if (!currentUser) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    // only students get recommendations
     if (currentUser.role !== "student") {
       return res.status(400).json({
         message: "Only students can get recommendations",
       });
     }
 
-    // fetch all alumni
+    // fetch alumni (block filter applied both sides)
     const alumniUsers = await User.find({
       role: "alumni",
-      _id: { $nin: currentUser.blockedUsers },
+      _id: { $nin: currentUser.blockedUsers || [] },
+      blockedUsers: { $nin: [currentUser._id] },
     }).select("-password");
 
-    // fetch mentorships for this student
-    const Mentorship = (await import("../models/Mentorship.js")).default;
+    // load mentorship model
+    const Mentorship =
+      (await import("../models/Mentorship.js")).default;
 
+    // get existing mentorships for student
     const mentorships = await Mentorship.find({
       student: currentUser._id,
     });
 
-    // helper map -> fast lookup
+    // fast lookup map
     const mentorshipMap = {};
     mentorships.forEach((m) => {
       mentorshipMap[m.alumni.toString()] = m;
     });
 
+    // build recommendation result
     const scoredAlumni = alumniUsers.map((alumni) => {
       const match = calculateSkillMatch(
         currentUser.skills || [],
-        alumni.skills || [],
+        alumni.skills || []
       );
 
-      const mentorship = mentorshipMap[alumni._id.toString()];
+      const mentorship =
+        mentorshipMap[alumni._id.toString()];
 
       return {
         ...alumni.toObject(),
         matchScore: match.score,
         commonSkills: match.commonSkills,
-
-        // 🔥 AUTO STATUS SYNC
         mentorshipStatus: mentorship?.status || null,
         mentorshipId: mentorship?._id || null,
       };
     });
 
-    scoredAlumni.sort((a, b) => b.matchScore - a.matchScore);
+    // best match first
+    scoredAlumni.sort(
+      (a, b) => b.matchScore - a.matchScore
+    );
 
     res.json(scoredAlumni.slice(0, 10));
   } catch (error) {

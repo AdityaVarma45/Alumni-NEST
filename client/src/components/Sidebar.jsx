@@ -9,7 +9,6 @@ export default function Sidebar({ user }) {
 
   const [requestCount, setRequestCount] = useState(0);
 
-  // listen for live mentorship count updates
   useEffect(() => {
     if (user?.role !== "alumni") return;
 
@@ -52,7 +51,8 @@ export default function Sidebar({ user }) {
         <Link
           to="/dashboard"
           className={`block px-3 py-2 rounded-lg text-sm ${
-            isActive("/dashboard")
+            isActive("/dashboard") &&
+            !location.pathname.includes("/dashboard/users")
               ? "bg-blue-50 text-blue-600"
               : "hover:bg-gray-100 text-gray-700"
           }`}
@@ -61,9 +61,9 @@ export default function Sidebar({ user }) {
         </Link>
 
         <Link
-          to="/users"
+          to="/dashboard/users"
           className={`block px-3 py-2 rounded-lg text-sm ${
-            isActive("/users")
+            isActive("/dashboard/users")
               ? "bg-blue-50 text-blue-600"
               : "hover:bg-gray-100 text-gray-700"
           }`}
@@ -72,9 +72,9 @@ export default function Sidebar({ user }) {
         </Link>
 
         <Link
-          to="/profile-setup"
+          to="/dashboard/profile-setup"
           className={`block px-3 py-2 rounded-lg text-sm ${
-            isActive("/profile-setup")
+            isActive("/dashboard/profile-setup")
               ? "bg-blue-50 text-blue-600"
               : "hover:bg-gray-100 text-gray-700"
           }`}
@@ -82,11 +82,10 @@ export default function Sidebar({ user }) {
           Update Profile Skills
         </Link>
 
-        {/* blocked users */}
         <Link
-          to="/blocked-users"
+          to="/dashboard/blocked-users"
           className={`block px-3 py-2 rounded-lg text-sm ${
-            isActive("/blocked-users")
+            isActive("/dashboard/blocked-users")
               ? "bg-blue-50 text-blue-600"
               : "hover:bg-gray-100 text-gray-700"
           }`}
@@ -94,12 +93,11 @@ export default function Sidebar({ user }) {
           Blocked Users
         </Link>
 
-        {/* alumni only */}
         {user?.role === "alumni" && (
           <Link
-            to="/mentorship"
+            to="/dashboard/mentorship"
             className={`px-3 py-2 rounded-lg text-sm flex justify-between items-center ${
-              isActive("/mentorship")
+              isActive("/dashboard/mentorship")
                 ? "bg-blue-50 text-blue-600"
                 : "hover:bg-gray-100 text-gray-700"
             }`}

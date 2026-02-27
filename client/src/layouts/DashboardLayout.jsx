@@ -12,8 +12,10 @@ export default function DashboardLayout() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex">
+      {/* persistent sidebar */}
       <Sidebar user={user} />
 
+      {/* page content */}
       <div className="flex-1 overflow-hidden">
         <Outlet />
       </div>
