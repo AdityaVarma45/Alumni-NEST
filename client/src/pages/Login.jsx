@@ -6,6 +6,7 @@ import { AuthContext } from "../context/AuthContext";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -18,7 +19,10 @@ export default function Login() {
         password,
       });
 
+      // save auth
       login(res.data);
+
+      // go dashboard
       navigate("/dashboard");
     } catch (error) {
       alert(error.response?.data?.message || "Login failed");
@@ -26,9 +30,9 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
 
-      <div className="bg-white p-8 rounded-xl shadow-md w-96">
         <h2 className="text-2xl font-bold text-center mb-6">
           Login to AlumniNest
         </h2>
@@ -41,9 +45,10 @@ export default function Login() {
             </label>
             <input
               type="email"
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -53,9 +58,10 @@ export default function Login() {
             </label>
             <input
               type="password"
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -68,7 +74,7 @@ export default function Login() {
         </form>
 
         <p className="text-sm text-center mt-4">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link
             to="/register"
             className="text-blue-600 hover:underline"
@@ -76,6 +82,16 @@ export default function Login() {
             Register
           </Link>
         </p>
+
+        <p className="text-sm text-center mt-2">
+          <Link
+            to="/"
+            className="text-gray-500 hover:underline"
+          >
+            ← Back to Welcome
+          </Link>
+        </p>
+
       </div>
     </div>
   );

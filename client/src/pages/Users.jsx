@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useMemo } from "react";
 import { Link } from "react-router-dom";
 import axios from "../api/axios";
 import { AuthContext } from "../context/AuthContext";
@@ -17,42 +17,53 @@ const getLastSeenLabel = (date, online) => {
   return "Offline";
 };
 
-/* shimmer skeleton card */
-const UserCardSkeleton = () => {
-  return (
-    <div className="bg-white border rounded-xl p-4 shadow-sm">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-2.5 h-2.5 rounded-full shimmer" />
-          <div className="h-4 w-28 rounded shimmer" />
-        </div>
-        <div className="h-5 w-16 rounded-full shimmer" />
+/* shimmer skeleton */
+const UserCardSkeleton = () => (
+  <div className="bg-white border rounded-xl p-4 shadow-sm">
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        <div className="w-2.5 h-2.5 rounded-full shimmer" />
+        <div className="h-4 w-28 rounded shimmer" />
       </div>
-
-      <div className="h-3 w-24 rounded mt-2 shimmer" />
-      <div className="h-3 w-40 rounded mt-2 shimmer" />
-      <div className="h-8 w-36 rounded mt-4 shimmer" />
+      <div className="h-5 w-16 rounded-full shimmer" />
     </div>
-  );
-};
+    <div className="h-3 w-24 rounded mt-2 shimmer" />
+    <div className="h-3 w-40 rounded mt-2 shimmer" />
+    <div className="h-8 w-36 rounded mt-4 shimmer" />
+  </div>
+);
 
 export default function Users() {
   const { user } = useContext(AuthContext);
 
   const [users, setUsers] = useState([]);
   const [blockedUsers, setBlockedUsers] = useState([]);
+  const [mentorships, setMentorships] = useState([]);
+  const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // 🔥 LOCAL UI STATE (instant updates)
+  const [localMentorshipStatus, setLocalMentorshipStatus] =
+    useState({});
+
+  /* ===============================
+     FETCH ALL DATA
+  =============================== */
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [usersRes, blockedRes] = await Promise.all([
-          axios.get("/users"),
-          axios.get("/users/blocked"),
-        ]);
+        const [usersRes, blockedRes, mentorshipRes, convoRes] =
+          await Promise.all([
+            axios.get("/users"),
+            axios.get("/users/blocked"),
+            axios.get("/mentorship"),
+            axios.get("/chat/conversations"),
+          ]);
 
         setUsers(usersRes.data);
         setBlockedUsers(blockedRes.data);
+        setMentorships(mentorshipRes.data || []);
+        setConversations(convoRes.data || []);
       } catch (error) {
         console.error(error);
       } finally {
@@ -63,6 +74,25 @@ export default function Users() {
     fetchData();
   }, []);
 
+  /* ===============================
+     HELPERS
+  =============================== */
+
+  const mentorshipMap = useMemo(() => {
+    const map = {};
+    mentorships.forEach((m) => {
+      const alumniId = m.alumni?._id || m.alumni;
+      map[alumniId] = m;
+    });
+    return map;
+  }, [mentorships]);
+
+  const findConversation = (alumniId) => {
+    return conversations.find((c) =>
+      c.participants?.some((p) => p._id === alumniId)
+    );
+  };
+
   const sendRequest = async (e, alumniId) => {
     e.preventDefault();
 
@@ -72,7 +102,11 @@ export default function Users() {
         message: "I would like mentorship",
       });
 
-      alert("Mentorship request sent");
+      // 🔥 instant UI change
+      setLocalMentorshipStatus((prev) => ({
+        ...prev,
+        [alumniId]: "pending",
+      }));
     } catch (error) {
       alert(error.response?.data?.message || "Failed");
     }
@@ -92,11 +126,64 @@ export default function Users() {
     }
   };
 
+  /* ===============================
+     BUTTON ENGINE (SMART)
+  =============================== */
+
+  const renderAction = (u) => {
+    const conversation = findConversation(u._id);
+    const mentorship = mentorshipMap[u._id];
+    const localStatus = localMentorshipStatus[u._id];
+
+    if (conversation) {
+      return (
+        <Link
+          to={`/dashboard/chat/${conversation._id}`}
+          onClick={(e) => e.stopPropagation()}
+          className="text-sm text-green-600 hover:underline font-medium"
+        >
+          Continue Chat
+        </Link>
+      );
+    }
+
+    if (localStatus === "pending" || mentorship?.status === "pending") {
+      return (
+        <span className="text-sm text-yellow-600 font-medium">
+          Request Pending
+        </span>
+      );
+    }
+
+    if (localStatus === "accepted" || mentorship?.status === "accepted") {
+      return (
+        <span className="text-sm text-green-600 font-medium">
+          Accepted
+        </span>
+      );
+    }
+
+    if (localStatus === "rejected" || mentorship?.status === "rejected") {
+      return (
+        <span className="text-sm text-red-500">
+          Request Rejected
+        </span>
+      );
+    }
+
+    return (
+      <button
+        onClick={(e) => sendRequest(e, u._id)}
+        className="text-sm bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700"
+      >
+        Request Mentorship
+      </button>
+    );
+  };
+
   return (
     <div className="p-6 space-y-10">
-      {/* =========================
-          BROWSE USERS
-      ========================== */}
+      {/* ================= BROWSE USERS ================= */}
       <div>
         <h2 className="text-xl font-bold mb-5 text-gray-800">
           Browse Users
@@ -134,7 +221,6 @@ export default function Users() {
                                 : "bg-gray-300"
                             }`}
                           />
-
                           <h3 className="font-semibold text-gray-800">
                             {u.username}
                           </h3>
@@ -151,13 +237,7 @@ export default function Users() {
                         </span>
                       </div>
 
-                      <p
-                        className={`text-xs mt-1 ${
-                          u.online
-                            ? "text-green-600"
-                            : "text-gray-500"
-                        }`}
-                      >
+                      <p className="text-xs mt-1 text-gray-500">
                         {statusLabel}
                       </p>
 
@@ -167,14 +247,7 @@ export default function Users() {
 
                       {u.role === "alumni" && (
                         <div className="mt-3">
-                          <button
-                            onClick={(e) =>
-                              sendRequest(e, u._id)
-                            }
-                            className="text-sm bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700"
-                          >
-                            Request Mentorship
-                          </button>
+                          {renderAction(u)}
                         </div>
                       )}
                     </div>
@@ -185,9 +258,7 @@ export default function Users() {
         </div>
       </div>
 
-      {/* =========================
-          BLOCKED USERS SECTION
-      ========================== */}
+      {/* ================= BLOCKED USERS ================= */}
       <div>
         <h2 className="text-xl font-bold mb-5 text-gray-800">
           Blocked Users

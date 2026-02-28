@@ -6,23 +6,27 @@ import { getRecommendedAlumni } from "../services/userService";
 */
 
 export const useRecommendedAlumni = () => {
-  const [recommended, setRecommended] = useState([]);
+  const [alumni, setAlumni] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchRecommended = async () => {
       try {
         const res = await getRecommendedAlumni();
 
-        // IMPORTANT: use res.data (array)
-        setRecommended(Array.isArray(res.data) ? res.data : []);
+        setAlumni(
+          Array.isArray(res.data) ? res.data : []
+        );
       } catch (err) {
         console.error(err);
-        setRecommended([]);
+        setAlumni([]);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchRecommended();
   }, []);
 
-  return recommended;
+  return { alumni, loading };
 };

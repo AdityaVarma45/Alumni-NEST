@@ -21,16 +21,17 @@ export default function Register() {
         role,
       });
 
-      navigate("/");
+      // after register → login page
+      navigate("/login");
     } catch (error) {
       alert(error.response?.data?.message || "Registration failed");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
 
-      <div className="bg-white p-8 rounded-xl shadow-md w-96">
         <h2 className="text-2xl font-bold text-center mb-6">
           Create Account
         </h2>
@@ -40,30 +41,34 @@ export default function Register() {
           <input
             type="text"
             placeholder="Username"
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
           <input
             type="email"
             placeholder="Email"
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
           <input
             type="password"
             placeholder="Password"
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
           <select
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={role}
             onChange={(e) => setRole(e.target.value)}
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="student">Student</option>
             <option value="alumni">Alumni</option>
@@ -80,12 +85,22 @@ export default function Register() {
         <p className="text-sm text-center mt-4">
           Already have an account?{" "}
           <Link
-            to="/"
+            to="/login"
             className="text-blue-600 hover:underline"
           >
             Login
           </Link>
         </p>
+
+        <p className="text-sm text-center mt-2">
+          <Link
+            to="/"
+            className="text-gray-500 hover:underline"
+          >
+            ← Back to Welcome
+          </Link>
+        </p>
+
       </div>
     </div>
   );

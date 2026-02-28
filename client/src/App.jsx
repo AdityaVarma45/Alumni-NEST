@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
+import Welcome from "./pages/Welcome";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
@@ -21,7 +22,8 @@ function App() {
       <Routes>
 
         {/* ================= PUBLIC ================= */}
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Welcome />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
         {/* ================= PROTECTED DASHBOARD ================= */}
@@ -33,10 +35,8 @@ function App() {
             </ProtectedRoute>
           }
         >
-          {/* profile setup (NO guard) */}
           <Route path="profile-setup" element={<ProfileSetup />} />
 
-          {/* guarded routes */}
           <Route
             index
             element={
@@ -91,6 +91,7 @@ function App() {
             }
           />
         </Route>
+
       </Routes>
     </Router>
   );
