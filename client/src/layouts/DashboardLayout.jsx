@@ -11,12 +11,14 @@ export default function DashboardLayout() {
   useSocket(user?.id);
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
-      {/* persistent sidebar */}
-      <Sidebar user={user} />
+    <div className="h-screen bg-gray-100 flex overflow-hidden">
+      {/* sidebar (fixed full height) */}
+      <div className="h-full flex-shrink-0">
+        <Sidebar user={user} />
+      </div>
 
-      {/* page content */}
-      <div className="flex-1 overflow-hidden">
+      {/* right content scrolls only */}
+      <div className="flex-1 h-full overflow-y-auto">
         <Outlet />
       </div>
     </div>

@@ -1,97 +1,125 @@
-import { useEffect, useState, useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
-import {
-  getMentorshipRequests,
-  respondMentorship,
-} from "../services/mentorshipService";
+import { useEffect, useState } from "react";
+import axios from "../api/axios";
 
 export default function MentorshipRequests() {
-  const { user } = useContext(AuthContext);
-
   const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  /* ===============================
+     FETCH REQUESTS
+  =============================== */
   useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        setLoading(true);
+
+        const res = await axios.get("/mentorship");
+
+        setRequests(res.data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchRequests();
   }, []);
 
-  const fetchRequests = async () => {
+  /* ===============================
+     RESPOND (ALUMNI)
+  =============================== */
+  const respond = async (id, status) => {
     try {
-      const res = await getMentorshipRequests();
-      setRequests(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+      await axios.put(`/mentorship/respond/${id}`, {
+        status,
+      });
 
-  const handleResponse = async (id, status) => {
-    try {
-      await respondMentorship(id, status);
-
-      // update UI instantly
+      // instant UI update
       setRequests((prev) =>
         prev.map((r) =>
           r._id === id ? { ...r, status } : r
         )
       );
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
     }
   };
 
   return (
     <div className="p-6">
-      <h1 className="text-xl font-semibold mb-4">
+      <h2 className="text-xl font-bold mb-5 text-gray-800">
         Mentorship Requests
-      </h1>
+      </h2>
 
-      {!requests.length && (
-        <p className="text-gray-500">No requests yet</p>
+      {/* ================= LOADING ================= */}
+      {loading && (
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="bg-white border rounded-xl p-4 animate-pulse"
+            >
+              <div className="h-4 bg-gray-200 rounded w-1/3 mb-2" />
+              <div className="h-3 bg-gray-200 rounded w-1/2" />
+            </div>
+          ))}
+        </div>
       )}
 
-      <div className="space-y-3">
-        {requests.map((req) => {
-          const student = req.student || req.alumni;
+      {/* ================= EMPTY ================= */}
+      {!loading && requests.length === 0 && (
+        <p className="text-sm text-gray-500">
+          No mentorship requests yet
+        </p>
+      )}
 
-          return (
+      {/* ================= LIST ================= */}
+      {!loading && requests.length > 0 && (
+        <div className="space-y-3">
+          {requests.map((req) => (
             <div
               key={req._id}
-              className="bg-white rounded-xl p-4 shadow-sm"
+              className="bg-white border rounded-xl p-4 shadow-sm"
             >
-              <h3 className="font-medium">
-                {student?.username}
-              </h3>
-
-              <p className="text-sm text-gray-500 mt-1">
-                Status: {req.status}
+              <p className="font-semibold text-gray-800">
+                {req.student?.username ||
+                  req.alumni?.username}
               </p>
 
-              {/* alumni actions */}
-              {user?.role === "alumni" &&
-                req.status === "pending" && (
-                  <div className="mt-3 flex gap-2">
-                    <button
-                      onClick={() =>
-                        handleResponse(req._id, "accepted")
-                      }
-                      className="bg-green-600 text-white px-3 py-1 rounded"
-                    >
-                      Accept
-                    </button>
+              <p className="text-sm text-gray-500 mt-1">
+                Status:{" "}
+                <span className="capitalize">
+                  {req.status}
+                </span>
+              </p>
 
-                    <button
-                      onClick={() =>
-                        handleResponse(req._id, "rejected")
-                      }
-                      className="bg-red-600 text-white px-3 py-1 rounded"
-                    >
-                      Reject
-                    </button>
-                  </div>
-                )}
+              {/* pending actions */}
+              {req.status === "pending" && (
+                <div className="flex gap-2 mt-3">
+                  <button
+                    onClick={() =>
+                      respond(req._id, "accepted")
+                    }
+                    className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
+                  >
+                    Accept
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      respond(req._id, "rejected")
+                    }
+                    className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
+                  >
+                    Reject
+                  </button>
+                </div>
+              )}
             </div>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

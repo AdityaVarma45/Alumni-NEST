@@ -28,7 +28,7 @@ function Sidebar({ user }) {
     location.pathname.startsWith(path);
 
   return (
-    <div className="w-72 bg-white border-r flex flex-col">
+    <div className="w-72 h-full bg-white border-r flex flex-col">
       {/* app title */}
       <div className="h-16 flex items-center px-5 border-b">
         <h1 className="text-xl font-bold text-blue-600">
@@ -47,14 +47,11 @@ function Sidebar({ user }) {
       </div>
 
       {/* navigation */}
-      <div className="flex-1 px-3 py-4 space-y-2">
-
+      <div className="flex-1 px-3 py-4 space-y-2 overflow-y-auto">
         <Link
           to="/dashboard"
           className={`block px-3 py-2 rounded-lg text-sm ${
-            isActive("/dashboard") &&
-            !location.pathname.includes("/dashboard/users") &&
-            !location.pathname.includes("/dashboard/profile-setup")
+            location.pathname === "/dashboard"
               ? "bg-blue-50 text-blue-600"
               : "hover:bg-gray-100 text-gray-700"
           }`}
@@ -105,7 +102,7 @@ function Sidebar({ user }) {
         )}
       </div>
 
-      {/* logout */}
+      {/* logout pinned bottom */}
       <div className="p-4 border-t">
         <button
           onClick={logout}

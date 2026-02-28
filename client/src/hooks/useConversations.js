@@ -9,7 +9,6 @@ export const useConversations = (user) => {
     []
   );
 
-  // 🟢 NEW loading state
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -17,25 +16,21 @@ export const useConversations = (user) => {
 
     const fetchConversations = async () => {
       try {
-        setLoading(true);
-
         const res = await getConversations();
 
         dispatch({
           type: "SET_CONVERSATIONS",
-          payload: res.data,
+          payload: res.data || [],
         });
       } catch (error) {
         console.error(error);
       } finally {
-        // 🔥 important
         setLoading(false);
       }
     };
 
     fetchConversations();
 
-    /* ===== ONLINE USERS ===== */
     const handleOnlineUsers = (users) => {
       dispatch({
         type: "ONLINE_USERS_UPDATED",
@@ -44,7 +39,6 @@ export const useConversations = (user) => {
       });
     };
 
-    /* ===== CONVERSATION UPDATED ===== */
     const handleConversationUpdated = (payload) => {
       dispatch({
         type: "CONVERSATION_UPDATED",
@@ -55,7 +49,6 @@ export const useConversations = (user) => {
       });
     };
 
-    /* ===== UNREAD RESET ===== */
     const handleUnreadUpdated = (payload) => {
       dispatch({
         type: "UNREAD_UPDATED",
@@ -74,6 +67,5 @@ export const useConversations = (user) => {
     };
   }, [user]);
 
-  //  return BOTH now
   return { conversations, loading };
 };

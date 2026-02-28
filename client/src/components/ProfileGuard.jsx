@@ -1,20 +1,34 @@
 import { useContext } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
 /*
-  Prevent user entering dashboard
-  if profile is not completed
+  ProfileGuard
+  -------------
+  Prevents user entering dashboard pages
+  if profile is not completed.
 */
 
 export default function ProfileGuard({ children }) {
   const { user } = useContext(AuthContext);
+  const location = useLocation();
 
+  // wait until user loads
   if (!user) return null;
 
-  // if profile not completed → redirect
+  // already on profile setup page → allow
+  if (location.pathname === "/dashboard/profile-setup") {
+    return children;
+  }
+
+  // redirect if profile not completed
   if (!user.profileCompleted) {
-    return <Navigate to="/profile-setup" replace />;
+    return (
+      <Navigate
+        to="/dashboard/profile-setup"
+        replace
+      />
+    );
   }
 
   return children;

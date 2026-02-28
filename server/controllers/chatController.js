@@ -110,9 +110,20 @@ export const getUserConversations = async (req, res) => {
           isRead: false,
         });
 
+        // 🔥 SAFE participant detection
         const otherParticipant = conversation.participants.find(
           (p) => p._id.toString() !== req.user._id.toString()
         );
+
+        // ⚠️ protect against broken conversations
+        if (!otherParticipant) {
+          return {
+            ...conversation.toObject(),
+            unreadCount,
+            online: false,
+            lastSeen: null,
+          };
+        }
 
         const online = isUserOnline(otherParticipant._id);
 
@@ -127,6 +138,7 @@ export const getUserConversations = async (req, res) => {
 
     res.json(conversationsWithMeta);
   } catch (error) {
+    console.error("getUserConversations error:", error);
     res.status(500).json({ message: error.message });
   }
 };

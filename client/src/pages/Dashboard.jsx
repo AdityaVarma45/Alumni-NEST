@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+
 import ConversationsList from "../components/ConversationsList";
 import RecommendedAlumniSection from "../components/recommendations/RecommendedAlumniSection";
 
@@ -8,6 +9,7 @@ import { useRecommendedAlumni } from "../hooks/useRecommendedAlumni";
 
 /*
   Dashboard page
+  ----------------
   - conversations list
   - smart alumni recommendations
 */
@@ -15,23 +17,35 @@ import { useRecommendedAlumni } from "../hooks/useRecommendedAlumni";
 export default function Dashboard() {
   const { user } = useContext(AuthContext);
 
-  // 🔥 updated (hook now returns object)
-  const { conversations, loading } = useConversations(user);
+  // conversations hook
+  const {
+    conversations,
+    loading: conversationsLoading,
+  } = useConversations(user);
 
-  const recommendedAlumni = useRecommendedAlumni();
+  // recommendations hook
+  const {
+    alumni: recommendedAlumni,
+    loading: recommendationsLoading,
+  } = useRecommendedAlumni();
 
   return (
     <div className="h-full overflow-y-auto p-6 space-y-6">
-      {/* conversations */}
+      {/* ===============================
+          CONVERSATIONS
+      =============================== */}
       <ConversationsList
         conversations={conversations}
         user={user}
-        loading={loading}
+        loading={conversationsLoading}
       />
 
-      {/* smart recommendation feed */}
+      {/* ===============================
+          RECOMMENDED ALUMNI
+      =============================== */}
       <RecommendedAlumniSection
         alumni={recommendedAlumni}
+        loading={recommendationsLoading}
       />
     </div>
   );

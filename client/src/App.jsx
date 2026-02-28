@@ -19,28 +19,77 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* public */}
+
+        {/* ================= PUBLIC ================= */}
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* protected dashboard shell */}
+        {/* ================= PROTECTED DASHBOARD ================= */}
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <ProfileGuard>
-                <DashboardLayout />
-              </ProfileGuard>
+              <DashboardLayout />
             </ProtectedRoute>
           }
         >
-          <Route index element={<Dashboard />} />
-          <Route path="chat/:conversationId" element={<ChatPage />} />
-          <Route path="users" element={<Users />} />
-          <Route path="users/:id" element={<UserProfile />} />
+          {/* profile setup (NO guard) */}
           <Route path="profile-setup" element={<ProfileSetup />} />
-          <Route path="blocked-users" element={<BlockedUsers />} />
-          <Route path="mentorship" element={<MentorshipRequests />} />
+
+          {/* guarded routes */}
+          <Route
+            index
+            element={
+              <ProfileGuard>
+                <Dashboard />
+              </ProfileGuard>
+            }
+          />
+
+          <Route
+            path="chat/:conversationId"
+            element={
+              <ProfileGuard>
+                <ChatPage />
+              </ProfileGuard>
+            }
+          />
+
+          <Route
+            path="users"
+            element={
+              <ProfileGuard>
+                <Users />
+              </ProfileGuard>
+            }
+          />
+
+          <Route
+            path="users/:id"
+            element={
+              <ProfileGuard>
+                <UserProfile />
+              </ProfileGuard>
+            }
+          />
+
+          <Route
+            path="blocked-users"
+            element={
+              <ProfileGuard>
+                <BlockedUsers />
+              </ProfileGuard>
+            }
+          />
+
+          <Route
+            path="mentorship"
+            element={
+              <ProfileGuard>
+                <MentorshipRequests />
+              </ProfileGuard>
+            }
+          />
         </Route>
       </Routes>
     </Router>
