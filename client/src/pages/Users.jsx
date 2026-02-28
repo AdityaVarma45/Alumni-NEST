@@ -17,19 +17,10 @@ const getLastSeenLabel = (date, online) => {
   return "Offline";
 };
 
-/* shimmer skeleton */
 const UserCardSkeleton = () => (
-  <div className="bg-white border rounded-xl p-4 shadow-sm">
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <div className="w-2.5 h-2.5 rounded-full shimmer" />
-        <div className="h-4 w-28 rounded shimmer" />
-      </div>
-      <div className="h-5 w-16 rounded-full shimmer" />
-    </div>
-    <div className="h-3 w-24 rounded mt-2 shimmer" />
-    <div className="h-3 w-40 rounded mt-2 shimmer" />
-    <div className="h-8 w-36 rounded mt-4 shimmer" />
+  <div className="bg-white border rounded-xl p-4 shadow-sm animate-pulse">
+    <div className="h-4 w-32 bg-gray-200 rounded mb-3" />
+    <div className="h-3 w-48 bg-gray-200 rounded" />
   </div>
 );
 
@@ -42,13 +33,10 @@ export default function Users() {
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔥 LOCAL UI STATE (instant updates)
   const [localMentorshipStatus, setLocalMentorshipStatus] =
     useState({});
 
-  /* ===============================
-     FETCH ALL DATA
-  =============================== */
+  /* fetch all data */
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -64,8 +52,8 @@ export default function Users() {
         setBlockedUsers(blockedRes.data);
         setMentorships(mentorshipRes.data || []);
         setConversations(convoRes.data || []);
-      } catch (error) {
-        console.error(error);
+      } catch (err) {
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -74,10 +62,7 @@ export default function Users() {
     fetchData();
   }, []);
 
-  /* ===============================
-     HELPERS
-  =============================== */
-
+  /* mentorship map */
   const mentorshipMap = useMemo(() => {
     const map = {};
     mentorships.forEach((m) => {
@@ -87,11 +72,42 @@ export default function Users() {
     return map;
   }, [mentorships]);
 
-  const findConversation = (alumniId) => {
-    return conversations.find((c) =>
-      c.participants?.some((p) => p._id === alumniId)
+  const findConversation = (id) =>
+    conversations.find((c) =>
+      c.participants?.some((p) => p._id === id)
     );
-  };
+
+  /* smart grouping */
+  const groupedUsers = useMemo(() => {
+    const list = users.filter((u) => u._id !== user?.id);
+
+    const active = [];
+    const recommended = [];
+    const others = [];
+
+    list.forEach((u) => {
+      const hasConversation = !!findConversation(u._id);
+      const mentorship = mentorshipMap[u._id];
+
+      if (hasConversation) {
+        active.push(u);
+        return;
+      }
+
+      if (
+        (user?.role === "student" && u.role === "alumni") ||
+        (user?.role === "alumni" && u.role === "student") ||
+        mentorship?.status === "accepted"
+      ) {
+        recommended.push(u);
+        return;
+      }
+
+      others.push(u);
+    });
+
+    return { active, recommended, others };
+  }, [users, user, conversations, mentorshipMap]);
 
   const sendRequest = async (e, alumniId) => {
     e.preventDefault();
@@ -102,7 +118,6 @@ export default function Users() {
         message: "I would like mentorship",
       });
 
-      // 🔥 instant UI change
       setLocalMentorshipStatus((prev) => ({
         ...prev,
         [alumniId]: "pending",
@@ -126,10 +141,7 @@ export default function Users() {
     }
   };
 
-  /* ===============================
-     BUTTON ENGINE (SMART)
-  =============================== */
-
+  /* action button logic */
   const renderAction = (u) => {
     const conversation = findConversation(u._id);
     const mentorship = mentorshipMap[u._id];
@@ -155,15 +167,15 @@ export default function Users() {
       );
     }
 
-    if (localStatus === "accepted" || mentorship?.status === "accepted") {
+    if (mentorship?.status === "accepted") {
       return (
         <span className="text-sm text-green-600 font-medium">
-          Accepted
+          Mentorship Active
         </span>
       );
     }
 
-    if (localStatus === "rejected" || mentorship?.status === "rejected") {
+    if (mentorship?.status === "rejected") {
       return (
         <span className="text-sm text-red-500">
           Request Rejected
@@ -181,112 +193,93 @@ export default function Users() {
     );
   };
 
-  return (
-    <div className="p-6 space-y-10">
-      {/* ================= BROWSE USERS ================= */}
-      <div>
-        <h2 className="text-xl font-bold mb-5 text-gray-800">
-          Browse Users
-        </h2>
+  const renderUserCard = (u) => {
+    const statusLabel = getLastSeenLabel(u.lastSeen, u.online);
 
-        <div className="space-y-3">
-          {loading ? (
-            <>
-              <UserCardSkeleton />
-              <UserCardSkeleton />
-              <UserCardSkeleton />
-            </>
-          ) : (
-            users
-              .filter((u) => u._id !== user?.id)
-              .map((u) => {
-                const statusLabel = getLastSeenLabel(
-                  u.lastSeen,
-                  u.online
-                );
+    return (
+      <Link
+        key={u._id}
+        to={`/dashboard/users/${u._id}`}
+        className="block"
+      >
+        <div className="bg-white border rounded-xl p-4 shadow-sm hover:shadow-md transition">
+          <div className="flex justify-between items-start">
+            <h3 className="font-semibold text-gray-800">
+              {u.username}
+            </h3>
 
-                return (
-                  <Link
-                    key={u._id}
-                    to={`/dashboard/users/${u._id}`}
-                    className="block"
-                  >
-                    <div className="bg-white border rounded-xl p-4 shadow-sm hover:shadow-md transition">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`w-2.5 h-2.5 rounded-full ${
-                              u.online
-                                ? "bg-green-500"
-                                : "bg-gray-300"
-                            }`}
-                          />
-                          <h3 className="font-semibold text-gray-800">
-                            {u.username}
-                          </h3>
-                        </div>
+            <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 capitalize">
+              {u.role}
+            </span>
+          </div>
 
-                        <span
-                          className={`text-xs px-2 py-0.5 rounded-full capitalize ${
-                            u.role === "alumni"
-                              ? "bg-blue-50 text-blue-600"
-                              : "bg-gray-100 text-gray-600"
-                          }`}
-                        >
-                          {u.role}
-                        </span>
-                      </div>
+          {/* only ONE status shown */}
+          <p className="text-xs text-gray-500 mt-1">
+            {statusLabel}
+          </p>
 
-                      <p className="text-xs mt-1 text-gray-500">
-                        {statusLabel}
-                      </p>
+          <p className="text-sm text-gray-500 mt-1">
+            {u.email}
+          </p>
 
-                      <p className="text-sm text-gray-500 mt-1">
-                        {u.email}
-                      </p>
-
-                      {u.role === "alumni" && (
-                        <div className="mt-3">
-                          {renderAction(u)}
-                        </div>
-                      )}
-                    </div>
-                  </Link>
-                );
-              })
+          {u.role === "alumni" && (
+            <div className="mt-3">{renderAction(u)}</div>
           )}
         </div>
-      </div>
+      </Link>
+    );
+  };
 
-      {/* ================= BLOCKED USERS ================= */}
+  const renderSection = (title, list) => {
+    if (!list.length) return null;
+
+    return (
+      <div className="space-y-3">
+        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+          {title}
+        </h3>
+        {list.map(renderUserCard)}
+      </div>
+    );
+  };
+
+  return (
+    <div className="p-6 space-y-10">
+      <h2 className="text-xl font-bold text-gray-800">
+        Browse Users
+      </h2>
+
+      {loading ? (
+        <>
+          <UserCardSkeleton />
+          <UserCardSkeleton />
+          <UserCardSkeleton />
+        </>
+      ) : (
+        <>
+          {renderSection("Active Conversations", groupedUsers.active)}
+          {renderSection("Recommended", groupedUsers.recommended)}
+          {renderSection("Others", groupedUsers.others)}
+        </>
+      )}
+
       <div>
         <h2 className="text-xl font-bold mb-5 text-gray-800">
           Blocked Users
         </h2>
 
-        {loading ? (
-          <>
-            <UserCardSkeleton />
-            <UserCardSkeleton />
-          </>
-        ) : blockedUsers.length === 0 ? (
-          <p className="text-sm text-gray-500">
-            No blocked users
-          </p>
+        {blockedUsers.length === 0 ? (
+          <p className="text-sm text-gray-500">No blocked users</p>
         ) : (
           <div className="space-y-3">
             {blockedUsers.map((u) => (
               <div
                 key={u._id}
-                className="bg-white border rounded-xl p-4 shadow-sm flex items-center justify-between"
+                className="bg-white border rounded-xl p-4 shadow-sm flex justify-between"
               >
                 <div>
-                  <p className="font-semibold text-gray-800">
-                    {u.username}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {u.email}
-                  </p>
+                  <p className="font-semibold">{u.username}</p>
+                  <p className="text-sm text-gray-500">{u.email}</p>
                 </div>
 
                 <button

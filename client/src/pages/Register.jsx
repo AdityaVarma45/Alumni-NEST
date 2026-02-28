@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "../api/axios";
+import Logo from "../components/Logo";
 
 export default function Register() {
   const [username, setUsername] = useState("");
@@ -29,9 +30,14 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
+    <div className="relative min-h-screen flex items-center justify-center bg-gray-100 px-4">
 
+      {/* ===== TOP LEFT LOGO ===== */}
+      <div className="absolute top-6 left-6">
+        <Logo size="text-3xl" />
+      </div>
+
+      <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-6">
           Create Account
         </h2>
@@ -44,7 +50,7 @@ export default function Register() {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-gray-300 rounded px-3 py-2"
           />
 
           <input
@@ -53,7 +59,7 @@ export default function Register() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-gray-300 rounded px-3 py-2"
           />
 
           <input
@@ -62,13 +68,13 @@ export default function Register() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-gray-300 rounded px-3 py-2"
           />
 
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-gray-300 rounded px-3 py-2"
           >
             <option value="student">Student</option>
             <option value="alumni">Alumni</option>
@@ -76,7 +82,7 @@ export default function Register() {
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
           >
             Register
           </button>
@@ -100,7 +106,6 @@ export default function Register() {
             ← Back to Welcome
           </Link>
         </p>
-
       </div>
     </div>
   );

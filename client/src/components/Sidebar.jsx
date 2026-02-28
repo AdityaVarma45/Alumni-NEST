@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useContext, useEffect, useState, memo } from "react";
 import { AuthContext } from "../context/AuthContext";
 import socket from "../socket";
+import Logo from "../components/Logo";
 
 function Sidebar({ user }) {
   const { logout } = useContext(AuthContext);
@@ -29,14 +30,13 @@ function Sidebar({ user }) {
 
   return (
     <div className="w-72 h-full bg-white border-r flex flex-col">
-      {/* app title */}
+
+      {/* Top brand / logo */}
       <div className="h-16 flex items-center px-5 border-b">
-        <h1 className="text-xl font-bold text-blue-600">
-          AlumniNest
-        </h1>
+        <Logo size="text-2xl" />
       </div>
 
-      {/* user info */}
+      {/* User info */}
       <div className="px-5 py-4 border-b">
         <p className="font-semibold text-gray-800">
           {user?.username}
@@ -46,8 +46,9 @@ function Sidebar({ user }) {
         </p>
       </div>
 
-      {/* navigation */}
+      {/* Navigation */}
       <div className="flex-1 px-3 py-4 space-y-2 overflow-y-auto">
+
         <Link
           to="/dashboard"
           className={`block px-3 py-2 rounded-lg text-sm ${
@@ -81,7 +82,7 @@ function Sidebar({ user }) {
           Update Profile Skills
         </Link>
 
-        {/* alumni only */}
+        {/* Alumni only */}
         {user?.role === "alumni" && (
           <Link
             to="/dashboard/mentorship"
@@ -102,7 +103,7 @@ function Sidebar({ user }) {
         )}
       </div>
 
-      {/* logout pinned bottom */}
+      {/* Logout pinned bottom */}
       <div className="p-4 border-t">
         <button
           onClick={logout}
@@ -111,6 +112,7 @@ function Sidebar({ user }) {
           Logout
         </button>
       </div>
+
     </div>
   );
 }
