@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Welcome from "./pages/Welcome";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import MyProfile from "./pages/MyProfile";
 
 import Dashboard from "./pages/Dashboard";
 import ChatPage from "./pages/ChatPage";
@@ -20,7 +21,6 @@ function App() {
   return (
     <Router>
       <Routes>
-
         {/* ================= PUBLIC ================= */}
         <Route path="/" element={<Welcome />} />
         <Route path="/login" element={<Login />} />
@@ -92,6 +92,14 @@ function App() {
           />
         </Route>
 
+        <Route
+          path="my-profile"
+          element={
+            <ProfileGuard>
+              <MyProfile />
+            </ProfileGuard>
+          }
+        />
       </Routes>
     </Router>
   );

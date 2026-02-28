@@ -49,6 +49,7 @@ function Sidebar({ user }) {
       {/* Navigation */}
       <div className="flex-1 px-3 py-4 space-y-2 overflow-y-auto">
 
+        {/* Chats */}
         <Link
           to="/dashboard"
           className={`block px-3 py-2 rounded-lg text-sm ${
@@ -60,10 +61,11 @@ function Sidebar({ user }) {
           Chats
         </Link>
 
+        {/* Browse Users (exact match only) */}
         <Link
           to="/dashboard/users"
           className={`block px-3 py-2 rounded-lg text-sm ${
-            isActive("/dashboard/users")
+            location.pathname === "/dashboard/users"
               ? "bg-blue-50 text-blue-600"
               : "hover:bg-gray-100 text-gray-700"
           }`}
@@ -71,17 +73,19 @@ function Sidebar({ user }) {
           Browse Users
         </Link>
 
+        {/* My Profile */}
         <Link
-          to="/dashboard/profile-setup"
+          to={`/dashboard/users/${user?.id}`}
           className={`block px-3 py-2 rounded-lg text-sm ${
-            isActive("/dashboard/profile-setup")
+            location.pathname === `/dashboard/users/${user?.id}`
               ? "bg-blue-50 text-blue-600"
               : "hover:bg-gray-100 text-gray-700"
           }`}
         >
-          Update Profile Skills
+          My Profile
         </Link>
 
+        
         {/* Alumni only */}
         {user?.role === "alumni" && (
           <Link
@@ -103,7 +107,7 @@ function Sidebar({ user }) {
         )}
       </div>
 
-      {/* Logout pinned bottom */}
+      {/* Logout */}
       <div className="p-4 border-t">
         <button
           onClick={logout}
