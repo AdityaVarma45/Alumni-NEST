@@ -7,46 +7,47 @@ import RecommendedAlumniSection from "../components/recommendations/RecommendedA
 import { useConversations } from "../hooks/useConversations";
 import { useRecommendedAlumni } from "../hooks/useRecommendedAlumni";
 
-/*
-  Dashboard page
-  ----------------
-  - conversations list
-  - smart alumni recommendations
-*/
-
 export default function Dashboard() {
   const { user } = useContext(AuthContext);
 
-  // conversations hook
   const {
     conversations,
     loading: conversationsLoading,
   } = useConversations(user);
 
-  // recommendations hook
   const {
     alumni: recommendedAlumni,
     loading: recommendationsLoading,
   } = useRecommendedAlumni();
 
   return (
-    <div className="h-full overflow-y-auto p-6 space-y-6">
-      {/* ===============================
-          CONVERSATIONS
-      =============================== */}
-      <ConversationsList
-        conversations={conversations}
-        user={user}
-        loading={conversationsLoading}
-      />
+    <div className="max-w-6xl mx-auto space-y-6">
 
-      {/* ===============================
-          RECOMMENDED ALUMNI
-      =============================== */}
-      <RecommendedAlumniSection
-        alumni={recommendedAlumni}
-        loading={recommendationsLoading}
-      />
+      {/* Conversations card */}
+      <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 md:p-6">
+        <h2 className="text-lg font-semibold text-slate-800 mb-4">
+          Chats
+        </h2>
+
+        <ConversationsList
+          conversations={conversations}
+          user={user}
+          loading={conversationsLoading}
+        />
+      </section>
+
+      {/* Recommended alumni card */}
+      <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 md:p-6">
+        <h2 className="text-lg font-semibold text-slate-800 mb-4">
+          Recommended Alumni
+        </h2>
+
+        <RecommendedAlumniSection
+          alumni={recommendedAlumni}
+          loading={recommendationsLoading}
+        />
+      </section>
+
     </div>
   );
 }

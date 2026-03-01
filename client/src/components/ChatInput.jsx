@@ -1,29 +1,72 @@
+import { Send } from "lucide-react";
+
+/*
+  Chat input
+  - clean SPA footer
+  - modern rounded input
+  - safe layout (no height issues)
+*/
+
 export default function ChatInput({
   newMessage,
   onChange,
   onSend,
 }) {
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && newMessage.trim()) {
+      onSend();
+    }
+  };
+
   return (
-    <div className="p-4 bg-white flex gap-3 border-t">
-
-      {/* message input */}
-      <input
-        value={newMessage}
-        onChange={(e) => onChange(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") onSend();
-        }}
-        className="flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        placeholder="Type a message..."
-      />
-
-      {/* send button */}
-      <button
-        onClick={onSend}
-        className="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700"
+    <div className="bg-white border-t border-slate-200 px-4 md:px-6 py-3">
+      
+      <div
+        className="
+          flex items-center gap-3
+          bg-slate-50
+          border border-slate-200
+          rounded-xl
+          px-3 py-2
+          shadow-sm
+          focus-within:ring-2
+          focus-within:ring-blue-100
+          transition-all
+        "
       >
-        Send
-      </button>
+        {/* Message input */}
+        <input
+          value={newMessage}
+          onChange={(e) => onChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Type a message..."
+          className="
+            flex-1 bg-transparent
+            text-sm text-slate-700
+            placeholder:text-slate-400
+            focus:outline-none
+          "
+        />
+
+        {/* Send button */}
+        <button
+          onClick={onSend}
+          disabled={!newMessage.trim()}
+          className="
+            h-9 w-9 rounded-lg
+            bg-blue-600 text-white
+            flex items-center justify-center
+            hover:bg-blue-700
+            active:scale-95
+            transition-all duration-150
+            disabled:opacity-50
+            disabled:cursor-not-allowed
+          "
+        >
+          <Send size={16} />
+        </button>
+      </div>
+
     </div>
   );
 }

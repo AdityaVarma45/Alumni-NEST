@@ -1,17 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 
-/* ======================================================
-   Small helper functions (easy to understand)
-====================================================== */
-
-// format time like 10:45 PM
+// format time
 const formatTime = (date) =>
   new Date(date).toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
   });
 
-// show Today / Yesterday / normal date
+// day separator label
 const getDayLabel = (date) => {
   const msgDate = new Date(date);
   const today = new Date();
@@ -26,13 +22,13 @@ const getDayLabel = (date) => {
   return msgDate.toLocaleDateString();
 };
 
-// check if message contains only emojis
+// emoji check
 const isEmojiOnly = (text = "") => {
   const emojiRegex = /^(\p{Extended_Pictographic}|\s)+$/u;
   return emojiRegex.test(text.trim());
 };
 
-// check if message is a link
+// link check
 const isLink = (text = "") =>
   /(https?:\/\/[^\s]+)/g.test(text);
 
@@ -43,16 +39,10 @@ export default function ChatMessages({
   getMessageStatus,
   messagesEndRef,
 }) {
-  // reference to scroll container
   const containerRef = useRef(null);
-
-  // show/hide scroll-to-bottom button
   const [showScrollBtn, setShowScrollBtn] = useState(false);
 
-  /* ======================================================
-     Detect scroll position
-     → show button when user scrolls up
-  ====================================================== */
+  // detect scroll position
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -73,7 +63,6 @@ export default function ChatMessages({
     };
   }, []);
 
-  // scroll smoothly to latest message
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({
       behavior: "smooth",
@@ -81,17 +70,14 @@ export default function ChatMessages({
   };
 
   return (
-    <div className="relative flex-1">
-      {/* ==================================================
-         Scrollable message area
-      ================================================== */}
+    <div className="relative h-full">
       <div
         ref={containerRef}
         className="
-          absolute inset-0
-          overflow-y-auto
-          p-6 space-y-2
-          bg-[#f5f7fb]
+          h-full overflow-y-auto
+          px-5 md:px-6 py-4
+          space-y-2
+          bg-slate-50
           scroll-smooth
         "
       >
@@ -115,17 +101,14 @@ export default function ChatMessages({
               ? nextMsg.sender._id.toString() === user?.id
               : nextMsg.sender?.toString() === user?.id);
 
-          // grouping messages from same sender
           const isGrouped = prevMsg && prevIsMine === isMine;
           const isLastInGroup = !nextMsg || nextIsMine !== isMine;
 
-          // day separator logic
           const showDaySeparator =
             !prevMsg ||
             getDayLabel(prevMsg.createdAt) !==
               getDayLabel(msg.createdAt);
 
-          // unread divider
           const showUnreadDivider =
             !isMine &&
             !msg.isRead &&
@@ -136,25 +119,25 @@ export default function ChatMessages({
           const content = msg.content || "";
           const length = content.length;
 
-          // adaptive bubble width
           let bubbleWidth = "max-w-[75%]";
           if (isEmojiOnly(content)) bubbleWidth = "max-w-fit";
-          else if (length < 12) bubbleWidth = "max-w-fit min-w-[80px]";
+          else if (length < 12)
+            bubbleWidth = "max-w-fit min-w-[80px]";
           else if (length < 80) bubbleWidth = "max-w-[65%]";
           else bubbleWidth = "max-w-[80%]";
 
           return (
             <div key={msg._id}>
-              {/* Day label */}
+              {/* day separator */}
               {showDaySeparator && (
-                <div className="sticky top-2 z-10 flex justify-center my-4">
-                  <span className="text-xs px-3 py-1 rounded-full bg-gray-300/80 text-gray-700 shadow-sm">
+                <div className="flex justify-center my-5">
+                  <span className="text-xs px-3 py-1 rounded-full bg-white border border-slate-200 text-slate-500 shadow-sm">
                     {getDayLabel(msg.createdAt)}
                   </span>
                 </div>
               )}
 
-              {/* New message divider */}
+              {/* unread divider */}
               {showUnreadDivider && (
                 <div className="flex justify-center my-3">
                   <span className="text-xs bg-blue-100 text-blue-600 px-3 py-1 rounded-full">
@@ -163,23 +146,22 @@ export default function ChatMessages({
                 </div>
               )}
 
-              {/* Message row */}
+              {/* message row */}
               <div
                 className={`flex ${
                   isMine ? "justify-end" : "justify-start"
                 } ${isGrouped ? "mt-1" : "mt-3"}`}
               >
-                {/* Bubble */}
                 <div
                   className={`
                     ${bubbleWidth}
                     px-4 py-2
-                    shadow-sm hover:shadow-md
                     transition-all duration-200
+                    shadow-sm
                     ${
                       isMine
                         ? "bg-blue-600 text-white"
-                        : "bg-white text-gray-800"
+                        : "bg-white text-slate-800 border border-slate-200"
                     }
                     ${
                       isMine
@@ -198,7 +180,6 @@ export default function ChatMessages({
                   `}
                 >
                   <div className="flex flex-col">
-                    {/* Message content */}
                     {isLink(content) ? (
                       <a
                         href={content}
@@ -213,14 +194,15 @@ export default function ChatMessages({
                     ) : (
                       <span
                         className={`${
-                          isEmojiOnly(content) ? "text-3xl" : "text-sm"
+                          isEmojiOnly(content)
+                            ? "text-3xl"
+                            : "text-sm"
                         }`}
                       >
                         {content}
                       </span>
                     )}
 
-                    {/* time + ticks */}
                     <div className="flex justify-end items-center mt-1 gap-2">
                       <span className="text-[10px] opacity-70">
                         {formatTime(msg.createdAt)}
@@ -241,18 +223,15 @@ export default function ChatMessages({
 
         {/* typing indicator */}
         {typingUser && (
-          <div className="text-sm text-gray-500 pl-2">
+          <div className="text-sm text-slate-500 pl-2 animate-pulse">
             typing...
           </div>
         )}
 
-        {/* bottom anchor */}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* ==================================================
-         Floating center button
-      ================================================== */}
+      {/* scroll button */}
       {showScrollBtn && (
         <button
           onClick={scrollToBottom}

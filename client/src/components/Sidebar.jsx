@@ -4,7 +4,6 @@ import { AuthContext } from "../context/AuthContext";
 import socket from "../socket";
 import Logo from "../components/Logo";
 
-/* lucide icons */
 import {
   MessageSquare,
   Users,
@@ -19,7 +18,6 @@ function Sidebar({ user }) {
 
   const [requestCount, setRequestCount] = useState(0);
 
-  // mentorship request count (alumni only)
   useEffect(() => {
     if (user?.role !== "alumni") return;
 
@@ -37,7 +35,6 @@ function Sidebar({ user }) {
   const isActive = (path) =>
     location.pathname.startsWith(path);
 
-  // reusable nav item
   const NavItem = ({ to, icon, label, exact = false }) => {
     const active = exact
       ? location.pathname === to
@@ -47,11 +44,11 @@ function Sidebar({ user }) {
       <Link
         to={to}
         className={`
-          group flex items-center gap-3 px-3 py-2 rounded-lg text-sm
+          group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm
           transition-all duration-200
           ${
             active
-              ? "bg-blue-50 text-blue-600 shadow-sm"
+              ? "bg-blue-600 text-white shadow-md"
               : "text-gray-700 hover:bg-gray-100"
           }
         `}
@@ -63,89 +60,114 @@ function Sidebar({ user }) {
         >
           {icon}
         </span>
-        <span>{label}</span>
+        <span className="font-medium">{label}</span>
       </Link>
     );
   };
 
   return (
-    <div className="w-72 h-full bg-white border-r flex flex-col">
+    <div className="h-full p-3">
+      {/* floating card sidebar */}
+      <div
+        className="
+          w-72 h-full
+          bg-white
+          rounded-2xl
+          shadow-sm
+          flex flex-col
+        "
+      >
+        {/* Brand */}
+        <div className="h-16 flex items-center px-5">
+          <Logo size="text-2xl" />
+        </div>
 
-      {/* Top brand */}
-      <div className="h-16 flex items-center px-5 border-b">
-        <Logo size="text-2xl" />
-      </div>
+        {/* User card */}
+        <div className="px-4 pb-4">
+          <div className="bg-gray-50 rounded-xl p-3">
+            <p className="font-semibold text-gray-800">
+              {user?.username}
+            </p>
+            <p className="text-sm text-gray-500 capitalize">
+              {user?.role}
+            </p>
+          </div>
+        </div>
 
-      {/* User info */}
-      <div className="px-5 py-4 border-b">
-        <p className="font-semibold text-gray-800">
-          {user?.username}
-        </p>
-        <p className="text-sm text-gray-500 capitalize">
-          {user?.role}
-        </p>
-      </div>
+        {/* Navigation */}
+        <div className="flex-1 px-3 space-y-2 overflow-y-auto">
 
-      {/* Navigation */}
-      <div className="flex-1 px-3 py-4 space-y-2 overflow-y-auto">
+          <NavItem
+            to="/dashboard/my-profile"
+            icon={<UserCircle size={17} />}
+            label="My Profile"
+            exact
+          />
 
-        {/* My Profile */}
-        <NavItem
-          to="/dashboard/my-profile"
-          icon={<UserCircle size={17} />}
-          label="My Profile"
-          exact
-        />
+          <NavItem
+            to="/dashboard"
+            icon={<MessageSquare size={17} />}
+            label="Chats"
+            exact
+          />
 
-        {/* Chats */}
-        <NavItem
-          to="/dashboard"
-          icon={<MessageSquare size={17} />}
-          label="Chats"
-          exact
-        />
+          <NavItem
+            to="/dashboard/users"
+            icon={<Users size={17} />}
+            label="Browse Users"
+            exact
+          />
 
-        {/* Browse Users */}
-        <NavItem
-          to="/dashboard/users"
-          icon={<Users size={17} />}
-          label="Browse Users"
-          exact
-        />
+          {user?.role === "alumni" && (
+            <Link
+              to="/dashboard/mentorship"
+              className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-sm transition-all ${
+                isActive("/dashboard/mentorship")
+                  ? "bg-blue-600 text-white shadow-md"
+                  : "text-gray-700 hover:bg-gray-100"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <GraduationCap size={17} />
+                <span className="font-medium">
+                  Mentorship Requests
+                </span>
+              </div>
 
-        {/* Alumni only */}
-        {user?.role === "alumni" && (
-          <Link
-            to="/dashboard/mentorship"
-            className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all ${
-              isActive("/dashboard/mentorship")
-                ? "bg-blue-50 text-blue-600 shadow-sm"
-                : "text-gray-700 hover:bg-gray-100"
-            }`}
+              {requestCount > 0 && (
+                <span
+                  className={`
+                    text-xs px-2 py-0.5 rounded-full
+                    ${
+                      isActive("/dashboard/mentorship")
+                        ? "bg-white text-blue-600"
+                        : "bg-blue-600 text-white"
+                    }
+                  `}
+                >
+                  {requestCount}
+                </span>
+              )}
+            </Link>
+          )}
+        </div>
+
+        {/* Logout */}
+        <div className="p-3">
+          <button
+            onClick={logout}
+            className="
+              w-full flex items-center justify-center gap-2
+              bg-red-500 hover:bg-red-600
+              text-white py-2.5
+              rounded-xl text-sm
+              transition
+            "
           >
-            <div className="flex items-center gap-3">
-              <GraduationCap size={17} />
-              <span>Mentorship Requests</span>
-            </div>
-
-            {requestCount > 0 && (
-              <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">
-                {requestCount}
-              </span>
-            )}
-          </Link>
-        )}
-      </div>
-
-      {/* Logout */}
-      <div className="p-4 border-t">
-        <button
-          onClick={logout}
-          className="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm transition"
-        >
-          <LogOut size={16} />
-          Logout
-        </button>
+            <LogOut size={16} />
+            Logout
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,12 @@
 import { formatLastSeen } from "../../utils/presence";
 
+/*
+  Chat header
+  - clean SPA style
+  - lightweight premium feel
+  - safe layout (no height issues)
+*/
+
 export default function ChatHeader({
   userName,
   online,
@@ -12,36 +19,50 @@ export default function ChatHeader({
     return `Last seen ${formatLastSeen(lastSeen)}`;
   };
 
-  return (
-    <div className="h-16 bg-white border-b px-5 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+  const initial = userName?.charAt(0)?.toUpperCase() || "U";
 
+  return (
+    <header className="h-16 bg-white border-b border-slate-200 px-5 md:px-6 flex items-center justify-between">
+      
+      {/* Left side */}
       <div className="flex items-center gap-3">
-        {/* avatar */}
+
+        {/* Avatar */}
         <div className="relative">
-          <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-semibold">
-            {userName?.charAt(0).toUpperCase()}
+          <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold text-sm shadow-sm">
+            {initial}
           </div>
 
-          {/* online dot */}
+          {/* Online indicator */}
           {online && (
-            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+            <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-white animate-pulse" />
           )}
         </div>
 
-        <div className="flex flex-col">
-          <span className="font-semibold text-gray-800">
+        {/* Name + status */}
+        <div className="flex flex-col leading-tight">
+          <span className="font-semibold text-slate-800">
             {userName}
           </span>
 
-          <span className="text-xs text-gray-500">
+          <span
+            className={`text-xs transition-colors ${
+              typing
+                ? "text-blue-600 font-medium"
+                : online
+                ? "text-green-600"
+                : "text-slate-500"
+            }`}
+          >
             {getStatusText()}
           </span>
         </div>
       </div>
 
-      <div className="text-xs text-gray-400">
+      {/* Right label */}
+      <span className="text-xs text-slate-400 font-medium hidden sm:block">
         AlumniNest Chat
-      </div>
-    </div>
+      </span>
+    </header>
   );
 }

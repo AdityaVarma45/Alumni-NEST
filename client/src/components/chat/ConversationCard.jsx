@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 
-/* format time preview */
+/* format time shown on right side */
 const formatPreviewTime = (date) => {
   if (!date) return "";
 
@@ -10,10 +10,9 @@ const formatPreviewTime = (date) => {
   });
 };
 
-/* last seen label */
+/* activity label */
 const getActivityLabel = (conv) => {
   if (conv.online) return "Active now";
-
   if (!conv.updatedAt) return "Offline";
 
   const diff =
@@ -30,71 +29,90 @@ const getActivityLabel = (conv) => {
 export default function ConversationCard({ conv, user }) {
   const location = useLocation();
 
-  /* -----------------------------
-     SAFE participant detection
-  ----------------------------- */
+  // safely find other participant
   const otherUser = conv.participants?.find((p) => {
-    // if populated object
     if (typeof p === "object") {
       return p._id?.toString() !== user?.id;
     }
-
-    // if string id
     return p.toString() !== user?.id;
   });
 
   const isActive = location.pathname.includes(conv._id);
 
+  const initial =
+    otherUser?.username?.charAt(0)?.toUpperCase() || "U";
+
   return (
     <Link to={`/dashboard/chat/${conv._id}`} className="block">
       <div
         className={`
-          rounded-2xl p-4 transition-all
-          shadow-sm hover:shadow-md
+          relative rounded-2xl border p-4
+          transition-all duration-200
           ${
             isActive
-              ? "bg-blue-50 border-l-4 border-blue-500"
-              : "bg-white hover:bg-gray-50"
+              ? "bg-blue-50 border-blue-200 shadow-sm"
+              : "bg-white border-slate-200 hover:bg-slate-50 hover:shadow-sm"
           }
         `}
       >
-        {/* top row */}
-        <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-gray-800">
-            {otherUser?.username || "User"}
-          </h3>
+        {/* active left indicator */}
+        {isActive && (
+          <div className="absolute left-0 top-3 bottom-3 w-1 rounded-r bg-blue-600" />
+        )}
 
-          <span className="text-xs text-gray-500">
-            {getActivityLabel(conv)}
-          </span>
-        </div>
+        <div className="flex items-start gap-3">
+          {/* avatar */}
+          <div className="relative shrink-0">
+            <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold shadow-sm">
+              {initial}
+            </div>
 
-        {/* message preview */}
-        <div className="mt-1 flex justify-between items-center">
-          <p
-            className={`text-sm truncate ${
-              conv.typing
-                ? "text-blue-500 italic"
-                : "text-gray-500"
-            }`}
-          >
-            {conv.typing
-              ? "typing..."
-              : conv.lastMessage || "Start chatting"}
-          </p>
+            {conv.online && (
+              <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full" />
+            )}
+          </div>
 
-          <span className="text-[10px] text-gray-400">
-            {formatPreviewTime(conv.updatedAt)}
-          </span>
+          {/* content */}
+          <div className="flex-1 min-w-0">
+            {/* top row */}
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="font-semibold text-slate-800 truncate">
+                {otherUser?.username || "User"}
+              </h3>
+
+              <span className="text-xs text-slate-500 whitespace-nowrap">
+                {getActivityLabel(conv)}
+              </span>
+            </div>
+
+            {/* message preview */}
+            <div className="mt-1 flex items-center justify-between gap-3">
+              <p
+                className={`text-sm truncate ${
+                  conv.typing
+                    ? "text-blue-600 italic animate-pulse"
+                    : "text-slate-500"
+                }`}
+              >
+                {conv.typing
+                  ? "typing..."
+                  : conv.lastMessage || "Start chatting"}
+              </p>
+
+              <span className="text-[10px] text-slate-400 whitespace-nowrap">
+                {formatPreviewTime(conv.updatedAt)}
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* unread badge */}
         {conv.unreadCount > 0 && (
-          <div className="mt-2 inline-flex bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
+          <div className="absolute top-3 right-3 min-w-[20px] h-5 px-1.5 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center font-semibold">
             {conv.unreadCount}
           </div>
         )}
       </div>
     </Link>
   );
-} 
+}
