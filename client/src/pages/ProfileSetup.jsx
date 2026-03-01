@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../api/axios";
 
@@ -15,13 +15,21 @@ import {
 
 export default function ProfileSetup() {
   const navigate = useNavigate();
-  const { updateUser } = useContext(AuthContext);
+  const { user, updateUser } = useContext(AuthContext);
 
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [selectedInterests, setSelectedInterests] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // simple progress score
+  // PREFILL EXISTING DATA (IMPORTANT FIX)
+  useEffect(() => {
+    if (!user) return;
+
+    setSelectedSkills(user.skills || []);
+    setSelectedInterests(user.interests || []);
+  }, [user]);
+
+  // progress score
   const progress = Math.min(
     100,
     selectedSkills.length * 10 +
@@ -37,13 +45,14 @@ export default function ProfileSetup() {
         interests: selectedInterests,
       });
 
+      // instantly update auth state
       updateUser({
         profileCompleted: true,
         skills: selectedSkills,
         interests: selectedInterests,
       });
 
-      navigate("/dashboard");
+      navigate("/dashboard/my-profile");
     } catch (err) {
       console.error(err);
     } finally {
@@ -55,7 +64,7 @@ export default function ProfileSetup() {
     <div className="w-full h-full bg-gray-100 p-6">
       <div className="max-w-6xl mx-auto space-y-6">
 
-        {/* Header Card */}
+        {/* Header */}
         <div className="bg-white border rounded-2xl p-6 shadow-sm">
           <div className="flex items-start gap-4">
 
@@ -65,14 +74,13 @@ export default function ProfileSetup() {
 
             <div className="flex-1">
               <h1 className="text-2xl font-bold text-gray-800">
-                Complete Your Profile
+                Update Profile
               </h1>
 
               <p className="text-sm text-gray-500 mt-1">
-                This helps us show smarter connections and recommendations in your dashboard.
+                Keep your skills and interests updated for better recommendations.
               </p>
 
-              {/* progress */}
               <div className="mt-4">
                 <div className="flex justify-between text-xs text-gray-500 mb-1">
                   <span>Profile Strength</span>
@@ -103,10 +111,6 @@ export default function ProfileSetup() {
               </h2>
             </div>
 
-            <p className="text-sm text-gray-500 mb-4">
-              Add your skills so the platform can match you with relevant people.
-            </p>
-
             <SkillPicker
               value={selectedSkills}
               onChange={setSelectedSkills}
@@ -122,10 +126,6 @@ export default function ProfileSetup() {
               </h2>
             </div>
 
-            <p className="text-sm text-gray-500 mb-4">
-              Select areas you want to explore, learn, or contribute to.
-            </p>
-
             <InterestDropdown
               value={selectedInterests}
               onChange={setSelectedInterests}
@@ -134,12 +134,12 @@ export default function ProfileSetup() {
 
         </div>
 
-        {/* Action Card */}
+        {/* Action */}
         <div className="bg-white border rounded-2xl p-5 shadow-sm flex justify-between items-center">
 
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <FiCheckCircle className="text-green-600" />
-            Finish setup to unlock personalized recommendations
+            Changes update your recommendations instantly
           </div>
 
           <button
@@ -153,7 +153,7 @@ export default function ProfileSetup() {
               disabled:opacity-60
             "
           >
-            {loading ? "Saving..." : "Finish Setup"}
+            {loading ? "Saving..." : "Save Changes"}
           </button>
 
         </div>
