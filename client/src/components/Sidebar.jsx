@@ -4,12 +4,22 @@ import { AuthContext } from "../context/AuthContext";
 import socket from "../socket";
 import Logo from "../components/Logo";
 
+/* lucide icons */
+import {
+  MessageSquare,
+  Users,
+  UserCircle,
+  GraduationCap,
+  LogOut,
+} from "lucide-react";
+
 function Sidebar({ user }) {
   const { logout } = useContext(AuthContext);
   const location = useLocation();
 
   const [requestCount, setRequestCount] = useState(0);
 
+  // mentorship request count (alumni only)
   useEffect(() => {
     if (user?.role !== "alumni") return;
 
@@ -27,10 +37,41 @@ function Sidebar({ user }) {
   const isActive = (path) =>
     location.pathname.startsWith(path);
 
+  // reusable nav item
+  const NavItem = ({ to, icon, label, exact = false }) => {
+    const active = exact
+      ? location.pathname === to
+      : isActive(to);
+
+    return (
+      <Link
+        to={to}
+        className={`
+          group flex items-center gap-3 px-3 py-2 rounded-lg text-sm
+          transition-all duration-200
+          ${
+            active
+              ? "bg-blue-50 text-blue-600 shadow-sm"
+              : "text-gray-700 hover:bg-gray-100"
+          }
+        `}
+      >
+        <span
+          className={`transition-transform ${
+            active ? "scale-110" : "group-hover:scale-105"
+          }`}
+        >
+          {icon}
+        </span>
+        <span>{label}</span>
+      </Link>
+    );
+  };
+
   return (
     <div className="w-72 h-full bg-white border-r flex flex-col">
 
-      {/* Logo */}
+      {/* Top brand */}
       <div className="h-16 flex items-center px-5 border-b">
         <Logo size="text-2xl" />
       </div>
@@ -48,53 +89,44 @@ function Sidebar({ user }) {
       {/* Navigation */}
       <div className="flex-1 px-3 py-4 space-y-2 overflow-y-auto">
 
-        {/* 1️⃣ My Profile */}
-        <Link
+        {/* My Profile */}
+        <NavItem
           to="/dashboard/my-profile"
-          className={`block px-3 py-2 rounded-lg text-sm ${
-            location.pathname === "/dashboard/my-profile"
-              ? "bg-blue-50 text-blue-600"
-              : "hover:bg-gray-100 text-gray-700"
-          }`}
-        >
-          My Profile
-        </Link>
+          icon={<UserCircle size={17} />}
+          label="My Profile"
+          exact
+        />
 
-        {/* 2️⃣ Chats */}
-        <Link
+        {/* Chats */}
+        <NavItem
           to="/dashboard"
-          className={`block px-3 py-2 rounded-lg text-sm ${
-            location.pathname === "/dashboard"
-              ? "bg-blue-50 text-blue-600"
-              : "hover:bg-gray-100 text-gray-700"
-          }`}
-        >
-          Chats
-        </Link>
+          icon={<MessageSquare size={17} />}
+          label="Chats"
+          exact
+        />
 
-        {/* 3️⃣ Browse Users */}
-        <Link
+        {/* Browse Users */}
+        <NavItem
           to="/dashboard/users"
-          className={`block px-3 py-2 rounded-lg text-sm ${
-            location.pathname === "/dashboard/users"
-              ? "bg-blue-50 text-blue-600"
-              : "hover:bg-gray-100 text-gray-700"
-          }`}
-        >
-          Browse Users
-        </Link>
+          icon={<Users size={17} />}
+          label="Browse Users"
+          exact
+        />
 
         {/* Alumni only */}
         {user?.role === "alumni" && (
           <Link
             to="/dashboard/mentorship"
-            className={`px-3 py-2 rounded-lg text-sm flex justify-between items-center ${
+            className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all ${
               isActive("/dashboard/mentorship")
-                ? "bg-blue-50 text-blue-600"
-                : "hover:bg-gray-100 text-gray-700"
+                ? "bg-blue-50 text-blue-600 shadow-sm"
+                : "text-gray-700 hover:bg-gray-100"
             }`}
           >
-            <span>Mentorship Requests</span>
+            <div className="flex items-center gap-3">
+              <GraduationCap size={17} />
+              <span>Mentorship Requests</span>
+            </div>
 
             {requestCount > 0 && (
               <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">
@@ -109,12 +141,12 @@ function Sidebar({ user }) {
       <div className="p-4 border-t">
         <button
           onClick={logout}
-          className="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm transition"
+          className="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm transition"
         >
+          <LogOut size={16} />
           Logout
         </button>
       </div>
-
     </div>
   );
 }
