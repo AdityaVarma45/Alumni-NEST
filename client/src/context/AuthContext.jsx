@@ -34,19 +34,33 @@ export const AuthProvider = ({ children }) => {
     fetchProfile();
   }, []);
 
-  // login handler
+  // LOGIN (safe + instant)
   const login = (data) => {
     localStorage.setItem("token", data.token);
-    setUser(data.user);
+
+    // instant UI login
+    setUser({
+      ...data.user,
+      id: data.user._id,
+    });
+
+    // fetch full profile in background
+    axios
+      .get("/users/profile")
+      .then((res) => {
+        setUser({
+          ...res.data,
+          id: res.data._id,
+        });
+      })
+      .catch(() => {});
   };
 
-  // logout handler
   const logout = () => {
     localStorage.removeItem("token");
     setUser(null);
   };
 
-  // NEW: update user manually (used after profile setup)
   const updateUser = (newData) => {
     setUser((prev) => ({
       ...prev,
@@ -61,4 +75,4 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-};
+}; 
