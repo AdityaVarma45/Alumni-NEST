@@ -21,12 +21,13 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* ================= PUBLIC ================= */}
+
+        {/* Public */}
         <Route path="/" element={<Welcome />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* ================= PROTECTED DASHBOARD ================= */}
+        {/* Dashboard */}
         <Route
           path="/dashboard"
           element={
@@ -73,6 +74,16 @@ function App() {
             }
           />
 
+          {/* ⭐ FIXED ROUTE LOCATION */}
+          <Route
+            path="my-profile"
+            element={
+              <ProfileGuard>
+                <MyProfile />
+              </ProfileGuard>
+            }
+          />
+
           <Route
             path="blocked-users"
             element={
@@ -92,14 +103,6 @@ function App() {
           />
         </Route>
 
-        <Route
-          path="my-profile"
-          element={
-            <ProfileGuard>
-              <MyProfile />
-            </ProfileGuard>
-          }
-        />
       </Routes>
     </Router>
   );

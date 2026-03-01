@@ -20,7 +20,7 @@ export default function MyProfile() {
   if (loading) return <ProfileSkeleton />;
   if (!user) return null;
 
-  /* ===== PROFILE COMPLETION ===== */
+  /* profile completion */
   const completion = useMemo(() => {
     let score = 0;
 
@@ -35,12 +35,10 @@ export default function MyProfile() {
   const initial = user.username?.[0]?.toUpperCase() || "U";
 
   return (
-    <div className="p-6 max-w-3xl space-y-6">
-
-      {/* ===== HEADER CARD ===== */}
+    <div className="h-full overflow-y-auto p-6 max-w-3xl space-y-6">
+      {/* Header */}
       <div className="bg-white border rounded-xl p-6 shadow-sm">
         <div className="flex items-center gap-4">
-
           {/* avatar */}
           <div className="w-14 h-14 rounded-full bg-blue-600 text-white flex items-center justify-center text-xl font-bold">
             {initial}
@@ -75,7 +73,7 @@ export default function MyProfile() {
         </div>
       </div>
 
-      {/* ===== QUICK STATS ===== */}
+      {/* Quick stats */}
       <div className="grid grid-cols-3 gap-3">
         <div className="bg-white border rounded-xl p-4 text-center shadow-sm">
           <p className="text-lg font-bold text-gray-800">
@@ -99,7 +97,7 @@ export default function MyProfile() {
         </div>
       </div>
 
-      {/* ===== SKILLS ===== */}
+      {/* Skills */}
       <div className="bg-white border rounded-xl p-6 shadow-sm">
         <h2 className="font-semibold text-gray-800 mb-3">
           Skills
@@ -123,7 +121,7 @@ export default function MyProfile() {
         )}
       </div>
 
-      {/* ===== INTERESTS ===== */}
+      {/* Interests */}
       <div className="bg-white border rounded-xl p-6 shadow-sm">
         <h2 className="font-semibold text-gray-800 mb-3">
           Interests
@@ -147,7 +145,7 @@ export default function MyProfile() {
         )}
       </div>
 
-      {/* ===== ACTIONS ===== */}
+      {/* Profile Actions */}
       <div className="bg-white border rounded-xl p-6 shadow-sm">
         <h2 className="font-semibold text-gray-800 mb-3">
           Profile Actions

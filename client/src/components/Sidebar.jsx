@@ -10,7 +10,6 @@ function Sidebar({ user }) {
 
   const [requestCount, setRequestCount] = useState(0);
 
-  // mentorship request count (alumni only)
   useEffect(() => {
     if (user?.role !== "alumni") return;
 
@@ -31,7 +30,7 @@ function Sidebar({ user }) {
   return (
     <div className="w-72 h-full bg-white border-r flex flex-col">
 
-      {/* Top brand / logo */}
+      {/* Logo */}
       <div className="h-16 flex items-center px-5 border-b">
         <Logo size="text-2xl" />
       </div>
@@ -49,7 +48,19 @@ function Sidebar({ user }) {
       {/* Navigation */}
       <div className="flex-1 px-3 py-4 space-y-2 overflow-y-auto">
 
-        {/* Chats */}
+        {/* 1️⃣ My Profile */}
+        <Link
+          to="/dashboard/my-profile"
+          className={`block px-3 py-2 rounded-lg text-sm ${
+            location.pathname === "/dashboard/my-profile"
+              ? "bg-blue-50 text-blue-600"
+              : "hover:bg-gray-100 text-gray-700"
+          }`}
+        >
+          My Profile
+        </Link>
+
+        {/* 2️⃣ Chats */}
         <Link
           to="/dashboard"
           className={`block px-3 py-2 rounded-lg text-sm ${
@@ -61,7 +72,7 @@ function Sidebar({ user }) {
           Chats
         </Link>
 
-        {/* Browse Users (exact match only) */}
+        {/* 3️⃣ Browse Users */}
         <Link
           to="/dashboard/users"
           className={`block px-3 py-2 rounded-lg text-sm ${
@@ -73,19 +84,6 @@ function Sidebar({ user }) {
           Browse Users
         </Link>
 
-        {/* My Profile */}
-        <Link
-          to={`/dashboard/users/${user?.id}`}
-          className={`block px-3 py-2 rounded-lg text-sm ${
-            location.pathname === `/dashboard/users/${user?.id}`
-              ? "bg-blue-50 text-blue-600"
-              : "hover:bg-gray-100 text-gray-700"
-          }`}
-        >
-          My Profile
-        </Link>
-
-        
         {/* Alumni only */}
         {user?.role === "alumni" && (
           <Link
