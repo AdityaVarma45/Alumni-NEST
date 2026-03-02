@@ -14,10 +14,11 @@ import {
 /* skeleton */
 function ProfileSkeleton() {
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-4 animate-pulse">
-      <div className="bg-white border rounded-2xl h-36" />
-      <div className="bg-white border rounded-2xl h-28" />
-      <div className="bg-white border rounded-2xl h-28" />
+    <div className="max-w-5xl mx-auto space-y-4 animate-pulse">
+      <div className="rounded-2xl border border-slate-200 bg-white h-36" />
+      <div className="rounded-xl border border-slate-200 bg-white h-24" />
+      <div className="rounded-xl border border-slate-200 bg-white h-28" />
+      <div className="rounded-xl border border-slate-200 bg-white h-28" />
     </div>
   );
 }
@@ -74,7 +75,7 @@ export default function UserProfile() {
     }
   };
 
-  /* ---------- smart helpers ---------- */
+  /* ---------- helpers ---------- */
 
   const findConversation = () =>
     conversations.find((c) =>
@@ -103,12 +104,11 @@ export default function UserProfile() {
 
     const conversation = findConversation();
 
-    // existing chat
     if (conversation) {
       return (
         <Link
           to={`/dashboard/chat/${conversation._id}`}
-          className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm"
+          className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm shadow-sm transition"
         >
           <FiMessageCircle />
           Start Chat
@@ -116,7 +116,6 @@ export default function UserProfile() {
       );
     }
 
-    // student viewing alumni
     if (user?.role === "student" && profile.role === "alumni") {
       if (mentorship?.status === "pending")
         return <span className="text-yellow-600 text-sm">Request Pending</span>;
@@ -130,19 +129,16 @@ export default function UserProfile() {
       return (
         <button
           onClick={sendRequest}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm"
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm shadow-sm transition"
         >
           Request Mentorship
         </button>
       );
     }
 
-    // alumni viewing student
     if (user?.role === "alumni" && profile.role === "student") {
       return (
-        <button
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm"
-        >
+        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm shadow-sm transition">
           Start Chat
         </button>
       );
@@ -158,7 +154,7 @@ export default function UserProfile() {
   if (!profile) {
     return (
       <div className="p-6">
-        <p className="text-gray-500">User not found</p>
+        <p className="text-slate-500">User not found</p>
       </div>
     );
   }
@@ -173,18 +169,18 @@ export default function UserProfile() {
     profile.username?.charAt(0)?.toUpperCase() || "U";
 
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-6">
+    <div className="max-w-5xl mx-auto space-y-6">
 
-      {/* HERO HEADER (UNCHANGED UI) */}
-      <div className="bg-white border rounded-2xl shadow-sm p-6">
+      {/* HEADER CARD */}
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex items-center gap-4">
 
-          <div className="w-16 h-16 rounded-full bg-blue-600 text-white flex items-center justify-center text-xl font-bold">
+          <div className="w-16 h-16 rounded-full bg-blue-600 text-white flex items-center justify-center text-xl font-bold shadow-sm">
             {initial}
           </div>
 
           <div className="flex-1">
-            <h2 className="text-2xl font-bold text-gray-800">
+            <h2 className="text-2xl font-bold text-slate-800">
               {profile.username}
             </h2>
 
@@ -193,49 +189,50 @@ export default function UserProfile() {
                 {profile.role}
               </span>
 
-              <span className={`text-xs flex items-center gap-1 ${profile.online ? "text-green-600" : "text-gray-500"}`}>
+              <span className={`text-xs flex items-center gap-1 ${
+                profile.online ? "text-green-600" : "text-slate-500"
+              }`}>
                 <FiClock size={12} />
                 {statusLabel}
               </span>
             </div>
 
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-sm text-slate-500 mt-2">
               {profile.email}
             </p>
           </div>
 
-          {/* NEW ROLE ACTION BUTTON */}
           {renderActionButton()}
         </div>
-      </div>
+      </section>
 
-      {/* rest of YOUR UI unchanged */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="bg-white border rounded-xl p-4 text-center shadow-sm">
-          <p className="text-lg font-bold text-gray-800">
+      {/* QUICK STATS */}
+      <section className="grid grid-cols-3 gap-3">
+        <div className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
+          <p className="text-lg font-bold text-slate-800">
             {profile.skills?.length || 0}
           </p>
-          <p className="text-xs text-gray-500">Skills</p>
+          <p className="text-xs text-slate-500">Skills</p>
         </div>
 
-        <div className="bg-white border rounded-xl p-4 text-center shadow-sm">
-          <p className="text-lg font-bold text-gray-800">
+        <div className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
+          <p className="text-lg font-bold text-slate-800">
             {profile.interests?.length || 0}
           </p>
-          <p className="text-xs text-gray-500">Interests</p>
+          <p className="text-xs text-slate-500">Interests</p>
         </div>
 
-        <div className="bg-white border rounded-xl p-4 text-center shadow-sm">
-          <p className="text-lg font-bold text-gray-800 capitalize">
+        <div className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
+          <p className="text-lg font-bold text-slate-800 capitalize">
             {profile.role}
           </p>
-          <p className="text-xs text-gray-500">Role</p>
+          <p className="text-xs text-slate-500">Role</p>
         </div>
-      </div>
+      </section>
 
-      {/* skills */}
-      <div className="bg-white border rounded-2xl shadow-sm p-6">
-        <h3 className="flex items-center gap-2 text-lg font-semibold mb-3">
+      {/* SKILLS */}
+      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-800 mb-3">
           <FiStar className="text-blue-600" />
           Skills
         </h3>
@@ -249,13 +246,13 @@ export default function UserProfile() {
             ))}
           </div>
         ) : (
-          <p className="text-sm text-gray-500">No skills added</p>
+          <p className="text-sm text-slate-500">No skills added</p>
         )}
-      </div>
+      </section>
 
-      {/* interests */}
-      <div className="bg-white border rounded-2xl shadow-sm p-6">
-        <h3 className="flex items-center gap-2 text-lg font-semibold mb-3">
+      {/* INTERESTS */}
+      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-800 mb-3">
           <FiTarget className="text-blue-600" />
           Interests
         </h3>
@@ -263,18 +260,19 @@ export default function UserProfile() {
         {profile.interests?.length ? (
           <div className="flex flex-wrap gap-2">
             {profile.interests.map((interest) => (
-              <span key={interest} className="px-3 py-1 text-sm rounded-full bg-gray-100 text-gray-700">
+              <span key={interest} className="px-3 py-1 text-sm rounded-full bg-slate-100 text-slate-700">
                 {interest}
               </span>
             ))}
           </div>
         ) : (
-          <p className="text-sm text-gray-500">No interests added</p>
+          <p className="text-sm text-slate-500">No interests added</p>
         )}
-      </div>
+      </section>
 
+      {/* BLOCK CARD */}
       {profile._id !== user?.id && (
-        <div className="bg-white border rounded-2xl shadow-sm p-6">
+        <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
           <button
             onClick={handleBlock}
             disabled={blocking}
@@ -283,7 +281,7 @@ export default function UserProfile() {
             <FiShield />
             {blocking ? "Blocking..." : "Block User"}
           </button>
-        </div>
+        </section>
       )}
     </div>
   );

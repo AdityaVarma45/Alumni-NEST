@@ -46,10 +46,20 @@ export default function ChatPage() {
   } = useChatMessages(conversationId, user);
 
   return (
-    <div className="relative flex flex-col h-full bg-slate-50">
-
-      {/* Header */}
-      <div className="shrink-0 border-b border-slate-200 bg-white">
+    <div
+      className="
+        relative flex flex-col
+        h-full min-h-0
+        bg-slate-50
+        rounded-2xl
+        border border-slate-200
+        overflow-hidden
+      "
+    >
+      {/* ===============================
+          HEADER
+      =============================== */}
+      <div className="shrink-0 bg-white">
         <ChatHeader
           userName={otherUser?.username || "User"}
           online={currentConversation?.online}
@@ -58,7 +68,9 @@ export default function ChatPage() {
         />
       </div>
 
-      {/* Messages area */}
+      {/* ===============================
+          MESSAGES (takes remaining space)
+      =============================== */}
       <div className="flex-1 min-h-0">
         <ChatMessages
           messages={messages}
@@ -69,8 +81,10 @@ export default function ChatPage() {
         />
       </div>
 
-      {/* Input */}
-      <div className="shrink-0 border-t border-slate-200 bg-white">
+      {/* ===============================
+          INPUT AREA
+      =============================== */}
+      <div className="shrink-0 bg-white">
         <ChatInput
           newMessage={newMessage}
           onChange={handleTyping}
@@ -78,7 +92,9 @@ export default function ChatPage() {
         />
       </div>
 
-      {/* Floating scroll button */}
+      {/* ===============================
+          FLOATING SCROLL BUTTON
+      =============================== */}
       {showScrollButton && (
         <button
           onClick={scrollToBottom}
@@ -87,7 +103,7 @@ export default function ChatPage() {
             bg-blue-600 text-white
             px-3 py-2 rounded-full
             shadow-lg hover:bg-blue-700
-            transition-all
+            transition-all duration-200
           "
         >
           ↓ New

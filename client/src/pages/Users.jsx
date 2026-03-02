@@ -17,10 +17,11 @@ const getLastSeenLabel = (date, online) => {
   return "Offline";
 };
 
+/* skeleton */
 const UserCardSkeleton = () => (
-  <div className="bg-white border rounded-xl p-4 shadow-sm animate-pulse">
-    <div className="h-4 w-32 bg-gray-200 rounded mb-3" />
-    <div className="h-3 w-48 bg-gray-200 rounded" />
+  <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm animate-pulse">
+    <div className="h-4 w-32 bg-slate-200 rounded mb-3" />
+    <div className="h-3 w-48 bg-slate-200 rounded" />
   </div>
 );
 
@@ -36,7 +37,7 @@ export default function Users() {
   const [localMentorshipStatus, setLocalMentorshipStatus] =
     useState({});
 
-  /* fetch all data */
+  /* fetch */
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -62,7 +63,6 @@ export default function Users() {
     fetchData();
   }, []);
 
-  /* mentorship map */
   const mentorshipMap = useMemo(() => {
     const map = {};
     mentorships.forEach((m) => {
@@ -77,7 +77,6 @@ export default function Users() {
       c.participants?.some((p) => p._id === id)
     );
 
-  /* smart grouping */
   const groupedUsers = useMemo(() => {
     const list = users.filter((u) => u._id !== user?.id);
 
@@ -89,18 +88,14 @@ export default function Users() {
       const hasConversation = !!findConversation(u._id);
       const mentorship = mentorshipMap[u._id];
 
-      if (hasConversation) {
-        active.push(u);
-        return;
-      }
+      if (hasConversation) return active.push(u);
 
       if (
         (user?.role === "student" && u.role === "alumni") ||
         (user?.role === "alumni" && u.role === "student") ||
         mentorship?.status === "accepted"
       ) {
-        recommended.push(u);
-        return;
+        return recommended.push(u);
       }
 
       others.push(u);
@@ -141,7 +136,6 @@ export default function Users() {
     }
   };
 
-  /* action button logic */
   const renderAction = (u) => {
     const conversation = findConversation(u._id);
     const mentorship = mentorshipMap[u._id];
@@ -159,29 +153,14 @@ export default function Users() {
       );
     }
 
-    if (localStatus === "pending" || mentorship?.status === "pending") {
-      return (
-        <span className="text-sm text-yellow-600 font-medium">
-          Request Pending
-        </span>
-      );
-    }
+    if (localStatus === "pending" || mentorship?.status === "pending")
+      return <span className="text-sm text-yellow-600">Request Pending</span>;
 
-    if (mentorship?.status === "accepted") {
-      return (
-        <span className="text-sm text-green-600 font-medium">
-          Mentorship Active
-        </span>
-      );
-    }
+    if (mentorship?.status === "accepted")
+      return <span className="text-sm text-green-600">Mentorship Active</span>;
 
-    if (mentorship?.status === "rejected") {
-      return (
-        <span className="text-sm text-red-500">
-          Request Rejected
-        </span>
-      );
-    }
+    if (mentorship?.status === "rejected")
+      return <span className="text-sm text-red-500">Request Rejected</span>;
 
     return (
       <button
@@ -197,30 +176,18 @@ export default function Users() {
     const statusLabel = getLastSeenLabel(u.lastSeen, u.online);
 
     return (
-      <Link
-        key={u._id}
-        to={`/dashboard/users/${u._id}`}
-        className="block"
-      >
-        <div className="bg-white border rounded-xl p-4 shadow-sm hover:shadow-md transition">
+      <Link key={u._id} to={`/dashboard/users/${u._id}`} className="block">
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md hover:bg-slate-50 transition">
           <div className="flex justify-between items-start">
-            <h3 className="font-semibold text-gray-800">
-              {u.username}
-            </h3>
+            <h3 className="font-semibold text-slate-800">{u.username}</h3>
 
             <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 capitalize">
               {u.role}
             </span>
           </div>
 
-          {/* only ONE status shown */}
-          <p className="text-xs text-gray-500 mt-1">
-            {statusLabel}
-          </p>
-
-          <p className="text-sm text-gray-500 mt-1">
-            {u.email}
-          </p>
+          <p className="text-xs text-slate-500 mt-1">{statusLabel}</p>
+          <p className="text-sm text-slate-500 mt-1">{u.email}</p>
 
           {u.role === "alumni" && (
             <div className="mt-3">{renderAction(u)}</div>
@@ -234,52 +201,57 @@ export default function Users() {
     if (!list.length) return null;
 
     return (
-      <div className="space-y-3">
-        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+      <section className="space-y-3">
+        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
           {title}
         </h3>
         {list.map(renderUserCard)}
-      </div>
+      </section>
     );
   };
 
   return (
-    <div className="p-6 space-y-10">
-      <h2 className="text-xl font-bold text-gray-800">
-        Browse Users
-      </h2>
+    <div className="max-w-6xl mx-auto space-y-8">
 
-      {loading ? (
-        <>
-          <UserCardSkeleton />
-          <UserCardSkeleton />
-          <UserCardSkeleton />
-        </>
-      ) : (
-        <>
-          {renderSection("Active Conversations", groupedUsers.active)}
-          {renderSection("Recommended", groupedUsers.recommended)}
-          {renderSection("Others", groupedUsers.others)}
-        </>
-      )}
+      {/* page card */}
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 md:p-6 shadow-sm space-y-6">
+        <h2 className="text-xl font-bold text-slate-800">
+          Browse Users
+        </h2>
 
-      <div>
-        <h2 className="text-xl font-bold mb-5 text-gray-800">
+        {loading ? (
+          <>
+            <UserCardSkeleton />
+            <UserCardSkeleton />
+            <UserCardSkeleton />
+          </>
+        ) : (
+          <>
+            {renderSection("Active Conversations", groupedUsers.active)}
+            {renderSection("Recommended", groupedUsers.recommended)}
+            {renderSection("Others", groupedUsers.others)}
+          </>
+        )}
+      </section>
+
+      {/* blocked users card */}
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 md:p-6 shadow-sm space-y-4">
+        <h2 className="text-xl font-bold text-slate-800">
           Blocked Users
         </h2>
 
         {blockedUsers.length === 0 ? (
-          <p className="text-sm text-gray-500">No blocked users</p>
+          <p className="text-sm text-slate-500">No blocked users</p>
         ) : (
           <div className="space-y-3">
             {blockedUsers.map((u) => (
               <div
                 key={u._id}
-                className="bg-white border rounded-xl p-4 shadow-sm flex justify-between"
+                className="rounded-2xl border border-slate-200 bg-slate-50 p-4 flex justify-between"
               >
                 <div>
-                  <p className="font-semibold">{u.username}</p>
-                  <p className="text-sm text-gray-500">{u.email}</p>
+                  <p className="font-semibold text-slate-800">{u.username}</p>
+                  <p className="text-sm text-slate-500">{u.email}</p>
                 </div>
 
                 <button
@@ -292,7 +264,7 @@ export default function Users() {
             ))}
           </div>
         )}
-      </div>
+      </section>
     </div>
   );
 }

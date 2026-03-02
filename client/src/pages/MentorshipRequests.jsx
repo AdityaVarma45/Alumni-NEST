@@ -5,16 +5,12 @@ export default function MentorshipRequests() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  /* ===============================
-     FETCH REQUESTS
-  =============================== */
+  /* fetch requests */
   useEffect(() => {
     const fetchRequests = async () => {
       try {
         setLoading(true);
-
         const res = await axios.get("/mentorship");
-
         setRequests(res.data);
       } catch (error) {
         console.error(error);
@@ -26,9 +22,7 @@ export default function MentorshipRequests() {
     fetchRequests();
   }, []);
 
-  /* ===============================
-     RESPOND (ALUMNI)
-  =============================== */
+  /* respond action */
   const respond = async (id, status) => {
     try {
       await axios.put(`/mentorship/respond/${id}`, {
@@ -46,76 +40,102 @@ export default function MentorshipRequests() {
     }
   };
 
-  return (
-    <div className="p-6">
-      <h2 className="text-xl font-bold mb-5 text-gray-800">
-        Mentorship Requests
-      </h2>
+  const getStatusStyle = (status) => {
+    if (status === "accepted")
+      return "bg-green-50 text-green-600";
+    if (status === "rejected")
+      return "bg-red-50 text-red-600";
+    return "bg-yellow-50 text-yellow-600";
+  };
 
-      {/* ================= LOADING ================= */}
+  return (
+    <div className="max-w-5xl mx-auto space-y-6">
+
+      {/* HEADER */}
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 className="text-2xl font-bold text-slate-800">
+          Mentorship Requests
+        </h2>
+        <p className="text-sm text-slate-500 mt-1">
+          Review and manage incoming mentorship requests.
+        </p>
+      </section>
+
+      {/* LOADING */}
       {loading && (
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="bg-white border rounded-xl p-4 animate-pulse"
+              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm animate-pulse"
             >
-              <div className="h-4 bg-gray-200 rounded w-1/3 mb-2" />
-              <div className="h-3 bg-gray-200 rounded w-1/2" />
+              <div className="h-4 w-1/3 rounded bg-slate-200 mb-3" />
+              <div className="h-3 w-1/2 rounded bg-slate-200" />
             </div>
           ))}
         </div>
       )}
 
-      {/* ================= EMPTY ================= */}
+      {/* EMPTY STATE */}
       {!loading && requests.length === 0 && (
-        <p className="text-sm text-gray-500">
-          No mentorship requests yet
-        </p>
+        <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+          <p className="text-sm text-slate-500">
+            No mentorship requests yet
+          </p>
+        </div>
       )}
 
-      {/* ================= LIST ================= */}
+      {/* LIST */}
       {!loading && requests.length > 0 && (
         <div className="space-y-3">
           {requests.map((req) => (
             <div
               key={req._id}
-              className="bg-white border rounded-xl p-4 shadow-sm"
+              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition"
             >
-              <p className="font-semibold text-gray-800">
-                {req.student?.username ||
-                  req.alumni?.username}
-              </p>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 
-              <p className="text-sm text-gray-500 mt-1">
-                Status:{" "}
-                <span className="capitalize">
-                  {req.status}
-                </span>
-              </p>
+                <div>
+                  <p className="font-semibold text-slate-800">
+                    {req.student?.username ||
+                      req.alumni?.username}
+                  </p>
 
-              {/* pending actions */}
-              {req.status === "pending" && (
-                <div className="flex gap-2 mt-3">
-                  <button
-                    onClick={() =>
-                      respond(req._id, "accepted")
-                    }
-                    className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
-                  >
-                    Accept
-                  </button>
-
-                  <button
-                    onClick={() =>
-                      respond(req._id, "rejected")
-                    }
-                    className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
-                  >
-                    Reject
-                  </button>
+                  <p className="text-sm text-slate-500 mt-1">
+                    Status:
+                    <span
+                      className={`ml-2 text-xs px-2 py-0.5 rounded-full capitalize ${getStatusStyle(
+                        req.status
+                      )}`}
+                    >
+                      {req.status}
+                    </span>
+                  </p>
                 </div>
-              )}
+
+                {/* actions */}
+                {req.status === "pending" && (
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() =>
+                        respond(req._id, "accepted")
+                      }
+                      className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 transition shadow-sm"
+                    >
+                      Accept
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        respond(req._id, "rejected")
+                      }
+                      className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-600 transition shadow-sm"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           ))}
         </div>

@@ -76,7 +76,7 @@ export default function ChatMessages({
         className="
           h-full overflow-y-auto
           px-5 md:px-6 py-4
-          space-y-2
+          space-y-1
           bg-slate-50
           scroll-smooth
         "
@@ -156,8 +156,8 @@ export default function ChatMessages({
                   className={`
                     ${bubbleWidth}
                     px-4 py-2
-                    transition-all duration-200
-                    shadow-sm
+                    shadow-sm hover:shadow
+                    transition-all duration-150
                     ${
                       isMine
                         ? "bg-blue-600 text-white"
@@ -223,7 +223,7 @@ export default function ChatMessages({
 
         {/* typing indicator */}
         {typingUser && (
-          <div className="text-sm text-slate-500 pl-2 animate-pulse">
+          <div className="pl-2 mt-2 text-sm text-slate-500 animate-pulse">
             typing...
           </div>
         )}
@@ -236,7 +236,7 @@ export default function ChatMessages({
         <button
           onClick={scrollToBottom}
           className="
-            absolute bottom-24 left-1/2 -translate-x-1/2
+            absolute bottom-20 left-1/2 -translate-x-1/2
             bg-blue-600 text-white
             w-10 h-10 rounded-full
             shadow-lg hover:bg-blue-700
