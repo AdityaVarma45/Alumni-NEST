@@ -9,6 +9,8 @@ import {
   Users,
   UserCircle,
   GraduationCap,
+  Briefcase,
+  PlusCircle,
   LogOut,
 } from "lucide-react";
 
@@ -17,11 +19,13 @@ function Sidebar({ user }) {
   const location = useLocation();
 
   const [requestCount, setRequestCount] = useState(0);
+  const [opportunityCount, setOpportunityCount] = useState(0);
 
+  /* mentorship count */
   useEffect(() => {
     if (user?.role !== "alumni") return;
 
-    const handleCount = (count) => {
+    const handleCount = (count = 0) => {
       setRequestCount(count);
     };
 
@@ -30,12 +34,32 @@ function Sidebar({ user }) {
     return () => {
       socket.off("mentorshipRequestCount", handleCount);
     };
-  }, [user]);
+  }, [user?.role]);
+
+  /* opportunity count */
+  useEffect(() => {
+    const handleOpportunityCount = (count = 0) => {
+      setOpportunityCount(count);
+    };
+
+    socket.on("opportunityCount", handleOpportunityCount);
+
+    return () => {
+      socket.off("opportunityCount", handleOpportunityCount);
+    };
+  }, []);
 
   const isActive = (path) =>
     location.pathname.startsWith(path);
 
-  const NavItem = ({ to, icon, label, exact = false }) => {
+  /* reusable nav */
+  const NavItem = ({
+    to,
+    icon,
+    label,
+    badge = 0,
+    exact = false,
+  }) => {
     const active = exact
       ? location.pathname === to
       : isActive(to);
@@ -44,8 +68,8 @@ function Sidebar({ user }) {
       <Link
         to={to}
         className={`
-          group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm
-          transition-all duration-200
+          flex items-center justify-between
+          px-3 py-2.5 rounded-xl text-sm transition-all
           ${
             active
               ? "bg-blue-600 text-white shadow-md"
@@ -53,30 +77,30 @@ function Sidebar({ user }) {
           }
         `}
       >
-        <span
-          className={`transition-transform ${
-            active ? "scale-110" : "group-hover:scale-105"
-          }`}
-        >
+        <div className="flex items-center gap-3">
           {icon}
-        </span>
-        <span className="font-medium">{label}</span>
+          <span className="font-medium">{label}</span>
+        </div>
+
+        {badge > 0 && (
+          <span
+            className={`text-xs px-2 py-0.5 rounded-full ${
+              active
+                ? "bg-white text-blue-600"
+                : "bg-blue-600 text-white"
+            }`}
+          >
+            {badge}
+          </span>
+        )}
       </Link>
     );
   };
 
   return (
     <div className="h-full p-3">
-      {/* floating card sidebar */}
-      <div
-        className="
-          w-72 h-full
-          bg-white
-          rounded-2xl
-          shadow-sm
-          flex flex-col
-        "
-      >
+      <div className="w-72 h-full bg-white rounded-2xl shadow-sm flex flex-col">
+
         {/* Brand */}
         <div className="h-16 flex items-center px-5">
           <Logo size="text-2xl" />
@@ -86,7 +110,7 @@ function Sidebar({ user }) {
         <div className="px-4 pb-4">
           <div className="bg-gray-50 rounded-xl p-3">
             <p className="font-semibold text-gray-800">
-              {user?.username}
+              {user?.username || "User"}
             </p>
             <p className="text-sm text-gray-500 capitalize">
               {user?.role}
@@ -94,7 +118,7 @@ function Sidebar({ user }) {
           </div>
         </div>
 
-        {/* Navigation */}
+        {/* NAV */}
         <div className="flex-1 px-3 space-y-2 overflow-y-auto">
 
           <NavItem
@@ -115,40 +139,30 @@ function Sidebar({ user }) {
             to="/dashboard/users"
             icon={<Users size={17} />}
             label="Browse Users"
-            exact
+          />
+
+          <NavItem
+            to="/dashboard/opportunities"
+            icon={<Briefcase size={17} />}
+            label="Opportunities"
+            badge={opportunityCount}
           />
 
           {user?.role === "alumni" && (
-            <Link
-              to="/dashboard/mentorship"
-              className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-sm transition-all ${
-                isActive("/dashboard/mentorship")
-                  ? "bg-blue-600 text-white shadow-md"
-                  : "text-gray-700 hover:bg-gray-100"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <GraduationCap size={17} />
-                <span className="font-medium">
-                  Mentorship Requests
-                </span>
-              </div>
+            <NavItem
+              to="/dashboard/opportunities/create"
+              icon={<PlusCircle size={17} />}
+              label="Post Opportunity"
+            />
+          )}
 
-              {requestCount > 0 && (
-                <span
-                  className={`
-                    text-xs px-2 py-0.5 rounded-full
-                    ${
-                      isActive("/dashboard/mentorship")
-                        ? "bg-white text-blue-600"
-                        : "bg-blue-600 text-white"
-                    }
-                  `}
-                >
-                  {requestCount}
-                </span>
-              )}
-            </Link>
+          {user?.role === "alumni" && (
+            <NavItem
+              to="/dashboard/mentorship"
+              icon={<GraduationCap size={17} />}
+              label="Mentorship Requests"
+              badge={requestCount}
+            />
           )}
         </div>
 
@@ -156,13 +170,7 @@ function Sidebar({ user }) {
         <div className="p-3">
           <button
             onClick={logout}
-            className="
-              w-full flex items-center justify-center gap-2
-              bg-red-500 hover:bg-red-600
-              text-white py-2.5
-              rounded-xl text-sm
-              transition
-            "
+            className="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-2.5 rounded-xl text-sm transition"
           >
             <LogOut size={16} />
             Logout

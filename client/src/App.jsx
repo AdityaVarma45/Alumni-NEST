@@ -12,6 +12,8 @@ import MentorshipRequests from "./pages/MentorshipRequests";
 import ProfileSetup from "./pages/ProfileSetup";
 import UserProfile from "./pages/UserProfile";
 import BlockedUsers from "./pages/BlockedUsers";
+import Opportunities from "./pages/Opportunities";
+import CreateOpportunity from "./pages/CreateOpportunity"; 
 
 import ProfileGuard from "./components/ProfileGuard";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -22,12 +24,12 @@ function App() {
     <Router>
       <Routes>
 
-        {/* Public */}
+        {/* ================= PUBLIC ================= */}
         <Route path="/" element={<Welcome />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Dashboard */}
+        {/* ================= DASHBOARD ================= */}
         <Route
           path="/dashboard"
           element={
@@ -36,8 +38,10 @@ function App() {
             </ProtectedRoute>
           }
         >
+          {/* profile setup */}
           <Route path="profile-setup" element={<ProfileSetup />} />
 
+          {/* chats dashboard */}
           <Route
             index
             element={
@@ -47,6 +51,7 @@ function App() {
             }
           />
 
+          {/* chat page */}
           <Route
             path="chat/:conversationId"
             element={
@@ -56,6 +61,7 @@ function App() {
             }
           />
 
+          {/* users */}
           <Route
             path="users"
             element={
@@ -74,7 +80,7 @@ function App() {
             }
           />
 
-          {/* ⭐ FIXED ROUTE LOCATION */}
+          {/* my profile */}
           <Route
             path="my-profile"
             element={
@@ -84,6 +90,7 @@ function App() {
             }
           />
 
+          {/* blocked users */}
           <Route
             path="blocked-users"
             element={
@@ -93,6 +100,7 @@ function App() {
             }
           />
 
+          {/* mentorship */}
           <Route
             path="mentorship"
             element={
@@ -101,6 +109,27 @@ function App() {
               </ProfileGuard>
             }
           />
+
+          {/*  OPPORTUNITY FEED */}
+          <Route
+            path="opportunities"
+            element={
+              <ProfileGuard>
+                <Opportunities />
+              </ProfileGuard>
+            }
+          />
+
+          {/* CREATE OPPORTUNITY PAGE */}
+          <Route
+            path="opportunities/create"
+            element={
+              <ProfileGuard>
+                <CreateOpportunity />
+              </ProfileGuard>
+            }
+          />
+
         </Route>
 
       </Routes>

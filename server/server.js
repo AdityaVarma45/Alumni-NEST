@@ -3,13 +3,16 @@ import http from "http";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
+
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import mentorshipRoutes from "./routes/mentorshipRoutes.js";
 import skillRoutes from "./routes/skillRoutes.js";
-import { initSocket } from "./socket/socket.js";
 import recommendationRoutes from "./routes/recommendationRoutes.js";
+import opportunityRoutes from "./routes/opportunityRoutes.js";
+
+import { initSocket } from "./socket/socket.js";
 
 dotenv.config();
 connectDB();
@@ -25,10 +28,11 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/mentorship", mentorshipRoutes);
 app.use("/api/meta", skillRoutes);
 app.use("/api/recommendations", recommendationRoutes);
+app.use("/api/opportunities", opportunityRoutes);
 
 const server = http.createServer(app);
 
-//Attach socket to HTTP server
+// Attach socket
 initSocket(server);
 
 const PORT = process.env.PORT || 5000;
