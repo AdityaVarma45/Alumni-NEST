@@ -52,7 +52,22 @@ export const getOpportunities = async (req, res) => {
       .populate("postedBy", "username role")
       .sort({ createdAt: -1 });
 
-    res.json(opportunities);
+    const userId = req.user._id.toString();
+
+    const feed = opportunities.map((op) => {
+      const obj = op.toObject();
+
+      obj.isSaved =
+        op.savedBy?.some(
+          (id) => id.toString() === userId
+        ) || false;
+
+      obj.savedByCount = op.savedBy?.length || 0;
+
+      return obj;
+    });
+
+    res.json(feed);
   } catch (error) {
     console.error("Get Opportunities Error:", error);
     res.status(500).json({ message: "Server error" });

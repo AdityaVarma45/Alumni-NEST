@@ -1,5 +1,14 @@
-import { ExternalLink, Bookmark, MapPin } from "lucide-react";
+import {
+  ExternalLink,
+  Bookmark,
+  MapPin,
+  Trash2,
+} from "lucide-react";
 
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
+
+/* badge colors */
 const typeStyles = {
   internship: "bg-blue-50 text-blue-600",
   job: "bg-green-50 text-green-600",
@@ -9,10 +18,7 @@ const typeStyles = {
   freelance: "bg-indigo-50 text-indigo-600",
 };
 
-/* safe time formatter */
 const timeAgo = (date) => {
-  if (!date) return "";
-
   const diff = (Date.now() - new Date(date)) / 1000;
 
   if (diff < 60) return "Just now";
@@ -22,70 +28,92 @@ const timeAgo = (date) => {
   return `${Math.floor(diff / 86400)}d ago`;
 };
 
-export default function OpportunityCard({ opportunity }) {
-  if (!opportunity) return null;
+export default function OpportunityCard({
+  opportunity,
+  onSave,
+  onDelete,
+}) {
+  const { user } = useContext(AuthContext);
 
   const typeClass =
     typeStyles[opportunity.type] ||
     "bg-slate-100 text-slate-600";
 
+  const isOwner =
+    opportunity.postedBy?._id === user?.id ||
+    user?.role === "admin";
+
   return (
     <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
 
-      {/* Header */}
+      {/* top */}
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="text-lg font-semibold text-slate-800">
-            {opportunity.title || "Opportunity"}
+            {opportunity.title}
           </h2>
 
           <p className="text-sm text-slate-500 mt-1">
-            {opportunity.company || "Company"}
+            {opportunity.company}
           </p>
         </div>
 
         <span
           className={`text-xs px-2 py-1 rounded-full capitalize ${typeClass}`}
         >
-          {opportunity.type || "general"}
+          {opportunity.type}
         </span>
       </div>
 
-      {/* Description */}
       <p className="text-sm text-slate-600 mt-3 line-clamp-3">
-        {opportunity.description || "No description"}
+        {opportunity.description}
       </p>
 
-      {/* Skills */}
-      {Array.isArray(opportunity.skills) &&
-        opportunity.skills.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
-            {opportunity.skills.map((skill) => (
-              <span
-                key={skill}
-                className="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-600"
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-        )}
+      {opportunity.skills?.length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-3">
+          {opportunity.skills.map((skill) => (
+            <span
+              key={skill}
+              className="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-600"
+            >
+              {skill}
+            </span>
+          ))}
+        </div>
+      )}
 
-      {/* Footer */}
+      {/* footer */}
       <div className="flex items-center justify-between mt-4">
 
         <div className="text-xs text-slate-500 flex items-center gap-2">
           <MapPin size={13} />
-          {opportunity.location || "Remote"} • {timeAgo(opportunity.createdAt)}
+          {opportunity.location || "Remote"} •{" "}
+          {timeAgo(opportunity.createdAt)}
         </div>
 
         <div className="flex items-center gap-2">
 
+          {/* SAVE */}
           <button
-            className="h-8 w-8 rounded-lg border border-slate-200 hover:bg-slate-50 flex items-center justify-center"
+            onClick={() => onSave?.(opportunity._id)}
+            className={`h-8 w-8 rounded-lg border flex items-center justify-center ${
+              opportunity.isSaved
+                ? "bg-blue-600 text-white border-blue-600"
+                : "border-slate-200 hover:bg-slate-50"
+            }`}
           >
             <Bookmark size={15} />
           </button>
+
+          {/* DELETE (OWNER ONLY) */}
+          {isOwner && (
+            <button
+              onClick={() => onDelete?.(opportunity._id)}
+              className="h-8 w-8 rounded-lg border border-red-200 text-red-500 hover:bg-red-50 flex items-center justify-center"
+            >
+              <Trash2 size={15} />
+            </button>
+          )}
 
           {opportunity.applyLink && (
             <a
@@ -101,7 +129,6 @@ export default function OpportunityCard({ opportunity }) {
         </div>
       </div>
 
-      {/* Poster */}
       <p className="text-xs text-slate-400 mt-3">
         Posted by {opportunity.postedBy?.username || "Alumni"}
       </p>

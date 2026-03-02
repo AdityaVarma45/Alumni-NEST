@@ -3,6 +3,8 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "../api/axios";
 import Logo from "../components/Logo";
 
+import { FiUser, FiMail, FiLock } from "react-icons/fi";
+
 export default function Register() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -22,59 +24,85 @@ export default function Register() {
         role,
       });
 
-      // after register → login page
       navigate("/login");
     } catch (error) {
       alert(error.response?.data?.message || "Registration failed");
     }
   };
 
-  return (
-    <div className="relative min-h-screen flex items-center justify-center bg-gray-100 px-4">
+  const inputStyle = `
+    w-full pl-10 pr-3 py-2.5 rounded-xl
+    border border-slate-300 bg-white
+    text-slate-700
+    focus:outline-none focus:ring-2 focus:ring-blue-500/20
+    focus:border-blue-500
+    transition-all duration-200
+  `;
 
-      {/* ===== TOP LEFT LOGO ===== */}
+  return (
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4">
       <div className="absolute top-6 left-6">
         <Logo size="text-3xl" />
       </div>
 
-      <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center mb-6">
+      <div className="w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-sm p-8">
+        <h2 className="text-2xl font-bold text-slate-800 text-center">
           Create Account
         </h2>
 
+        <p className="text-sm text-slate-500 text-center mt-1 mb-6">
+          Start your journey with AlumniNest
+        </p>
+
         <form onSubmit={handleSubmit} className="space-y-4">
 
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-            className="w-full border border-gray-300 rounded px-3 py-2"
-          />
+          <div className="relative">
+            <FiUser className="absolute left-3 top-3.5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              className={inputStyle}
+            />
+          </div>
 
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full border border-gray-300 rounded px-3 py-2"
-          />
+          <div className="relative">
+            <FiMail className="absolute left-3 top-3.5 text-slate-400" />
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className={inputStyle}
+            />
+          </div>
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full border border-gray-300 rounded px-3 py-2"
-          />
+          <div className="relative">
+            <FiLock className="absolute left-3 top-3.5 text-slate-400" />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className={inputStyle}
+            />
+          </div>
 
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="w-full border border-gray-300 rounded px-3 py-2"
+            className="
+              w-full px-3 py-2.5 rounded-xl
+              border border-slate-300 bg-white
+              text-slate-700
+              focus:outline-none focus:ring-2 focus:ring-blue-500/20
+              focus:border-blue-500
+              transition-all duration-200
+            "
           >
             <option value="student">Student</option>
             <option value="alumni">Alumni</option>
@@ -82,27 +110,27 @@ export default function Register() {
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+            className="
+              w-full bg-blue-600 text-white
+              py-2.5 rounded-xl
+              hover:bg-blue-700
+              active:scale-[0.99]
+              transition-all duration-200
+            "
           >
             Register
           </button>
         </form>
 
-        <p className="text-sm text-center mt-4">
+        <p className="text-sm text-center mt-5 text-slate-600">
           Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-blue-600 hover:underline"
-          >
+          <Link to="/login" className="text-blue-600 hover:underline">
             Login
           </Link>
         </p>
 
         <p className="text-sm text-center mt-2">
-          <Link
-            to="/"
-            className="text-gray-500 hover:underline"
-          >
+          <Link to="/" className="text-slate-500 hover:underline">
             ← Back to Welcome
           </Link>
         </p>

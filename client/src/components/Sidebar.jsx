@@ -150,14 +150,6 @@ function Sidebar({ user }) {
 
           {user?.role === "alumni" && (
             <NavItem
-              to="/dashboard/opportunities/create"
-              icon={<PlusCircle size={17} />}
-              label="Post Opportunity"
-            />
-          )}
-
-          {user?.role === "alumni" && (
-            <NavItem
               to="/dashboard/mentorship"
               icon={<GraduationCap size={17} />}
               label="Mentorship Requests"
