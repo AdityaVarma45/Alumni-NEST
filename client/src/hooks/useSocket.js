@@ -6,18 +6,20 @@ export const useSocket = (userId) => {
 
   useEffect(() => {
     if (!userId) return;
-    if (initialized.current) return;
 
+    // prevent duplicate registration
+    if (initialized.current) return;
     initialized.current = true;
 
     if (!socket.connected) {
       socket.connect();
     }
 
+    // register user for notifications + online presence
     socket.emit("userOnline", userId);
 
     return () => {
-      // keep socket alive globally
+      // keep socket globally alive
     };
   }, [userId]);
 

@@ -6,7 +6,6 @@ let io;
 
 /*
   userId -> Set of socketIds
-  supports multiple tabs/devices
 */
 const onlineUsers = new Map();
 
@@ -24,29 +23,16 @@ export const initSocket = (server) => {
     socket.on("userOnline", async (userId) => {
       const id = userId.toString();
 
-      // create set if not exists
       if (!onlineUsers.has(id)) {
         onlineUsers.set(id, new Set());
       }
 
-      // add this socket
       onlineUsers.get(id).add(socket.id);
 
+      // join room for notifications
       socket.join(id);
 
-      // mark messages delivered
-      await Message.updateMany(
-        {
-          conversation: { $exists: true },
-          sender: { $ne: userId },
-          isDelivered: false,
-        },
-        { isDelivered: true }
-      );
-
       io.emit("onlineUsers", Array.from(onlineUsers.keys()));
-
-      console.log("ONLINE USERS:", Array.from(onlineUsers.keys()));
     });
 
     /* ==============================
@@ -74,16 +60,6 @@ export const initSocket = (server) => {
     });
 
     /* ==============================
-       READ STATUS
-    ============================== */
-    socket.on("messagesRead", ({ conversationId, readerId }) => {
-      socket.to(conversationId).emit("messagesReadUpdate", {
-        conversationId,
-        readerId,
-      });
-    });
-
-    /* ==============================
        DISCONNECT
     ============================== */
     socket.on("disconnect", async () => {
@@ -91,7 +67,6 @@ export const initSocket = (server) => {
         if (sockets.has(socket.id)) {
           sockets.delete(socket.id);
 
-          // only remove user when NO tabs left
           if (sockets.size === 0) {
             onlineUsers.delete(userId);
 
@@ -105,8 +80,6 @@ export const initSocket = (server) => {
       }
 
       io.emit("onlineUsers", Array.from(onlineUsers.keys()));
-
-      console.log("User disconnected:", socket.id);
     });
   });
 };

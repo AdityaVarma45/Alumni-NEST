@@ -1,4 +1,5 @@
 import Opportunity from "../models/Opportunity.js";
+import { createNotification } from "../utils/createNotification.js";
 
 /* ===============================
    CREATE OPPORTUNITY
@@ -34,6 +35,19 @@ export const createOpportunity = async (req, res) => {
       postedBy: req.user._id,
     });
 
+    // 🔔 Notify all students
+    const students = await User.find({ role: "student" });
+
+    for (const student of students) {
+      await createNotification({
+        recipient: student._id,
+        sender: req.user._id,
+        type: "new_opportunity",
+        message: `New opportunity posted: ${title}`,
+        relatedId: opportunity._id,
+      });
+    }
+
     res.status(201).json(opportunity);
   } catch (error) {
     console.error("Create Opportunity Error:", error);
@@ -57,10 +71,7 @@ export const getOpportunities = async (req, res) => {
     const feed = opportunities.map((op) => {
       const obj = op.toObject();
 
-      obj.isSaved =
-        op.savedBy?.some(
-          (id) => id.toString() === userId
-        ) || false;
+      obj.isSaved = op.savedBy?.some((id) => id.toString() === userId) || false;
 
       obj.savedByCount = op.savedBy?.length || 0;
 
@@ -79,9 +90,10 @@ export const getOpportunities = async (req, res) => {
 =============================== */
 export const getOpportunityById = async (req, res) => {
   try {
-    const opportunity = await Opportunity.findById(
-      req.params.id
-    ).populate("postedBy", "username role");
+    const opportunity = await Opportunity.findById(req.params.id).populate(
+      "postedBy",
+      "username role",
+    );
 
     if (!opportunity) {
       return res.status(404).json({
@@ -104,9 +116,7 @@ export const getOpportunityById = async (req, res) => {
 =============================== */
 export const deleteOpportunity = async (req, res) => {
   try {
-    const opportunity = await Opportunity.findById(
-      req.params.id
-    );
+    const opportunity = await Opportunity.findById(req.params.id);
 
     if (!opportunity) {
       return res.status(404).json({
@@ -115,8 +125,7 @@ export const deleteOpportunity = async (req, res) => {
     }
 
     if (
-      opportunity.postedBy.toString() !==
-        req.user._id.toString() &&
+      opportunity.postedBy.toString() !== req.user._id.toString() &&
       req.user.role !== "admin"
     ) {
       return res.status(403).json({
@@ -138,9 +147,7 @@ export const deleteOpportunity = async (req, res) => {
 =============================== */
 export const toggleOpportunityStatus = async (req, res) => {
   try {
-    const opportunity = await Opportunity.findById(
-      req.params.id
-    );
+    const opportunity = await Opportunity.findById(req.params.id);
 
     if (!opportunity) {
       return res.status(404).json({
@@ -149,8 +156,7 @@ export const toggleOpportunityStatus = async (req, res) => {
     }
 
     if (
-      opportunity.postedBy.toString() !==
-        req.user._id.toString() &&
+      opportunity.postedBy.toString() !== req.user._id.toString() &&
       req.user.role !== "admin"
     ) {
       return res.status(403).json({
@@ -158,10 +164,7 @@ export const toggleOpportunityStatus = async (req, res) => {
       });
     }
 
-    opportunity.status =
-      opportunity.status === "active"
-        ? "closed"
-        : "active";
+    opportunity.status = opportunity.status === "active" ? "closed" : "active";
 
     await opportunity.save();
 
@@ -177,9 +180,7 @@ export const toggleOpportunityStatus = async (req, res) => {
 =============================== */
 export const toggleSaveOpportunity = async (req, res) => {
   try {
-    const opportunity = await Opportunity.findById(
-      req.params.id
-    );
+    const opportunity = await Opportunity.findById(req.params.id);
 
     if (!opportunity) {
       return res.status(404).json({
@@ -189,16 +190,14 @@ export const toggleSaveOpportunity = async (req, res) => {
 
     const userId = req.user._id.toString();
 
-    const alreadySaved =
-      opportunity.savedBy.some(
-        (id) => id.toString() === userId
-      );
+    const alreadySaved = opportunity.savedBy.some(
+      (id) => id.toString() === userId,
+    );
 
     if (alreadySaved) {
-      opportunity.savedBy =
-        opportunity.savedBy.filter(
-          (id) => id.toString() !== userId
-        );
+      opportunity.savedBy = opportunity.savedBy.filter(
+        (id) => id.toString() !== userId,
+      );
     } else {
       opportunity.savedBy.push(userId);
     }

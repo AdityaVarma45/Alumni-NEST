@@ -3,15 +3,11 @@ import User from "../models/User.js";
 
 /*
   Protect middleware
-  - reads JWT from Authorization header
-  - verifies token
-  - attaches user to req.user
 */
 const protect = async (req, res, next) => {
   try {
     let token;
 
-    // Authorization: Bearer TOKEN
     if (
       req.headers.authorization &&
       req.headers.authorization.startsWith("Bearer")
@@ -19,20 +15,17 @@ const protect = async (req, res, next) => {
       token = req.headers.authorization.split(" ")[1];
     }
 
-    // no token sent
     if (!token) {
       return res.status(401).json({
         message: "Not authorized, token missing",
       });
     }
 
-    // verify JWT
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET
     );
 
-    // find user and attach to request
     const user = await User.findById(decoded.id).select("-password");
 
     if (!user) {
@@ -43,7 +36,6 @@ const protect = async (req, res, next) => {
 
     req.user = user;
 
-    // continue to next middleware/controller
     next();
   } catch (error) {
     console.error("Auth error:", error.message);
@@ -54,4 +46,6 @@ const protect = async (req, res, next) => {
   }
 };
 
+/* Export BOTH ways */
+export { protect };
 export default protect;

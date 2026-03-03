@@ -1,8 +1,8 @@
 import Mentorship from "../models/Mentorship.js";
 import { getIO } from "../socket/socket.js";
-import Notification from "../models/Notification.js";
 import Conversation from "../models/Conversation.js";
 import User from "../models/User.js";
+import { createNotification } from "../utils/createNotification.js";
 
 /*
   Student sends mentorship request
@@ -40,7 +40,6 @@ export const requestMentorship = async (req, res) => {
     if (existing) {
       return res.status(400).json({
         message: "Mentorship already exists",
-        mentorship: existing,
       });
     }
 
@@ -51,9 +50,17 @@ export const requestMentorship = async (req, res) => {
       status: "pending",
     });
 
-    // ---------- LIVE COUNT UPDATE ----------
-    const io = getIO();
+    // 🔔 Notification
+    await createNotification({
+      recipient: alumniId,
+      sender: req.user._id,
+      type: "mentorship_request",
+      message: "You received a new mentorship request",
+      relatedId: mentorship._id,
+    });
 
+    // keep your live count
+    const io = getIO();
     const pendingCount = await Mentorship.countDocuments({
       alumni: alumniId,
       status: "pending",
@@ -71,7 +78,7 @@ export const requestMentorship = async (req, res) => {
 };
 
 /*
-  Alumni responds to request
+  Alumni responds
 */
 export const respondMentorship = async (req, res) => {
   try {
@@ -101,7 +108,6 @@ export const respondMentorship = async (req, res) => {
     mentorship.status = status;
     await mentorship.save();
 
-    // create conversation once
     let conversation = null;
 
     if (status === "accepted") {
@@ -119,8 +125,10 @@ export const respondMentorship = async (req, res) => {
       }
     }
 
-    await Notification.create({
+    // 🔔 Notification
+    await createNotification({
       recipient: mentorship.student,
+      sender: req.user._id,
       type: "mentorship_response",
       message: `Your mentorship request was ${status}`,
       relatedId: mentorship._id,
@@ -128,7 +136,6 @@ export const respondMentorship = async (req, res) => {
 
     const io = getIO();
 
-    // LIVE STATUS EVENT
     io.to(mentorship.student.toString()).emit(
       "mentorshipStatusUpdated",
       {
@@ -151,7 +158,7 @@ export const respondMentorship = async (req, res) => {
 };
 
 /*
-  Get mentorship requests
+  GET mentorship requests (THIS WAS MISSING)
 */
 export const getMentorshipRequests = async (req, res) => {
   try {

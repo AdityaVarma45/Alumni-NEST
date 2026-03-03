@@ -1,5 +1,5 @@
 import Notification from "../models/Notification.js";
-import { getIO, getReceiverSocketId } from "../socket/socket.js";
+import { getIO } from "../socket/socket.js";
 
 export const createNotification = async ({
   recipient,
@@ -16,18 +16,9 @@ export const createNotification = async ({
     relatedId,
   });
 
-  const receiverSocketId = getReceiverSocketId(recipient.toString());
-
-  if (receiverSocketId) {
-    getIO().to(receiverSocketId).emit("newNotification", {
-      _id: notification._id,
-      message,
-      type,
-      sender,
-      read: false,
-      createdAt: notification.createdAt,
-    });
-  }
+  // emit to user room (works for multi-tab)
+  const io = getIO();
+  io.to(recipient.toString()).emit("newNotification", notification);
 
   return notification;
 };
