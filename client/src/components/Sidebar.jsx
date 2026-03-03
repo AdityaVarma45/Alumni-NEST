@@ -5,12 +5,12 @@ import socket from "../socket";
 import Logo from "../components/Logo";
 
 import {
+  LayoutDashboard,
   MessageSquare,
   Users,
   UserCircle,
   GraduationCap,
   Briefcase,
-  PlusCircle,
   LogOut,
 } from "lucide-react";
 
@@ -21,38 +21,28 @@ function Sidebar({ user }) {
   const [requestCount, setRequestCount] = useState(0);
   const [opportunityCount, setOpportunityCount] = useState(0);
 
-  /* mentorship count */
   useEffect(() => {
     if (user?.role !== "alumni") return;
 
-    const handleCount = (count = 0) => {
-      setRequestCount(count);
-    };
+    const handleCount = (count = 0) => setRequestCount(count);
 
     socket.on("mentorshipRequestCount", handleCount);
-
-    return () => {
-      socket.off("mentorshipRequestCount", handleCount);
-    };
+    return () => socket.off("mentorshipRequestCount", handleCount);
   }, [user?.role]);
 
-  /* opportunity count */
   useEffect(() => {
-    const handleOpportunityCount = (count = 0) => {
+    const handleOpportunityCount = (count = 0) =>
       setOpportunityCount(count);
-    };
 
     socket.on("opportunityCount", handleOpportunityCount);
-
-    return () => {
-      socket.off("opportunityCount", handleOpportunityCount);
-    };
+    return () => socket.off("opportunityCount", handleOpportunityCount);
   }, []);
 
-  const isActive = (path) =>
-    location.pathname.startsWith(path);
+  const isActive = (path, exact = false) =>
+    exact
+      ? location.pathname === path
+      : location.pathname.startsWith(path);
 
-  /* reusable nav */
   const NavItem = ({
     to,
     icon,
@@ -60,19 +50,18 @@ function Sidebar({ user }) {
     badge = 0,
     exact = false,
   }) => {
-    const active = exact
-      ? location.pathname === to
-      : isActive(to);
+    const active = isActive(to, exact);
 
     return (
       <Link
         to={to}
         className={`
           flex items-center justify-between
-          px-3 py-2.5 rounded-xl text-sm transition-all
+          px-3 py-2.5 rounded-xl text-sm
+          transition-all duration-200
           ${
             active
-              ? "bg-blue-600 text-white shadow-md"
+              ? "bg-blue-600 text-white shadow-sm"
               : "text-gray-700 hover:bg-gray-100"
           }
         `}
@@ -118,21 +107,20 @@ function Sidebar({ user }) {
           </div>
         </div>
 
-        {/* NAV */}
+        {/* NAVIGATION */}
         <div className="flex-1 px-3 space-y-2 overflow-y-auto">
 
           <NavItem
-            to="/dashboard/my-profile"
-            icon={<UserCircle size={17} />}
-            label="My Profile"
+            to="/dashboard"
+            icon={<LayoutDashboard size={17} />}
+            label="Overview"
             exact
           />
 
           <NavItem
-            to="/dashboard"
+            to="/dashboard/chats"
             icon={<MessageSquare size={17} />}
             label="Chats"
-            exact
           />
 
           <NavItem
@@ -156,13 +144,19 @@ function Sidebar({ user }) {
               badge={requestCount}
             />
           )}
+
+          <NavItem
+            to="/dashboard/my-profile"
+            icon={<UserCircle size={17} />}
+            label="My Profile"
+          />
         </div>
 
         {/* Logout */}
         <div className="p-3">
           <button
             onClick={logout}
-            className="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-2.5 rounded-xl text-sm transition"
+            className="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-2.5 rounded-xl text-sm transition-all duration-200"
           >
             <LogOut size={16} />
             Logout

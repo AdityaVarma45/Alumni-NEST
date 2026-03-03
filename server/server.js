@@ -11,6 +11,7 @@ import mentorshipRoutes from "./routes/mentorshipRoutes.js";
 import skillRoutes from "./routes/skillRoutes.js";
 import recommendationRoutes from "./routes/recommendationRoutes.js";
 import opportunityRoutes from "./routes/opportunityRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
 
 import { initSocket } from "./socket/socket.js";
 
@@ -29,6 +30,7 @@ app.use("/api/mentorship", mentorshipRoutes);
 app.use("/api/meta", skillRoutes);
 app.use("/api/recommendations", recommendationRoutes);
 app.use("/api/opportunities", opportunityRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 const server = http.createServer(app);
 

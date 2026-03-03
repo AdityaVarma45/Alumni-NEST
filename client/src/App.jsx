@@ -5,7 +5,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import MyProfile from "./pages/MyProfile";
 
-import Dashboard from "./pages/Dashboard";
+import DashboardHome from "./pages/DashboardHome";
+import Chats from "./pages/Chats"; // ✅ NEW
 import ChatPage from "./pages/ChatPage";
 import Users from "./pages/Users";
 import MentorshipRequests from "./pages/MentorshipRequests";
@@ -13,7 +14,7 @@ import ProfileSetup from "./pages/ProfileSetup";
 import UserProfile from "./pages/UserProfile";
 import BlockedUsers from "./pages/BlockedUsers";
 import Opportunities from "./pages/Opportunities";
-import CreateOpportunity from "./pages/CreateOpportunity"; 
+import CreateOpportunity from "./pages/CreateOpportunity";
 
 import ProfileGuard from "./components/ProfileGuard";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -24,12 +25,12 @@ function App() {
     <Router>
       <Routes>
 
-        {/* ================= PUBLIC ================= */}
+        {/* PUBLIC */}
         <Route path="/" element={<Welcome />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* ================= DASHBOARD ================= */}
+        {/* DASHBOARD */}
         <Route
           path="/dashboard"
           element={
@@ -38,20 +39,29 @@ function App() {
             </ProtectedRoute>
           }
         >
-          {/* profile setup */}
           <Route path="profile-setup" element={<ProfileSetup />} />
 
-          {/* chats dashboard */}
+          {/* OVERVIEW */}
           <Route
             index
             element={
               <ProfileGuard>
-                <Dashboard />
+                <DashboardHome />
               </ProfileGuard>
             }
           />
 
-          {/* chat page */}
+          {/* ⭐ CHATS LIST */}
+          <Route
+            path="chats"
+            element={
+              <ProfileGuard>
+                <Chats />
+              </ProfileGuard>
+            }
+          />
+
+          {/* SINGLE CHAT */}
           <Route
             path="chat/:conversationId"
             element={
@@ -61,7 +71,7 @@ function App() {
             }
           />
 
-          {/* users */}
+          {/* USERS */}
           <Route
             path="users"
             element={
@@ -80,7 +90,7 @@ function App() {
             }
           />
 
-          {/* my profile */}
+          {/* PROFILE */}
           <Route
             path="my-profile"
             element={
@@ -90,7 +100,7 @@ function App() {
             }
           />
 
-          {/* blocked users */}
+          {/* BLOCKED */}
           <Route
             path="blocked-users"
             element={
@@ -100,7 +110,7 @@ function App() {
             }
           />
 
-          {/* mentorship */}
+          {/* MENTORSHIP */}
           <Route
             path="mentorship"
             element={
@@ -110,7 +120,7 @@ function App() {
             }
           />
 
-          {/*  OPPORTUNITY FEED */}
+          {/* OPPORTUNITIES */}
           <Route
             path="opportunities"
             element={
@@ -120,7 +130,6 @@ function App() {
             }
           />
 
-          {/* CREATE OPPORTUNITY PAGE */}
           <Route
             path="opportunities/create"
             element={
@@ -131,7 +140,6 @@ function App() {
           />
 
         </Route>
-
       </Routes>
     </Router>
   );

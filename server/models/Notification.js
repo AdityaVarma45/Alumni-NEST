@@ -7,19 +7,34 @@ const notificationSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+
+    sender: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+
     type: {
       type: String,
-      enum: ["mentorship_request", "mentorship_response"],
+      enum: [
+        "mentorship_request",
+        "mentorship_accepted",
+        "new_opportunity",
+        "message",
+        "opportunity_saved",
+      ],
       required: true,
     },
+
     message: {
       type: String,
       required: true,
     },
+
     relatedId: {
       type: mongoose.Schema.Types.ObjectId,
     },
-    isRead: {
+
+    read: {
       type: Boolean,
       default: false,
     },
@@ -27,7 +42,9 @@ const notificationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-notificationSchema.index({ recipient: 1, isRead: 1 });
-const Notification = mongoose.model("Notification", notificationSchema);
+const Notification = mongoose.model(
+  "Notification",
+  notificationSchema
+);
 
 export default Notification;
