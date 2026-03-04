@@ -6,7 +6,8 @@ import Register from "./pages/Register";
 import MyProfile from "./pages/MyProfile";
 
 import DashboardHome from "./pages/DashboardHome";
-import Chats from "./pages/Chats"; // ✅ NEW
+import Notifications from "./pages/Notifications"; 
+import Chats from "./pages/Chats";
 import ChatPage from "./pages/ChatPage";
 import Users from "./pages/Users";
 import MentorshipRequests from "./pages/MentorshipRequests";
@@ -51,7 +52,17 @@ function App() {
             }
           />
 
-          {/* ⭐ CHATS LIST */}
+          {/*  NOTIFICATIONS */}
+          <Route
+            path="notifications"
+            element={
+              <ProfileGuard>
+                <Notifications />
+              </ProfileGuard>
+            }
+          />
+
+          {/* CHATS */}
           <Route
             path="chats"
             element={

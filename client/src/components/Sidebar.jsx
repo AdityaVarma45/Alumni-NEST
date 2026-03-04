@@ -11,6 +11,7 @@ import {
   UserCircle,
   GraduationCap,
   Briefcase,
+  Bell,
   LogOut,
 } from "lucide-react";
 
@@ -115,6 +116,12 @@ function Sidebar({ user }) {
             icon={<LayoutDashboard size={17} />}
             label="Overview"
             exact
+          />
+
+          <NavItem
+            to="/dashboard/notifications"
+            icon={<Bell size={17} />}
+            label="Notifications"
           />
 
           <NavItem
