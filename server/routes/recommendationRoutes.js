@@ -1,19 +1,14 @@
 import express from "express";
 import protect from "../middleware/authMiddleware.js";
-import { getRecommendedAlumni } from "../controllers/recommendationController.js";
-
-/*
-  Recommendation Routes
-  ---------------------
-  Protected route → only logged-in users
-*/
+import {
+  getRecommendedAlumni,
+  getRecommendedStudents,
+} from "../controllers/recommendationController.js";
 
 const router = express.Router();
 
-/*
-  GET /api/recommendations/alumni
-  returns smart ranked alumni list
-*/
 router.get("/alumni", protect, getRecommendedAlumni);
+
+router.get("/students", protect, getRecommendedStudents);
 
 export default router;

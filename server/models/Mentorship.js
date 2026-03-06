@@ -16,6 +16,12 @@ const mentorshipSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    initiatedBy: {
+      type: String,
+      enum: ["student", "alumni"],
+      required: true,
+    },
+
     status: {
       type: String,
       enum: ["pending", "accepted", "rejected"],

@@ -1,52 +1,33 @@
 import User from "../models/User.js";
+import Mentorship from "../models/Mentorship.js";
 import { calculateSkillMatch } from "../utils/skillMatcher.js";
 import { isUserOnline } from "../socket/socket.js";
 
 /* ===================================================
    Recommended Alumni Engine
-   ---------------------------------------------------
-   Smart ranking based on:
-   - skill match
-   - online status
-   - recent activity
 =================================================== */
 
 export const getRecommendedAlumni = async (req, res) => {
   try {
     const currentUser = req.user;
 
-    if (!currentUser) {
-      return res.status(401).json({
-        message: "Unauthorized",
-      });
-    }
-
-    // get all alumni except current user
     const alumniUsers = await User.find({
       role: "alumni",
       _id: { $ne: currentUser._id },
     }).select("username skills lastSeen role");
 
-    // build ranked list
     const rankedAlumni = alumniUsers.map((alumni) => {
-      // skill intelligence
       const match = calculateSkillMatch(
         currentUser.skills || [],
         alumni.skills || []
       );
 
-      // online bonus
-      const onlineBonus = isUserOnline(alumni._id)
-        ? 20
-        : 0;
+      const onlineBonus = isUserOnline(alumni._id) ? 20 : 0;
 
-      // recent activity bonus
       let activeBonus = 0;
-
       if (alumni.lastSeen) {
         const diff =
-          Date.now() -
-          new Date(alumni.lastSeen).getTime();
+          Date.now() - new Date(alumni.lastSeen).getTime();
 
         if (diff < 24 * 60 * 60 * 1000) {
           activeBonus = 10;
@@ -65,17 +46,64 @@ export const getRecommendedAlumni = async (req, res) => {
       };
     });
 
-    // sort by score
-    rankedAlumni.sort(
-      (a, b) => b.finalScore - a.finalScore
-    );
+    rankedAlumni.sort((a, b) => b.finalScore - a.finalScore);
 
     res.status(200).json(rankedAlumni);
   } catch (error) {
-    console.error("Recommendation error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
+/* ===================================================
+   Recommended Students Engine
+=================================================== */
+
+export const getRecommendedStudents = async (req, res) => {
+  try {
+    const currentUser = req.user;
+
+    if (currentUser.role !== "alumni") {
+      return res.status(403).json({
+        message: "Only alumni can access this",
+      });
+    }
+
+    const students = await User.find({
+      role: "student",
+      _id: { $ne: currentUser._id },
+    }).select("username skills lastSeen role");
+
+    const mentorships = await Mentorship.find({
+      alumni: currentUser._id,
+    });
+
+    const mentorshipMap = {};
+    mentorships.forEach((m) => {
+      mentorshipMap[m.student.toString()] = m;
+    });
+
+    const rankedStudents = students.map((student) => {
+      const match = calculateSkillMatch(
+        currentUser.skills || [],
+        student.skills || []
+      );
+
+      const mentorship = mentorshipMap[student._id.toString()];
+
+      return {
+        ...student.toObject(),
+        matchScore: match.score,
+        commonSkills: match.commonSkills,
+        mentorshipStatus: mentorship?.status || null,
+      };
+    });
+
+    rankedStudents.sort((a, b) => b.matchScore - a.matchScore);
+
+    res.json(rankedStudents.slice(0, 10));
+  } catch (error) {
     res.status(500).json({
-      message: "Server error",
+      message: "Failed to get recommended students",
     });
   }
 };

@@ -5,29 +5,19 @@ import User from "../models/User.js";
 import { createNotification } from "../utils/createNotification.js";
 
 /*
-  Student sends mentorship request
+====================================================
+Student sends mentorship request
+====================================================
 */
 export const requestMentorship = async (req, res) => {
   try {
     const { alumniId, message } = req.body;
 
-    if (!alumniId || !message) {
-      return res.status(400).json({
-        message: "Alumni ID and message are required",
-      });
-    }
+    const alumni = await User.findById(alumniId);
 
-    const alumniUser = await User.findById(alumniId);
-
-    if (!alumniUser) {
+    if (!alumni) {
       return res.status(404).json({
         message: "Alumni not found",
-      });
-    }
-
-    if (alumniUser.blockedUsers.includes(req.user._id)) {
-      return res.status(403).json({
-        message: "You are blocked by this user",
       });
     }
 
@@ -47,10 +37,11 @@ export const requestMentorship = async (req, res) => {
       student: req.user._id,
       alumni: alumniId,
       message,
+      initiatedBy: "student",
       status: "pending",
     });
 
-    // 🔔 Notification
+    /* Notification */
     await createNotification({
       recipient: alumniId,
       sender: req.user._id,
@@ -59,8 +50,9 @@ export const requestMentorship = async (req, res) => {
       relatedId: mentorship._id,
     });
 
-    // keep your live count
+    /* Socket update */
     const io = getIO();
+
     const pendingCount = await Mentorship.countDocuments({
       alumni: alumniId,
       status: "pending",
@@ -78,7 +70,60 @@ export const requestMentorship = async (req, res) => {
 };
 
 /*
-  Alumni responds
+====================================================
+Alumni offers mentorship to student
+====================================================
+*/
+export const offerMentorship = async (req, res) => {
+  try {
+    const { studentId, message } = req.body;
+
+    const student = await User.findById(studentId);
+
+    if (!student) {
+      return res.status(404).json({
+        message: "Student not found",
+      });
+    }
+
+    const existing = await Mentorship.findOne({
+      student: studentId,
+      alumni: req.user._id,
+      status: { $in: ["pending", "accepted"] },
+    });
+
+    if (existing) {
+      return res.status(400).json({
+        message: "Mentorship already exists",
+      });
+    }
+
+    const mentorship = await Mentorship.create({
+      student: studentId,
+      alumni: req.user._id,
+      message: message || "I'd like to mentor you.",
+      initiatedBy: "alumni",
+      status: "pending",
+    });
+
+    await createNotification({
+      recipient: studentId,
+      sender: req.user._id,
+      type: "mentorship_request",
+      message: "An alumni offered mentorship",
+      relatedId: mentorship._id,
+    });
+
+    res.status(201).json(mentorship);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+/*
+====================================================
+Respond to mentorship (accept / reject)
+====================================================
 */
 export const respondMentorship = async (req, res) => {
   try {
@@ -95,13 +140,28 @@ export const respondMentorship = async (req, res) => {
 
     if (!mentorship) {
       return res.status(404).json({
-        message: "Request not found",
+        message: "Mentorship not found",
       });
     }
 
-    if (mentorship.alumni.toString() !== req.user._id.toString()) {
+    /*
+    Determine who is allowed to respond
+    */
+    if (
+      mentorship.initiatedBy === "student" &&
+      mentorship.alumni.toString() !== req.user._id.toString()
+    ) {
       return res.status(403).json({
-        message: "Not authorized",
+        message: "Only alumni can respond",
+      });
+    }
+
+    if (
+      mentorship.initiatedBy === "alumni" &&
+      mentorship.student.toString() !== req.user._id.toString()
+    ) {
+      return res.status(403).json({
+        message: "Only student can respond",
       });
     }
 
@@ -125,14 +185,22 @@ export const respondMentorship = async (req, res) => {
       }
     }
 
-    // 🔔 Notification
+    /* Notification message depends on initiator */
+
+    const recipient =
+      mentorship.initiatedBy === "student"
+        ? mentorship.student
+        : mentorship.alumni;
+
     await createNotification({
-      recipient: mentorship.student,
+      recipient,
       sender: req.user._id,
-      type: "mentorship_response",
-      message: `Your mentorship request was ${status}`,
+      type: "mentorship_accepted",
+      message: `Mentorship request ${status}`,
       relatedId: mentorship._id,
     });
+
+    /* Socket update */
 
     const io = getIO();
 
@@ -146,19 +214,16 @@ export const respondMentorship = async (req, res) => {
       }
     );
 
-    const populated = await mentorship.populate([
-      { path: "student", select: "username email" },
-      { path: "alumni", select: "username email" },
-    ]);
-
-    res.json(populated);
+    res.json(mentorship);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
 /*
-  GET mentorship requests (THIS WAS MISSING)
+====================================================
+Get mentorships
+====================================================
 */
 export const getMentorshipRequests = async (req, res) => {
   try {

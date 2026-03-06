@@ -5,11 +5,11 @@ import {
   requestMentorship,
   respondMentorship,
   getMentorshipRequests,
+  offerMentorship,
 } from "../controllers/mentorshipController.js";
 
 const router = express.Router();
 
-// Only students can request
 router.post(
   "/request",
   protect,
@@ -17,7 +17,13 @@ router.post(
   requestMentorship
 );
 
-// Only alumni/admin can respond
+router.post(
+  "/offer",
+  protect,
+  authorizeRoles("alumni"),
+  offerMentorship
+);
+
 router.put(
   "/respond/:id",
   protect,
@@ -25,10 +31,6 @@ router.put(
   respondMentorship
 );
 
-router.get(
-  "/",
-  protect,
-  getMentorshipRequests
-);
+router.get("/", protect, getMentorshipRequests);
 
 export default router;

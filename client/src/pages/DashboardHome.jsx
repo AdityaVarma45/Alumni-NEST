@@ -4,6 +4,8 @@ import axios from "../api/axios";
 import { AuthContext } from "../context/AuthContext";
 
 import RecommendedAlumniSection from "../components/recommendations/RecommendedAlumniSection";
+import RecommendedStudentsSection from "../components/recommendations/RecommendedStudentsSection";
+
 import { useRecommendedAlumni } from "../hooks/useRecommendedAlumni";
 
 import {
@@ -128,7 +130,7 @@ export default function DashboardHome() {
 
       </div>
 
-      {/* ================= RECOMMENDED ALUMNI (CORE FEATURE) ================= */}
+      {/* ================= RECOMMENDED ALUMNI ================= */}
       {user?.role === "student" && (
         <section className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
           <h2 className="font-semibold text-slate-800 mb-4">
@@ -140,6 +142,11 @@ export default function DashboardHome() {
             loading={recommendationsLoading}
           />
         </section>
+      )}
+
+      {/* ================= RECOMMENDED STUDENTS ================= */}
+      {user?.role === "alumni" && (
+        <RecommendedStudentsSection />
       )}
 
       {/* ================= OPPORTUNITY PREVIEW ================= */}
