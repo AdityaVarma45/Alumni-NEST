@@ -10,6 +10,11 @@ import {
 
 const router = express.Router();
 
+/*
+========================================
+Student sends mentorship request
+========================================
+*/
 router.post(
   "/request",
   protect,
@@ -17,6 +22,11 @@ router.post(
   requestMentorship
 );
 
+/*
+========================================
+Alumni offers mentorship to student
+========================================
+*/
 router.post(
   "/offer",
   protect,
@@ -24,13 +34,28 @@ router.post(
   offerMentorship
 );
 
+/*
+========================================
+Respond to mentorship
+(student OR alumni depending on initiator)
+========================================
+*/
 router.put(
   "/respond/:id",
   protect,
-  authorizeRoles("alumni", "admin"),
+  authorizeRoles("student", "alumni", "admin"),
   respondMentorship
 );
 
-router.get("/", protect, getMentorshipRequests);
+/*
+========================================
+Get mentorships
+========================================
+*/
+router.get(
+  "/",
+  protect,
+  getMentorshipRequests
+);
 
 export default router;
