@@ -1,44 +1,41 @@
 import { useEffect, useState } from "react";
 import axios from "../api/axios";
 
-export default function MentorshipRequests() {
-  const [requests, setRequests] = useState([]);
+export default function MentorshipOffers() {
+  const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchRequests = async () => {
+    const fetchOffers = async () => {
       try {
-        setLoading(true);
-
         const res = await axios.get("/mentorship");
 
-        // Only show requests initiated by students
-        const studentRequests = res.data.filter(
-          (m) => m.initiatedBy === "student"
+        setOffers(
+          res.data.filter((m) => m.initiatedBy === "alumni")
         );
-
-        setRequests(studentRequests);
-      } catch (error) {
-        console.error(error);
+      } catch (err) {
+        console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchRequests();
+    fetchOffers();
   }, []);
 
   const respond = async (id, status) => {
     try {
-      await axios.put(`/mentorship/respond/${id}`, { status });
+      await axios.put(`/mentorship/respond/${id}`, {
+        status,
+      });
 
-      setRequests((prev) =>
-        prev.map((r) =>
-          r._id === id ? { ...r, status } : r
+      setOffers((prev) =>
+        prev.map((o) =>
+          o._id === id ? { ...o, status } : o
         )
       );
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -55,51 +52,50 @@ export default function MentorshipRequests() {
 
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className="text-2xl font-bold text-slate-800">
-          Mentorship Requests
+          Mentorship Offers
         </h2>
 
         <p className="text-sm text-slate-500 mt-1">
-          Review and manage incoming mentorship requests.
+          Alumni offering mentorship to you.
         </p>
       </section>
 
       {loading && <p>Loading...</p>}
 
-      {!loading && requests.length === 0 && (
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
-          No mentorship requests yet
+      {!loading && offers.length === 0 && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center">
+          No mentorship offers yet
         </div>
       )}
 
-      {!loading && requests.length > 0 && (
+      {!loading && offers.length > 0 && (
         <div className="space-y-3">
-          {requests.map((req) => (
+          {offers.map((offer) => (
             <div
-              key={req._id}
+              key={offer._id}
               className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
             >
               <div className="flex justify-between items-center">
 
                 <div>
                   <p className="font-semibold text-slate-800">
-                    {req.student?.username}
+                    {offer.alumni?.username}
                   </p>
 
                   <span
                     className={`text-xs px-2 py-1 rounded-full ${getStatusStyle(
-                      req.status
+                      offer.status
                     )}`}
                   >
-                    {req.status}
+                    {offer.status}
                   </span>
                 </div>
 
-                {req.status === "pending" && (
+                {offer.status === "pending" && (
                   <div className="flex gap-2">
-
                     <button
                       onClick={() =>
-                        respond(req._id, "accepted")
+                        respond(offer._id, "accepted")
                       }
                       className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm"
                     >
@@ -108,13 +104,12 @@ export default function MentorshipRequests() {
 
                     <button
                       onClick={() =>
-                        respond(req._id, "rejected")
+                        respond(offer._id, "rejected")
                       }
                       className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm"
                     >
                       Reject
                     </button>
-
                   </div>
                 )}
 

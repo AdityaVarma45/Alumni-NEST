@@ -63,15 +63,25 @@ export default function Users() {
     fetchData();
   }, []);
 
-  /* mentorship map */
-  const mentorshipMap = useMemo(() => {
-    const map = {};
-    mentorships.forEach((m) => {
+  /* mentorship map supporting both directions */
+const mentorshipMap = useMemo(() => {
+  const map = {};
+
+  mentorships.forEach((m) => {
+    if (user?.role === "student") {
       const alumniId = m.alumni?._id || m.alumni;
       map[alumniId] = m;
-    });
-    return map;
-  }, [mentorships]);
+    }
+
+    if (user?.role === "alumni") {
+      const studentId = m.student?._id || m.student;
+      map[studentId] = m;
+    }
+  });
+
+  return map;
+}, [mentorships, user?.role]);
+
 
   const findConversation = (id) =>
     conversations.find((c) =>

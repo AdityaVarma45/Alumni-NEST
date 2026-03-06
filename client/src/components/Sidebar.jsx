@@ -22,28 +22,44 @@ function Sidebar({ user }) {
   const [requestCount, setRequestCount] = useState(0);
   const [opportunityCount, setOpportunityCount] = useState(0);
 
+  /* ===============================
+     mentorship request count (alumni)
+  =============================== */
   useEffect(() => {
     if (user?.role !== "alumni") return;
 
     const handleCount = (count = 0) => setRequestCount(count);
 
     socket.on("mentorshipRequestCount", handleCount);
-    return () => socket.off("mentorshipRequestCount", handleCount);
+
+    return () =>
+      socket.off("mentorshipRequestCount", handleCount);
   }, [user?.role]);
 
+  /* ===============================
+     opportunity count
+  =============================== */
   useEffect(() => {
     const handleOpportunityCount = (count = 0) =>
       setOpportunityCount(count);
 
     socket.on("opportunityCount", handleOpportunityCount);
-    return () => socket.off("opportunityCount", handleOpportunityCount);
+
+    return () =>
+      socket.off("opportunityCount", handleOpportunityCount);
   }, []);
 
+  /* ===============================
+     active route helper
+  =============================== */
   const isActive = (path, exact = false) =>
     exact
       ? location.pathname === path
       : location.pathname.startsWith(path);
 
+  /* ===============================
+     navigation item
+  =============================== */
   const NavItem = ({
     to,
     icon,
@@ -91,12 +107,12 @@ function Sidebar({ user }) {
     <div className="h-full p-3">
       <div className="w-72 h-full bg-white rounded-2xl shadow-sm flex flex-col">
 
-        {/* Brand */}
+        {/* ================= BRAND ================= */}
         <div className="h-16 flex items-center px-5">
           <Logo size="text-2xl" />
         </div>
 
-        {/* User card */}
+        {/* ================= USER CARD ================= */}
         <div className="px-4 pb-4">
           <div className="bg-gray-50 rounded-xl p-3">
             <p className="font-semibold text-gray-800">
@@ -108,7 +124,7 @@ function Sidebar({ user }) {
           </div>
         </div>
 
-        {/* NAVIGATION */}
+        {/* ================= NAVIGATION ================= */}
         <div className="flex-1 px-3 space-y-2 overflow-y-auto">
 
           <NavItem
@@ -143,12 +159,24 @@ function Sidebar({ user }) {
             badge={opportunityCount}
           />
 
+          {/* ================= MENTORSHIP NAV ================= */}
+
+          {/* Alumni → see incoming student requests */}
           {user?.role === "alumni" && (
             <NavItem
               to="/dashboard/mentorship"
               icon={<GraduationCap size={17} />}
               label="Mentorship Requests"
               badge={requestCount}
+            />
+          )}
+
+          {/* Student → see alumni offers */}
+          {user?.role === "student" && (
+            <NavItem
+              to="/dashboard/mentorship-offers"
+              icon={<GraduationCap size={17} />}
+              label="Mentorship Offers"
             />
           )}
 
@@ -159,7 +187,7 @@ function Sidebar({ user }) {
           />
         </div>
 
-        {/* Logout */}
+        {/* ================= LOGOUT ================= */}
         <div className="p-3">
           <button
             onClick={logout}

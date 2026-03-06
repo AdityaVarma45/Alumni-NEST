@@ -6,11 +6,12 @@ import Register from "./pages/Register";
 import MyProfile from "./pages/MyProfile";
 
 import DashboardHome from "./pages/DashboardHome";
-import Notifications from "./pages/Notifications"; 
+import Notifications from "./pages/Notifications";
 import Chats from "./pages/Chats";
 import ChatPage from "./pages/ChatPage";
 import Users from "./pages/Users";
 import MentorshipRequests from "./pages/MentorshipRequests";
+import MentorshipOffers from "./pages/MentorshipOffers";   // ⭐ NEW
 import ProfileSetup from "./pages/ProfileSetup";
 import UserProfile from "./pages/UserProfile";
 import BlockedUsers from "./pages/BlockedUsers";
@@ -52,7 +53,7 @@ function App() {
             }
           />
 
-          {/*  NOTIFICATIONS */}
+          {/* NOTIFICATIONS */}
           <Route
             path="notifications"
             element={
@@ -121,12 +122,22 @@ function App() {
             }
           />
 
-          {/* MENTORSHIP */}
+          {/* MENTORSHIP REQUESTS (ALUMNI) */}
           <Route
             path="mentorship"
             element={
               <ProfileGuard>
                 <MentorshipRequests />
+              </ProfileGuard>
+            }
+          />
+
+          {/* MENTORSHIP OFFERS (STUDENTS) */}
+          <Route
+            path="mentorship-offers"
+            element={
+              <ProfileGuard>
+                <MentorshipOffers />
               </ProfileGuard>
             }
           />
