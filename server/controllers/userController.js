@@ -3,7 +3,10 @@ import { calculateSkillMatch } from "../utils/skillMatcher.js";
 import Mentorship from "../models/Mentorship.js";
 import { isUserOnline } from "../socket/socket.js";
 
-// block user
+/* ===================================================
+   Block User
+=================================================== */
+
 export const blockUser = async (req, res) => {
   try {
     const { userIdToBlock } = req.body;
@@ -26,14 +29,20 @@ export const blockUser = async (req, res) => {
     await user.save();
 
     res.json({ message: "User blocked successfully" });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-//
+/* ===================================================
+   Get All Users (Used in Browse Users Page)
+   Added matchScore + commonSkills
+=================================================== */
+
 export const getAllUsers = async (req, res) => {
   try {
+
     const currentUser = await User.findById(req.user._id);
 
     const users = await User.find({
@@ -46,7 +55,29 @@ export const getAllUsers = async (req, res) => {
       },
     }).select("-password");
 
-    res.json(users);
+    const scoredUsers = users.map((u) => {
+
+      const match = calculateSkillMatch(
+        currentUser.skills || [],
+        u.skills || [],
+        currentUser.interests || [],
+        u.interests || []
+      );
+
+      return {
+        ...u.toObject(),
+        matchScore: match.score,
+        commonSkills: match.commonSkills,
+        commonInterests: match.commonInterests,
+        online: isUserOnline(u._id),
+      };
+    });
+
+    // sort best match first
+    scoredUsers.sort((a, b) => b.matchScore - a.matchScore);
+
+    res.json(scoredUsers);
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -58,6 +89,7 @@ export const getAllUsers = async (req, res) => {
 
 export const getSkillMatches = async (req, res) => {
   try {
+
     const currentUser = await User.findById(req.user._id);
 
     if (!currentUser) {
@@ -66,13 +98,16 @@ export const getSkillMatches = async (req, res) => {
       });
     }
 
-    // only match alumni
     const alumniUsers = await User.find({
       role: "alumni",
     });
 
     const matches = alumniUsers.map((alumni) => {
-      const result = calculateSkillMatch(currentUser.skills, alumni.skills);
+
+      const result = calculateSkillMatch(
+        currentUser.skills,
+        alumni.skills
+      );
 
       return {
         _id: alumni._id,
@@ -83,10 +118,10 @@ export const getSkillMatches = async (req, res) => {
       };
     });
 
-    // sort best match first
     matches.sort((a, b) => b.score - a.score);
 
     res.json(matches);
+
   } catch (error) {
     res.status(500).json({
       message: error.message,
@@ -96,11 +131,11 @@ export const getSkillMatches = async (req, res) => {
 
 /* ===================================================
    Recommended Alumni Engine
-   finds best mentors for current student
 =================================================== */
 
 export const getRecommendedAlumni = async (req, res) => {
   try {
+
     const currentUser = await User.findById(req.user._id);
 
     if (!currentUser) {
@@ -126,12 +161,14 @@ export const getRecommendedAlumni = async (req, res) => {
     });
 
     const mentorshipMap = {};
+
     mentorships.forEach((m) => {
       mentorshipMap[m.alumni.toString()] = m;
     });
 
     const scoredAlumni = alumniUsers
       .map((alumni) => {
+
         const match = calculateSkillMatch(
           currentUser.skills || [],
           alumni.skills || [],
@@ -152,25 +189,28 @@ export const getRecommendedAlumni = async (req, res) => {
           mentorshipId: mentorship?._id || null,
         };
       })
-      // hide weak matches (product polish)
       .filter((a) => a.matchScore >= 25);
 
-    scoredAlumni.sort(
-      (a, b) => b.matchScore - a.matchScore
-    );
+    scoredAlumni.sort((a, b) => b.matchScore - a.matchScore);
 
     res.json(scoredAlumni.slice(0, 10));
+
   } catch (error) {
     console.error(error);
+
     res.status(500).json({
       message: "Failed to get recommendations",
     });
   }
 };
 
-// update profile setup (skills + interests)
+/* ===================================================
+   Update Profile Setup
+=================================================== */
+
 export const updateProfileSetup = async (req, res) => {
   try {
+
     const { skills, interests } = req.body;
 
     const user = await User.findById(req.user._id);
@@ -179,7 +219,6 @@ export const updateProfileSetup = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // update profile fields
     user.skills = skills || [];
     user.interests = interests || [];
     user.profileCompleted = true;
@@ -187,16 +226,21 @@ export const updateProfileSetup = async (req, res) => {
     await user.save();
 
     res.json(user);
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
+/* ===================================================
+   Setup Profile
+=================================================== */
+
 export const setupProfile = async (req, res) => {
   try {
+
     const { skills, interests } = req.body;
 
-    // fetch real mongoose document
     const user = await User.findById(req.user._id);
 
     if (!user) {
@@ -205,30 +249,36 @@ export const setupProfile = async (req, res) => {
       });
     }
 
-    // update fields
     user.skills = skills || [];
     user.interests = interests || [];
     user.profileCompleted = true;
 
-    // save to DB
     await user.save();
 
     res.json({
       message: "Profile updated successfully",
       user,
     });
+
   } catch (error) {
+
     console.error(error);
+
     res.status(500).json({
       message: error.message,
     });
   }
 };
 
-// get specific user profile (for viewing other users)
+/* ===================================================
+   Get User Profile
+=================================================== */
+
 export const getUserProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select("-password");
+
+    const user = await User.findById(req.params.id)
+      .select("-password");
 
     if (!user) {
       return res.status(404).json({
@@ -240,44 +290,59 @@ export const getUserProfile = async (req, res) => {
       ...user.toObject(),
       online: isUserOnline(user._id),
     });
+
   } catch (error) {
+
     res.status(500).json({
       message: error.message,
     });
   }
 };
 
-// get blocked users list
+/* ===================================================
+   Get Blocked Users
+=================================================== */
+
 export const getBlockedUsers = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).populate(
-      "blockedUsers",
-      "username email role lastSeen",
-    );
+
+    const user = await User.findById(req.user._id)
+      .populate(
+        "blockedUsers",
+        "username email role lastSeen"
+      );
 
     res.json(user.blockedUsers);
+
   } catch (error) {
+
     res.status(500).json({
       message: error.message,
     });
   }
 };
 
-// unblock user
+/* ===================================================
+   Unblock User
+=================================================== */
+
 export const unblockUser = async (req, res) => {
   try {
+
     const { userIdToUnblock } = req.body;
 
     const user = await User.findById(req.user._id);
 
     user.blockedUsers = user.blockedUsers.filter(
-      (id) => id.toString() !== userIdToUnblock,
+      (id) => id.toString() !== userIdToUnblock
     );
 
     await user.save();
 
     res.json({ message: "User unblocked successfully" });
+
   } catch (error) {
+
     res.status(500).json({
       message: error.message,
     });

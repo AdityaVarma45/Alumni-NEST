@@ -17,6 +17,20 @@ const getLastSeenLabel = (date, online) => {
   return "Offline";
 };
 
+/* match label helper */
+const getMatchLabel = (score) => {
+  if (score >= 80)
+    return { label: "Excellent match", color: "text-green-600 bg-green-50" };
+
+  if (score >= 60)
+    return { label: "Strong match", color: "text-blue-600 bg-blue-50" };
+
+  if (score >= 40)
+    return { label: "Good match", color: "text-amber-600 bg-amber-50" };
+
+  return { label: "Possible match", color: "text-slate-500 bg-slate-100" };
+};
+
 /* skeleton */
 const UserCardSkeleton = () => (
   <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm animate-pulse">
@@ -64,24 +78,23 @@ export default function Users() {
   }, []);
 
   /* mentorship map supporting both directions */
-const mentorshipMap = useMemo(() => {
-  const map = {};
+  const mentorshipMap = useMemo(() => {
+    const map = {};
 
-  mentorships.forEach((m) => {
-    if (user?.role === "student") {
-      const alumniId = m.alumni?._id || m.alumni;
-      map[alumniId] = m;
-    }
+    mentorships.forEach((m) => {
+      if (user?.role === "student") {
+        const alumniId = m.alumni?._id || m.alumni;
+        map[alumniId] = m;
+      }
 
-    if (user?.role === "alumni") {
-      const studentId = m.student?._id || m.student;
-      map[studentId] = m;
-    }
-  });
+      if (user?.role === "alumni") {
+        const studentId = m.student?._id || m.student;
+        map[studentId] = m;
+      }
+    });
 
-  return map;
-}, [mentorships, user?.role]);
-
+    return map;
+  }, [mentorships, user?.role]);
 
   const findConversation = (id) =>
     conversations.find((c) =>
@@ -207,7 +220,6 @@ const mentorshipMap = useMemo(() => {
         </span>
       );
 
-    /* student → request */
     if (user?.role === "student" && u.role === "alumni") {
       return (
         <button
@@ -219,7 +231,6 @@ const mentorshipMap = useMemo(() => {
       );
     }
 
-    /* alumni → offer */
     if (user?.role === "alumni" && u.role === "student") {
       return (
         <button
@@ -237,27 +248,60 @@ const mentorshipMap = useMemo(() => {
   /* user card */
   const renderUserCard = (u) => {
     const statusLabel = getLastSeenLabel(u.lastSeen, u.online);
+    const match = getMatchLabel(u.matchScore || 0);
 
     return (
       <Link key={u._id} to={`/dashboard/users/${u._id}`} className="block">
         <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md hover:bg-slate-50 transition">
+
           <div className="flex justify-between items-start">
-            <h3 className="font-semibold text-slate-800">
-              {u.username}
-            </h3>
+
+            <div>
+              <h3 className="font-semibold text-slate-800">
+                {u.username}
+              </h3>
+
+              <p className="text-xs text-slate-500 mt-1">
+                {statusLabel}
+              </p>
+            </div>
 
             <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 capitalize">
               {u.role}
             </span>
           </div>
 
-          <p className="text-xs text-slate-500 mt-1">
-            {statusLabel}
-          </p>
+          {u.commonSkills?.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {u.commonSkills.slice(0, 4).map((skill) => (
+                <span
+                  key={skill}
+                  className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-md"
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+          )}
 
-          <p className="text-sm text-slate-500 mt-1">{u.email}</p>
+          {u.matchScore !== undefined && (
+            <div className="flex items-center justify-between mt-3">
+              <span className="text-xs font-semibold text-slate-700">
+                {u.matchScore}% match
+              </span>
+
+              <span
+                className={`text-xs px-2 py-0.5 rounded-md ${match.color}`}
+              >
+                {match.label}
+              </span>
+            </div>
+          )}
+
+          <p className="text-sm text-slate-500 mt-2">{u.email}</p>
 
           <div className="mt-3">{renderAction(u)}</div>
+
         </div>
       </Link>
     );
@@ -280,7 +324,6 @@ const mentorshipMap = useMemo(() => {
   return (
     <div className="max-w-6xl mx-auto space-y-8">
 
-      {/* users */}
       <section className="rounded-2xl border border-slate-200 bg-white p-5 md:p-6 shadow-sm space-y-6">
         <h2 className="text-xl font-bold text-slate-800">
           Browse Users
@@ -304,7 +347,6 @@ const mentorshipMap = useMemo(() => {
         )}
       </section>
 
-      {/* blocked */}
       <section className="rounded-2xl border border-slate-200 bg-white p-5 md:p-6 shadow-sm space-y-4">
         <h2 className="text-xl font-bold text-slate-800">
           Blocked Users

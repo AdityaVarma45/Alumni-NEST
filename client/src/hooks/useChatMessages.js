@@ -12,7 +12,6 @@ export function useChatMessages(conversationId, user) {
   const [newMessage, setNewMessage] = useState("");
   const [typingUser, setTypingUser] = useState(false);
 
-  // 👑 infinite scroll engine
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loadingOld, setLoadingOld] = useState(false);
@@ -34,14 +33,15 @@ export function useChatMessages(conversationId, user) {
     const fetchMessages = async () => {
       const res = await getMessages(conversationId);
 
-      // backend may return array OR object
-      const msgs = Array.isArray(res.data) ? res.data : res.data.messages || [];
+      const msgs = Array.isArray(res.data)
+        ? res.data
+        : res.data.messages || [];
 
       setMessages([...msgs].reverse());
       setHasMore(res.data.hasMore);
 
       await markAsRead(conversationId);
-      // update sidebar unread instantly
+
       dispatch({
         type: "UNREAD_UPDATED",
         payload: {
@@ -61,7 +61,7 @@ export function useChatMessages(conversationId, user) {
   }, [conversationId]);
 
   /* ===============================
-     LOAD OLDER MESSAGES (TOP SCROLL)
+     LOAD OLDER MESSAGES
   =============================== */
   const loadOlderMessages = async () => {
     if (!hasMore || loadingOld) return;
@@ -76,12 +76,14 @@ export function useChatMessages(conversationId, user) {
     try {
       const res = await getMessages(conversationId, nextPage);
 
-      setMessages((prev) => [...res.data.messages.reverse(), ...prev]);
+      setMessages((prev) => [
+        ...res.data.messages.reverse(),
+        ...prev,
+      ]);
 
       setHasMore(res.data.hasMore);
       setPage(nextPage);
 
-      // preserve scroll position (pro move)
       setTimeout(() => {
         const newHeight = container.scrollHeight;
         container.scrollTop = newHeight - oldHeight;
@@ -92,7 +94,7 @@ export function useChatMessages(conversationId, user) {
   };
 
   /* ===============================
-     TOP SCROLL DETECTION
+     SCROLL DETECTION
   =============================== */
   useEffect(() => {
     const container = containerRef.current;
@@ -104,14 +106,17 @@ export function useChatMessages(conversationId, user) {
       }
 
       const distance =
-        container.scrollHeight - container.scrollTop - container.clientHeight;
+        container.scrollHeight -
+        container.scrollTop -
+        container.clientHeight;
 
       setShowScrollButton(distance > 250);
     };
 
     container.addEventListener("scroll", handleScroll);
 
-    return () => container.removeEventListener("scroll", handleScroll);
+    return () =>
+      container.removeEventListener("scroll", handleScroll);
   }, [page, hasMore]);
 
   /* ===============================
@@ -122,10 +127,21 @@ export function useChatMessages(conversationId, user) {
 
     socket.emit("joinConversation", conversationId);
 
-    const handleReceiveMessage = async (message) => {
-      if (message.conversation?.toString() !== conversationId) return;
+    const handleReceiveMessage = (message) => {
+      if (message.conversation?.toString() !== conversationId)
+        return;
 
-      setMessages((prev) => [...prev, message]);
+      /* 🔥 FIX 1: Ignore own messages (prevents duplicate) */
+      if (message.sender?.toString() === user?.id?.toString())
+        return;
+
+      setMessages((prev) => {
+        /* 🔥 FIX 2: Prevent duplicate IDs */
+        const exists = prev.some((m) => m._id === message._id);
+        if (exists) return prev;
+
+        return [...prev, message];
+      });
 
       dispatch({
         type: "CONVERSATION_UPDATED",
@@ -139,11 +155,12 @@ export function useChatMessages(conversationId, user) {
 
     socket.on("receiveMessage", handleReceiveMessage);
 
-    return () => socket.off("receiveMessage", handleReceiveMessage);
-  }, [conversationId]);
+    return () =>
+      socket.off("receiveMessage", handleReceiveMessage);
+  }, [conversationId, user]);
 
   /* ===============================
-     AUTO SCROLL (NEW MSG)
+     AUTO SCROLL
   =============================== */
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({
@@ -180,9 +197,16 @@ export function useChatMessages(conversationId, user) {
 
     const res = await sendMessageAPI(conversationId, text);
 
-    setMessages((prev) => prev.map((m) => (m._id === tempId ? res.data : m)));
+    setMessages((prev) =>
+      prev.map((m) =>
+        m._id === tempId ? res.data : m
+      )
+    );
   };
 
+  /* ===============================
+     TYPING
+  =============================== */
   const handleTyping = (value) => {
     setNewMessage(value);
 
@@ -201,12 +225,18 @@ export function useChatMessages(conversationId, user) {
     }, 1000);
   };
 
+  /* ===============================
+     MESSAGE STATUS
+  =============================== */
   const getMessageStatus = (msg) => {
-    if (msg.optimistic) return { icon: "⏳", color: "text-gray-300" };
+    if (msg.optimistic)
+      return { icon: "⏳", color: "text-gray-300" };
 
-    if (msg.isRead) return { icon: "✓✓", color: "text-blue-400" };
+    if (msg.isRead)
+      return { icon: "✓✓", color: "text-blue-400" };
 
-    if (msg.isDelivered) return { icon: "✓✓", color: "text-gray-300" };
+    if (msg.isDelivered)
+      return { icon: "✓✓", color: "text-gray-300" };
 
     return { icon: "✓", color: "text-gray-300" };
   };
