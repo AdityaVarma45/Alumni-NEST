@@ -43,20 +43,17 @@ export default function RecommendedAlumniCard({ alumni }) {
 
   const matchInfo = getMatchLabel(alumni.matchScore);
 
-  /* detect existing conversation */
   const existingConversation = useMemo(() => {
     return conversations.find((conv) =>
       conv.participants?.some((p) => p._id === alumni._id)
     );
   }, [conversations, alumni._id]);
 
-  /* online detection */
   const isOnline = useMemo(() => {
     if (!existingConversation) return false;
     return existingConversation.online;
   }, [existingConversation]);
 
-  /* mentorship live updates */
   useEffect(() => {
     const update = mentorshipUpdates?.[alumni._id];
 
@@ -66,7 +63,6 @@ export default function RecommendedAlumniCard({ alumni }) {
     }
   }, [mentorshipUpdates, alumni._id]);
 
-  /* send mentorship request */
   const sendRequest = async () => {
     try {
       await axios.post("/mentorship/request", {
@@ -76,17 +72,10 @@ export default function RecommendedAlumniCard({ alumni }) {
 
       setStatus("pending");
     } catch (err) {
-      if (err.response?.data?.message === "Mentorship already exists") {
-        const existing = err.response.data.mentorship;
-        setStatus(existing.status);
-        return;
-      }
-
       console.error(err);
     }
   };
 
-  /* action button engine */
   const renderActionButton = () => {
     if (existingConversation) {
       return (
@@ -137,9 +126,15 @@ export default function RecommendedAlumniCard({ alumni }) {
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-4 hover:shadow-md transition">
-
-      {/* Header */}
+    <div
+      className="
+      bg-white border border-slate-200
+      rounded-2xl p-4
+      shadow-sm
+      hover:shadow-lg hover:-translate-y-0.5
+      transition-all duration-200
+      "
+    >
       <div className="flex items-start justify-between">
 
         <div>
@@ -147,9 +142,15 @@ export default function RecommendedAlumniCard({ alumni }) {
             {alumni.username}
           </h3>
 
-          <p className="text-xs mt-1">
+          <p className="text-xs mt-1 flex items-center gap-1">
             {isOnline ? (
-              <span className="text-green-600">Online</span>
+              <>
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </span>
+                <span className="text-green-600">Online</span>
+              </>
             ) : (
               <span className="text-slate-500">
                 {getLastSeenLabel(alumni.lastSeen)}
@@ -158,32 +159,37 @@ export default function RecommendedAlumniCard({ alumni }) {
           </p>
         </div>
 
-        {/* Match indicator */}
         <div className="flex flex-col items-end gap-1">
           <span className="text-xs font-semibold text-slate-700">
             {alumni.matchScore}% match
           </span>
 
           <span
-            className={`text-xs px-2 py-0.5 rounded-md ${matchInfo.color}`}
+            className={`text-xs px-2 py-0.5 rounded-md font-medium ${matchInfo.color}`}
           >
             {matchInfo.label}
           </span>
         </div>
+
       </div>
 
-      {/* Explanation */}
       <p className="text-xs text-slate-500 mt-3">
         You share expertise in these areas
       </p>
 
-      {/* Skills */}
       {alumni.commonSkills?.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-2">
           {alumni.commonSkills.slice(0, 4).map((skill) => (
             <span
               key={skill}
-              className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-md"
+              className="
+              text-xs
+              bg-slate-100
+              text-slate-600
+              px-2 py-1
+              rounded-md
+              border border-slate-200
+              "
             >
               {skill}
             </span>
@@ -191,7 +197,6 @@ export default function RecommendedAlumniCard({ alumni }) {
         </div>
       )}
 
-      {/* Action */}
       <div className="mt-4">
         {renderActionButton()}
       </div>

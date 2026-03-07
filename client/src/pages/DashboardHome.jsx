@@ -88,6 +88,7 @@ export default function DashboardHome() {
         <h1 className="text-2xl font-bold text-slate-800">
           Welcome back, {user?.username}
         </h1>
+
         <p className="text-sm text-slate-500 mt-1">
           Here’s what’s happening in your network.
         </p>
@@ -101,6 +102,7 @@ export default function DashboardHome() {
             <Briefcase size={16} />
             Opportunities
           </div>
+
           <p className="text-2xl font-bold text-slate-800">
             {stats.opportunities}
           </p>
@@ -113,6 +115,7 @@ export default function DashboardHome() {
               ? "Pending Requests"
               : "Active Mentorships"}
           </div>
+
           <p className="text-2xl font-bold text-slate-800">
             {stats.mentorship}
           </p>
@@ -123,6 +126,7 @@ export default function DashboardHome() {
             <MessageSquare size={16} />
             Conversations
           </div>
+
           <p className="text-2xl font-bold text-slate-800">
             {stats.conversations}
           </p>
@@ -132,16 +136,10 @@ export default function DashboardHome() {
 
       {/* ================= RECOMMENDED ALUMNI ================= */}
       {user?.role === "student" && (
-        <section className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-          <h2 className="font-semibold text-slate-800 mb-4">
-            Recommended Alumni
-          </h2>
-
-          <RecommendedAlumniSection
-            alumni={recommendedAlumni}
-            loading={recommendationsLoading}
-          />
-        </section>
+        <RecommendedAlumniSection
+          alumni={recommendedAlumni}
+          loading={recommendationsLoading}
+        />
       )}
 
       {/* ================= RECOMMENDED STUDENTS ================= */}
@@ -151,7 +149,9 @@ export default function DashboardHome() {
 
       {/* ================= OPPORTUNITY PREVIEW ================= */}
       <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+
         <div className="flex justify-between items-center mb-4">
+
           <h2 className="font-semibold text-slate-800">
             {user?.role === "alumni"
               ? "Your Recent Posts"
@@ -164,6 +164,7 @@ export default function DashboardHome() {
           >
             View all
           </Link>
+
         </div>
 
         {(user?.role === "alumni"
@@ -182,20 +183,24 @@ export default function DashboardHome() {
               <p className="text-sm font-medium text-slate-700">
                 {o.title}
               </p>
+
               <p className="text-xs text-slate-500">
                 {o.company}
               </p>
             </div>
           ))
         )}
+
       </div>
 
       {/* ================= QUICK ACTION FOR ALUMNI ================= */}
       {user?.role === "alumni" && (
         <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6">
+
           <h3 className="font-semibold text-blue-800">
             Share a new opportunity
           </h3>
+
           <p className="text-sm text-blue-700 mt-1">
             Help students by posting internships, jobs, or referrals.
           </p>
@@ -206,6 +211,7 @@ export default function DashboardHome() {
           >
             Post Opportunity
           </Link>
+
         </div>
       )}
 

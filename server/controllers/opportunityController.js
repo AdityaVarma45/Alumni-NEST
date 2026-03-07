@@ -1,4 +1,5 @@
 import Opportunity from "../models/Opportunity.js";
+import User from "../models/User.js";
 import { createNotification } from "../utils/createNotification.js";
 
 /* ===============================
