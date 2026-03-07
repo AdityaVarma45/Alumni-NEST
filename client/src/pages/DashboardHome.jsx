@@ -277,56 +277,72 @@ export default function DashboardHome() {
           LATEST OPPORTUNITIES
       =============================== */}
 
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+      {/* ===============================
+    LATEST OPPORTUNITIES
+=============================== */}
 
-        <h2 className="font-semibold text-slate-800 text-lg mb-4">
-          Latest Opportunities
-        </h2>
+<div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
 
-        {opportunities.slice(0, 3).map((o) => (
-          <Link
-            key={o._id}
-            to="/dashboard/opportunities"
-            className="block border border-slate-200 rounded-xl px-4 py-3 hover:bg-slate-50 hover:border-blue-200 transition mb-3"
-          >
-            <div className="flex justify-between items-center">
+  <div className="flex items-center justify-between mb-5">
+    <h2 className="font-semibold text-slate-800 text-lg">
+      Latest Opportunities
+    </h2>
 
-              <div>
-                <p className="font-medium text-slate-800">{o.title}</p>
-                <p className="text-xs text-slate-500 mt-1">{o.company}</p>
-              </div>
+    <Link
+      to="/dashboard/opportunities"
+      className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1"
+    >
+      Browse All
+      <ArrowRight size={14} />
+    </Link>
+  </div>
 
-              {o.type && (
-                <span className="text-xs px-2 py-1 rounded-md bg-blue-50 text-blue-600 capitalize">
-                  {o.type}
-                </span>
-              )}
+  {opportunities.length === 0 ? (
+    <p className="text-sm text-slate-500">
+      No opportunities posted yet.
+    </p>
+  ) : (
+    <div className="grid md:grid-cols-2 gap-4">
 
+      {opportunities.slice(0, 3).map((o) => (
+        <Link
+          key={o._id}
+          to="/dashboard/opportunities"
+          className="
+            border border-slate-200
+            rounded-xl
+            p-4
+            hover:bg-slate-50
+            hover:border-blue-200
+            transition
+          "
+        >
+          <div className="flex items-center justify-between">
+
+            <div>
+              <p className="font-medium text-slate-800">
+                {o.title}
+              </p>
+
+              <p className="text-xs text-slate-500 mt-1">
+                {o.company}
+              </p>
             </div>
-          </Link>
-        ))}
 
-        {/* CTA BUTTON */}
-        <div className="mt-5 pt-4 border-t border-slate-100">
+            {o.type && (
+              <span className="text-xs px-2 py-1 rounded-md bg-blue-50 text-blue-600 capitalize">
+                {o.type}
+              </span>
+            )}
 
-          <Link
-            to="/dashboard/opportunities"
-            className="
-              flex items-center justify-center gap-2
-              text-sm font-medium text-blue-600
-              bg-blue-50 hover:bg-blue-100
-              rounded-lg py-2
-              transition
-            "
-          >
-            Browse All Opportunities
-            <ArrowRight size={16} />
-          </Link>
+          </div>
+        </Link>
+      ))}
 
-        </div>
+    </div>
+  )}
 
-      </div>
-
+</div>
     </div>
   );
 }
