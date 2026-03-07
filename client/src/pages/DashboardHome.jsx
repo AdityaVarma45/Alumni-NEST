@@ -1,6 +1,8 @@
 import { useEffect, useState, useContext, useMemo } from "react";
 import { Link } from "react-router-dom";
 import axios from "../api/axios";
+import socket from "../socket";
+
 import { AuthContext } from "../context/AuthContext";
 
 import RecommendedAlumniSection from "../components/recommendations/RecommendedAlumniSection";
@@ -12,7 +14,35 @@ import {
   Briefcase,
   GraduationCap,
   MessageSquare,
+  ArrowUpRight,
+  ArrowRight,
 } from "lucide-react";
+
+/* animated stat counter */
+function AnimatedNumber({ value }) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let start = 0;
+    const duration = 400;
+    const step = Math.ceil(value / (duration / 16));
+
+    const interval = setInterval(() => {
+      start += step;
+
+      if (start >= value) {
+        setCount(value);
+        clearInterval(interval);
+      } else {
+        setCount(start);
+      }
+    }, 16);
+
+    return () => clearInterval(interval);
+  }, [value]);
+
+  return <>{count}</>;
+}
 
 export default function DashboardHome() {
   const { user } = useContext(AuthContext);
@@ -25,6 +55,10 @@ export default function DashboardHome() {
     alumni: recommendedAlumni,
     loading: recommendationsLoading,
   } = useRecommendedAlumni();
+
+  /* ===============================
+     INITIAL FETCH
+  =============================== */
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,12 +80,43 @@ export default function DashboardHome() {
     fetchData();
   }, []);
 
-  /* ===== Derived Data ===== */
+  /* ===============================
+     REALTIME SOCKET UPDATES
+  =============================== */
 
-  const myOpportunities =
-    user?.role === "alumni"
-      ? opportunities.filter((o) => o.postedBy?._id === user.id)
-      : [];
+  useEffect(() => {
+    if (!user) return;
+
+    const handleConversationUpdate = () => {
+      setConversations((prev) => [...prev]);
+    };
+
+    const handleMentorshipUpdate = () => {
+      axios.get("/mentorship").then((res) => {
+        setMentorships(res.data || []);
+      });
+    };
+
+    const handleOpportunityUpdate = () => {
+      axios.get("/opportunities").then((res) => {
+        setOpportunities(res.data || []);
+      });
+    };
+
+    socket.on("conversationUpdated", handleConversationUpdate);
+    socket.on("mentorshipStatusUpdated", handleMentorshipUpdate);
+    socket.on("newOpportunity", handleOpportunityUpdate);
+
+    return () => {
+      socket.off("conversationUpdated", handleConversationUpdate);
+      socket.off("mentorshipStatusUpdated", handleMentorshipUpdate);
+      socket.off("newOpportunity", handleOpportunityUpdate);
+    };
+  }, [user]);
+
+  /* ===============================
+     DERIVED DATA
+  =============================== */
 
   const pendingRequests =
     user?.role === "alumni"
@@ -83,7 +148,7 @@ export default function DashboardHome() {
   return (
     <div className="max-w-6xl mx-auto space-y-8">
 
-      {/* ================= HEADER ================= */}
+      {/* HEADER */}
       <div>
         <h1 className="text-2xl font-bold text-slate-800">
           Welcome back, {user?.username}
@@ -94,47 +159,109 @@ export default function DashboardHome() {
         </p>
       </div>
 
-      {/* ================= SNAPSHOT STATS ================= */}
+      {/* ===============================
+          STATS CARDS
+      =============================== */}
+
       <div className="grid md:grid-cols-3 gap-4">
 
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center gap-2 text-slate-500 text-sm mb-2">
-            <Briefcase size={16} />
-            Opportunities
+        {/* Opportunities */}
+        <Link
+          to="/dashboard/opportunities"
+          className="group bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition"
+        >
+          <div className="flex justify-between items-start">
+
+            <div>
+              <div className="flex items-center gap-2 text-sm text-slate-500">
+                <span className="p-1.5 rounded-lg bg-blue-50 text-blue-600">
+                  <Briefcase size={16} />
+                </span>
+                Opportunities
+              </div>
+
+              <p className="text-2xl font-bold text-slate-800 mt-2">
+                <AnimatedNumber value={stats.opportunities} />
+              </p>
+            </div>
+
+            <ArrowUpRight
+              size={18}
+              className="text-slate-300 group-hover:text-blue-500"
+            />
+
           </div>
+        </Link>
 
-          <p className="text-2xl font-bold text-slate-800">
-            {stats.opportunities}
-          </p>
-        </div>
+        {/* Mentorship */}
+        <Link
+          to={
+            user?.role === "alumni"
+              ? "/dashboard/mentorship"
+              : "/dashboard/mentorship-offers"
+          }
+          className="group bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition"
+        >
+          <div className="flex justify-between items-start">
 
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center gap-2 text-slate-500 text-sm mb-2">
-            <GraduationCap size={16} />
-            {user?.role === "alumni"
-              ? "Pending Requests"
-              : "Active Mentorships"}
+            <div>
+              <div className="flex items-center gap-2 text-sm text-slate-500">
+                <span className="p-1.5 rounded-lg bg-indigo-50 text-indigo-600">
+                  <GraduationCap size={16} />
+                </span>
+
+                {user?.role === "alumni"
+                  ? "Pending Requests"
+                  : "Active Mentorships"}
+              </div>
+
+              <p className="text-2xl font-bold text-slate-800 mt-2">
+                <AnimatedNumber value={stats.mentorship} />
+              </p>
+            </div>
+
+            <ArrowUpRight
+              size={18}
+              className="text-slate-300 group-hover:text-indigo-500"
+            />
+
           </div>
+        </Link>
 
-          <p className="text-2xl font-bold text-slate-800">
-            {stats.mentorship}
-          </p>
-        </div>
+        {/* Conversations */}
+        <Link
+          to="/dashboard/chats"
+          className="group bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition"
+        >
+          <div className="flex justify-between items-start">
 
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center gap-2 text-slate-500 text-sm mb-2">
-            <MessageSquare size={16} />
-            Conversations
+            <div>
+              <div className="flex items-center gap-2 text-sm text-slate-500">
+                <span className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600">
+                  <MessageSquare size={16} />
+                </span>
+                Conversations
+              </div>
+
+              <p className="text-2xl font-bold text-slate-800 mt-2">
+                <AnimatedNumber value={stats.conversations} />
+              </p>
+            </div>
+
+            <ArrowUpRight
+              size={18}
+              className="text-slate-300 group-hover:text-emerald-500"
+            />
+
           </div>
-
-          <p className="text-2xl font-bold text-slate-800">
-            {stats.conversations}
-          </p>
-        </div>
+        </Link>
 
       </div>
 
-      {/* ================= RECOMMENDED ALUMNI ================= */}
+      {/* ===============================
+          RECOMMENDATIONS
+      =============================== */}
+
       {user?.role === "student" && (
         <RecommendedAlumniSection
           alumni={recommendedAlumni}
@@ -142,78 +269,63 @@ export default function DashboardHome() {
         />
       )}
 
-      {/* ================= RECOMMENDED STUDENTS ================= */}
       {user?.role === "alumni" && (
         <RecommendedStudentsSection />
       )}
 
-      {/* ================= OPPORTUNITY PREVIEW ================= */}
+      {/* ===============================
+          LATEST OPPORTUNITIES
+      =============================== */}
+
       <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
 
-        <div className="flex justify-between items-center mb-4">
+        <h2 className="font-semibold text-slate-800 text-lg mb-4">
+          Latest Opportunities
+        </h2>
 
-          <h2 className="font-semibold text-slate-800">
-            {user?.role === "alumni"
-              ? "Your Recent Posts"
-              : "Latest Opportunities"}
-          </h2>
+        {opportunities.slice(0, 3).map((o) => (
+          <Link
+            key={o._id}
+            to="/dashboard/opportunities"
+            className="block border border-slate-200 rounded-xl px-4 py-3 hover:bg-slate-50 hover:border-blue-200 transition mb-3"
+          >
+            <div className="flex justify-between items-center">
+
+              <div>
+                <p className="font-medium text-slate-800">{o.title}</p>
+                <p className="text-xs text-slate-500 mt-1">{o.company}</p>
+              </div>
+
+              {o.type && (
+                <span className="text-xs px-2 py-1 rounded-md bg-blue-50 text-blue-600 capitalize">
+                  {o.type}
+                </span>
+              )}
+
+            </div>
+          </Link>
+        ))}
+
+        {/* CTA BUTTON */}
+        <div className="mt-5 pt-4 border-t border-slate-100">
 
           <Link
             to="/dashboard/opportunities"
-            className="text-sm text-blue-600 hover:underline"
+            className="
+              flex items-center justify-center gap-2
+              text-sm font-medium text-blue-600
+              bg-blue-50 hover:bg-blue-100
+              rounded-lg py-2
+              transition
+            "
           >
-            View all
+            Browse All Opportunities
+            <ArrowRight size={16} />
           </Link>
 
         </div>
-
-        {(user?.role === "alumni"
-          ? myOpportunities.slice(0, 3)
-          : opportunities.slice(0, 3)
-        ).length === 0 ? (
-          <p className="text-sm text-slate-500">
-            No opportunities yet.
-          </p>
-        ) : (
-          (user?.role === "alumni"
-            ? myOpportunities.slice(0, 3)
-            : opportunities.slice(0, 3)
-          ).map((o) => (
-            <div key={o._id} className="mb-3 last:mb-0">
-              <p className="text-sm font-medium text-slate-700">
-                {o.title}
-              </p>
-
-              <p className="text-xs text-slate-500">
-                {o.company}
-              </p>
-            </div>
-          ))
-        )}
 
       </div>
-
-      {/* ================= QUICK ACTION FOR ALUMNI ================= */}
-      {user?.role === "alumni" && (
-        <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6">
-
-          <h3 className="font-semibold text-blue-800">
-            Share a new opportunity
-          </h3>
-
-          <p className="text-sm text-blue-700 mt-1">
-            Help students by posting internships, jobs, or referrals.
-          </p>
-
-          <Link
-            to="/dashboard/opportunities/create"
-            className="inline-block mt-4 bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition"
-          >
-            Post Opportunity
-          </Link>
-
-        </div>
-      )}
 
     </div>
   );
