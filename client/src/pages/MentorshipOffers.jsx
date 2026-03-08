@@ -1,18 +1,30 @@
 import { useEffect, useState } from "react";
 import axios from "../api/axios";
+import { useNavigate } from "react-router-dom";
 
 export default function MentorshipOffers() {
-  const [offers, setOffers] = useState([]);
+  const [incomingOffers, setIncomingOffers] = useState([]);
+  const [sentRequests, setSentRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchOffers = async () => {
       try {
         const res = await axios.get("/mentorship");
 
-        setOffers(
-          res.data.filter((m) => m.initiatedBy === "alumni")
+        const offersFromAlumni = res.data.filter(
+          (m) => m.initiatedBy === "alumni"
         );
+
+        const studentRequests = res.data.filter(
+          (m) => m.initiatedBy === "student"
+        );
+
+        setIncomingOffers(offersFromAlumni);
+        setSentRequests(studentRequests);
+
       } catch (err) {
         console.error(err);
       } finally {
@@ -25,11 +37,9 @@ export default function MentorshipOffers() {
 
   const respond = async (id, status) => {
     try {
-      await axios.put(`/mentorship/respond/${id}`, {
-        status,
-      });
+      await axios.put(`/mentorship/respond/${id}`, { status });
 
-      setOffers((prev) =>
+      setIncomingOffers((prev) =>
         prev.map((o) =>
           o._id === id ? { ...o, status } : o
         )
@@ -39,11 +49,25 @@ export default function MentorshipOffers() {
     }
   };
 
+  const openChat = async (userId) => {
+    try {
+      const res = await axios.get("/chat/conversations");
+
+      const conversation = res.data.find((c) =>
+        c.participants.some((p) => p._id === userId)
+      );
+
+      if (conversation) {
+        navigate(`/dashboard/chat/${conversation._id}`);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const getStatusStyle = (status) => {
-    if (status === "accepted")
-      return "bg-green-50 text-green-600";
-    if (status === "rejected")
-      return "bg-red-50 text-red-600";
+    if (status === "accepted") return "bg-green-50 text-green-600";
+    if (status === "rejected") return "bg-red-50 text-red-600";
     return "bg-yellow-50 text-yellow-600";
   };
 
@@ -56,68 +80,110 @@ export default function MentorshipOffers() {
         </h2>
 
         <p className="text-sm text-slate-500 mt-1">
-          Alumni offering mentorship to you.
+          Alumni offering mentorship and your sent requests.
         </p>
       </section>
 
       {loading && <p>Loading...</p>}
 
-      {!loading && offers.length === 0 && (
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center">
-          No mentorship offers yet
-        </div>
-      )}
+      {/* OFFERS FROM ALUMNI */}
+      {!loading && incomingOffers.length > 0 && (
+        <section className="space-y-3">
 
-      {!loading && offers.length > 0 && (
-        <div className="space-y-3">
-          {offers.map((offer) => (
+          <h3 className="text-sm font-semibold text-slate-600">
+            Offers From Alumni
+          </h3>
+
+          {incomingOffers.map((offer) => (
             <div
               key={offer._id}
-              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+              className="relative rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
             >
-              <div className="flex justify-between items-center">
 
-                <div>
-                  <p className="font-semibold text-slate-800">
-                    {offer.alumni?.username}
-                  </p>
+              {offer.status === "accepted" && (
+                <button
+                  onClick={() => openChat(offer.alumni?._id)}
+                  className="absolute top-4 right-4 text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700"
+                >
+                  Open Chat
+                </button>
+              )}
 
-                  <span
-                    className={`text-xs px-2 py-1 rounded-full ${getStatusStyle(
-                      offer.status
-                    )}`}
+              <p className="font-semibold text-slate-800">
+                {offer.alumni?.username}
+              </p>
+
+              <span
+                className={`text-xs px-2 py-1 rounded-full ${getStatusStyle(offer.status)}`}
+              >
+                {offer.status}
+              </span>
+
+              {offer.status === "pending" && (
+                <div className="flex gap-2 mt-3">
+
+                  <button
+                    onClick={() => respond(offer._id, "accepted")}
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm"
                   >
-                    {offer.status}
-                  </span>
+                    Accept
+                  </button>
+
+                  <button
+                    onClick={() => respond(offer._id, "rejected")}
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm"
+                  >
+                    Reject
+                  </button>
+
                 </div>
+              )}
 
-                {offer.status === "pending" && (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() =>
-                        respond(offer._id, "accepted")
-                      }
-                      className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm"
-                    >
-                      Accept
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        respond(offer._id, "rejected")
-                      }
-                      className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm"
-                    >
-                      Reject
-                    </button>
-                  </div>
-                )}
-
-              </div>
             </div>
           ))}
-        </div>
+
+        </section>
       )}
+
+      {/* SENT REQUESTS */}
+      {!loading && sentRequests.length > 0 && (
+        <section className="space-y-3">
+
+          <h3 className="text-sm font-semibold text-slate-600">
+            Your Sent Requests
+          </h3>
+
+          {sentRequests.map((req) => (
+            <div
+              key={req._id}
+              className="relative rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+            >
+
+              {req.status === "accepted" && (
+                <button
+                  onClick={() => openChat(req.alumni?._id)}
+                  className="absolute top-4 right-4 text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700"
+                >
+                  Open Chat
+                </button>
+              )}
+
+              <p className="font-semibold text-slate-800">
+                {req.alumni?.username}
+              </p>
+
+              <span
+                className={`text-xs px-2 py-1 rounded-full ${getStatusStyle(req.status)}`}
+              >
+                {req.status}
+              </span>
+
+            </div>
+          ))}
+
+        </section>
+      )}
+
     </div>
   );
 }
