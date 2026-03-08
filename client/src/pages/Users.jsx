@@ -2,6 +2,7 @@ import { useEffect, useState, useContext, useMemo } from "react";
 import { Link } from "react-router-dom";
 import axios from "../api/axios";
 import { AuthContext } from "../context/AuthContext";
+import { Search, X } from "lucide-react";
 
 /* helper */
 const getLastSeenLabel = (date, online) => {
@@ -48,8 +49,14 @@ export default function Users() {
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const [localMentorshipStatus, setLocalMentorshipStatus] =
-    useState({});
+  const [localMentorshipStatus, setLocalMentorshipStatus] = useState({});
+
+  /* search UI */
+  const [showFilters, setShowFilters] = useState(false);
+
+  const [search, setSearch] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
+  const [skillFilter, setSkillFilter] = useState("");
 
   /* fetch */
   useEffect(() => {
@@ -77,7 +84,6 @@ export default function Users() {
     fetchData();
   }, []);
 
-  /* mentorship map supporting both directions */
   const mentorshipMap = useMemo(() => {
     const map = {};
 
@@ -101,15 +107,35 @@ export default function Users() {
       c.participants?.some((p) => p._id === id)
     );
 
-  /* group users */
-  const groupedUsers = useMemo(() => {
-    const list = users.filter((u) => u._id !== user?.id);
+  /* FILTER USERS */
+  const filteredUsers = useMemo(() => {
+    return users.filter((u) => {
+      if (u._id === user?.id) return false;
 
+      if (search && !u.username.toLowerCase().includes(search.toLowerCase()))
+        return false;
+
+      if (roleFilter !== "all" && u.role !== roleFilter) return false;
+
+      if (
+        skillFilter &&
+        !u.skills?.some((s) =>
+          s.toLowerCase().includes(skillFilter.toLowerCase())
+        )
+      )
+        return false;
+
+      return true;
+    });
+  }, [users, search, roleFilter, skillFilter, user]);
+
+  /* GROUP USERS */
+  const groupedUsers = useMemo(() => {
     const active = [];
     const recommended = [];
     const others = [];
 
-    list.forEach((u) => {
+    filteredUsers.forEach((u) => {
       const hasConversation = !!findConversation(u._id);
       const mentorship = mentorshipMap[u._id];
 
@@ -127,61 +153,8 @@ export default function Users() {
     });
 
     return { active, recommended, others };
-  }, [users, user, conversations, mentorshipMap]);
+  }, [filteredUsers, user, conversations, mentorshipMap]);
 
-  /* student sends request */
-  const sendRequest = async (e, alumniId) => {
-    e.preventDefault();
-
-    try {
-      await axios.post("/mentorship/request", {
-        alumniId,
-        message: "I would like mentorship",
-      });
-
-      setLocalMentorshipStatus((prev) => ({
-        ...prev,
-        [alumniId]: "pending",
-      }));
-    } catch (error) {
-      alert(error.response?.data?.message || "Failed");
-    }
-  };
-
-  /* alumni offers mentorship */
-  const offerMentorship = async (e, studentId) => {
-    e.preventDefault();
-
-    try {
-      await axios.post("/mentorship/offer", {
-        studentId,
-        message: "I'd like to mentor you.",
-      });
-
-      setLocalMentorshipStatus((prev) => ({
-        ...prev,
-        [studentId]: "pending",
-      }));
-    } catch (error) {
-      alert(error.response?.data?.message || "Failed");
-    }
-  };
-
-  const unblockUser = async (id) => {
-    try {
-      await axios.post("/users/unblock", {
-        userIdToUnblock: id,
-      });
-
-      setBlockedUsers((prev) =>
-        prev.filter((u) => u._id !== id)
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  /* action logic */
   const renderAction = (u) => {
     const conversation = findConversation(u._id);
     const mentorship = mentorshipMap[u._id];
@@ -200,30 +173,14 @@ export default function Users() {
     }
 
     if (localStatus === "pending" || mentorship?.status === "pending")
-      return (
-        <span className="text-sm text-yellow-600">
-          Request Pending
-        </span>
-      );
+      return <span className="text-sm text-yellow-600">Request Pending</span>;
 
     if (mentorship?.status === "accepted")
-      return (
-        <span className="text-sm text-green-600">
-          Mentorship Active
-        </span>
-      );
-
-    if (mentorship?.status === "rejected")
-      return (
-        <span className="text-sm text-red-500">
-          Request Rejected
-        </span>
-      );
+      return <span className="text-sm text-green-600">Mentorship Active</span>;
 
     if (user?.role === "student" && u.role === "alumni") {
       return (
         <button
-          onClick={(e) => sendRequest(e, u._id)}
           className="text-sm bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700"
         >
           Request Mentorship
@@ -234,7 +191,6 @@ export default function Users() {
     if (user?.role === "alumni" && u.role === "student") {
       return (
         <button
-          onClick={(e) => offerMentorship(e, u._id)}
           className="text-sm bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700"
         >
           Offer Mentorship
@@ -245,7 +201,6 @@ export default function Users() {
     return null;
   };
 
-  /* user card */
   const renderUserCard = (u) => {
     const statusLabel = getLastSeenLabel(u.lastSeen, u.online);
     const match = getMatchLabel(u.matchScore || 0);
@@ -257,32 +212,14 @@ export default function Users() {
           <div className="flex justify-between items-start">
 
             <div>
-              <h3 className="font-semibold text-slate-800">
-                {u.username}
-              </h3>
-
-              <p className="text-xs text-slate-500 mt-1">
-                {statusLabel}
-              </p>
+              <h3 className="font-semibold text-slate-800">{u.username}</h3>
+              <p className="text-xs text-slate-500 mt-1">{statusLabel}</p>
             </div>
 
             <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 capitalize">
               {u.role}
             </span>
           </div>
-
-          {u.commonSkills?.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-3">
-              {u.commonSkills.slice(0, 4).map((skill) => (
-                <span
-                  key={skill}
-                  className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-md"
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
-          )}
 
           {u.matchScore !== undefined && (
             <div className="flex items-center justify-between mt-3">
@@ -324,10 +261,61 @@ export default function Users() {
   return (
     <div className="max-w-6xl mx-auto space-y-8">
 
+      {/* USERS SECTION */}
       <section className="rounded-2xl border border-slate-200 bg-white p-5 md:p-6 shadow-sm space-y-6">
-        <h2 className="text-xl font-bold text-slate-800">
-          Browse Users
-        </h2>
+
+        {/* HEADER */}
+        <div className="flex items-center justify-between">
+
+          <div>
+            <h2 className="text-xl font-bold text-slate-800">
+              Browse Users
+            </h2>
+
+            <p className="text-sm text-slate-500 mt-1">
+              Find students and alumni in the network.
+            </p>
+          </div>
+
+          <button
+            onClick={() => setShowFilters((prev) => !prev)}
+            className="p-2 rounded-lg border border-slate-200 hover:bg-slate-50"
+          >
+            {showFilters ? <X size={18} /> : <Search size={18} />}
+          </button>
+
+        </div>
+
+        {/* FILTER PANEL */}
+        {showFilters && (
+          <div className="flex flex-wrap gap-3 border-t border-slate-200 pt-4">
+
+            <input
+              placeholder="Search users..."
+              className="border border-slate-200 rounded-lg px-3 py-2 text-sm"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+
+            <select
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+              className="border border-slate-200 rounded-lg px-3 py-2 text-sm"
+            >
+              <option value="all">All Roles</option>
+              <option value="student">Students</option>
+              <option value="alumni">Alumni</option>
+            </select>
+
+            <input
+              placeholder="Filter by skill..."
+              value={skillFilter}
+              onChange={(e) => setSkillFilter(e.target.value)}
+              className="border border-slate-200 rounded-lg px-3 py-2 text-sm"
+            />
+
+          </div>
+        )}
 
         {loading ? (
           <>
@@ -337,52 +325,14 @@ export default function Users() {
           </>
         ) : (
           <>
-            {renderSection(
-              "Active Conversations",
-              groupedUsers.active
-            )}
+            {renderSection("Active Conversations", groupedUsers.active)}
             {renderSection("Recommended", groupedUsers.recommended)}
             {renderSection("Others", groupedUsers.others)}
           </>
         )}
+
       </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 md:p-6 shadow-sm space-y-4">
-        <h2 className="text-xl font-bold text-slate-800">
-          Blocked Users
-        </h2>
-
-        {blockedUsers.length === 0 ? (
-          <p className="text-sm text-slate-500">
-            No blocked users
-          </p>
-        ) : (
-          <div className="space-y-3">
-            {blockedUsers.map((u) => (
-              <div
-                key={u._id}
-                className="rounded-2xl border border-slate-200 bg-slate-50 p-4 flex justify-between"
-              >
-                <div>
-                  <p className="font-semibold text-slate-800">
-                    {u.username}
-                  </p>
-                  <p className="text-sm text-slate-500">
-                    {u.email}
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => unblockUser(u._id)}
-                  className="text-sm bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600"
-                >
-                  Unblock
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
     </div>
   );
 }
