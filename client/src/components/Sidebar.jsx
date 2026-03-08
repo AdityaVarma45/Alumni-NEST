@@ -3,6 +3,7 @@ import { useContext, useEffect, useState, memo } from "react";
 import { AuthContext } from "../context/AuthContext";
 import socket from "../socket";
 import Logo from "../components/Logo";
+import toast from "react-hot-toast";
 
 import {
   LayoutDashboard,
@@ -58,6 +59,18 @@ function Sidebar({ user }) {
       : location.pathname.startsWith(path);
 
   /* ===============================
+     PROFILE WARNING
+  =============================== */
+
+  const warnProfileIncomplete = () => {
+    if (!user?.profileCompleted) {
+      toast.error(
+        "Please add at least 3 skills and 1 interest for better usage of the platform."
+      );
+    }
+  };
+
+  /* ===============================
      navigation item
   =============================== */
   const NavItem = ({
@@ -72,6 +85,7 @@ function Sidebar({ user }) {
     return (
       <Link
         to={to}
+        onClick={warnProfileIncomplete}
         className={`
           flex items-center justify-between
           px-3 py-2.5 rounded-xl text-sm
@@ -159,9 +173,6 @@ function Sidebar({ user }) {
             badge={opportunityCount}
           />
 
-          {/* ================= MENTORSHIP NAV ================= */}
-
-          {/* Alumni → see incoming student requests */}
           {user?.role === "alumni" && (
             <NavItem
               to="/dashboard/mentorship"
@@ -171,7 +182,6 @@ function Sidebar({ user }) {
             />
           )}
 
-          {/* Student → see alumni offers */}
           {user?.role === "student" && (
             <NavItem
               to="/dashboard/mentorship-offers"
@@ -185,6 +195,7 @@ function Sidebar({ user }) {
             icon={<UserCircle size={17} />}
             label="My Profile"
           />
+
         </div>
 
         {/* ================= LOGOUT ================= */}

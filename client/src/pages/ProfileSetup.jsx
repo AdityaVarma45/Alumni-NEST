@@ -6,12 +6,7 @@ import SkillPicker from "../components/SkillPicker";
 import InterestDropdown from "../components/profile/InterestDropdown";
 import { AuthContext } from "../context/AuthContext";
 
-import {
-  FiUser,
-  FiStar,
-  FiTarget,
-  FiCheckCircle,
-} from "react-icons/fi";
+import { FiUser, FiStar, FiTarget, FiCheckCircle } from "react-icons/fi";
 
 export default function ProfileSetup() {
   const navigate = useNavigate();
@@ -32,11 +27,20 @@ export default function ProfileSetup() {
   /* progress score */
   const progress = Math.min(
     100,
-    selectedSkills.length * 10 +
-      selectedInterests.length * 10
+    selectedSkills.length * 10 + selectedInterests.length * 10,
   );
 
   const handleSave = async () => {
+    if (selectedSkills.length < 3) {
+      alert("Please add at least 3 skills.");
+      return;
+    }
+
+    if (selectedInterests.length < 1) {
+      alert("Please select at least 1 interest.");
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -61,11 +65,9 @@ export default function ProfileSetup() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-
       {/* HEADER CARD */}
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex items-start gap-4">
-
           <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
             <FiUser size={20} />
           </div>
@@ -76,7 +78,8 @@ export default function ProfileSetup() {
             </h1>
 
             <p className="text-sm text-slate-500 mt-1">
-              Keep your skills and interests updated for smarter alumni recommendations.
+              Keep your skills and interests updated for smarter alumni
+              recommendations.
             </p>
 
             {/* progress */}
@@ -94,35 +97,26 @@ export default function ProfileSetup() {
               </div>
             </div>
           </div>
-
         </div>
       </section>
 
       {/* MAIN GRID */}
       <section className="grid md:grid-cols-2 gap-6">
-
         {/* Skills Card */}
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <FiStar className="text-blue-600" />
-            <h2 className="font-semibold text-slate-800">
-              Skills
-            </h2>
+            <h2 className="font-semibold text-slate-800">Skills</h2>
           </div>
 
-          <SkillPicker
-            value={selectedSkills}
-            onChange={setSelectedSkills}
-          />
+          <SkillPicker value={selectedSkills} onChange={setSelectedSkills} />
         </div>
 
         {/* Interests Card */}
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <FiTarget className="text-blue-600" />
-            <h2 className="font-semibold text-slate-800">
-              Interests
-            </h2>
+            <h2 className="font-semibold text-slate-800">Interests</h2>
           </div>
 
           <InterestDropdown
@@ -130,12 +124,10 @@ export default function ProfileSetup() {
             onChange={setSelectedInterests}
           />
         </div>
-
       </section>
 
       {/* ACTION CARD */}
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-
         <div className="flex items-center gap-2 text-sm text-slate-600">
           <FiCheckCircle className="text-green-600" />
           Changes update your recommendations instantly
@@ -155,9 +147,7 @@ export default function ProfileSetup() {
         >
           {loading ? "Saving..." : "Save Changes"}
         </button>
-
       </section>
-
     </div>
   );
 }

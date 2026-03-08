@@ -9,6 +9,7 @@ import {
   deleteOpportunity,
   toggleOpportunityStatus,
   toggleSaveOpportunity,
+  updateOpportunity
 } from "../controllers/opportunityController.js";
 
 const router = express.Router();
@@ -26,6 +27,9 @@ router.get("/", protect, getOpportunities);
 
 /* get one */
 router.get("/:id", protect, getOpportunityById);
+
+/* update */
+router.put("/:id", protect, authorizeRoles("alumni", "admin"), updateOpportunity);
 
 /* delete */
 router.delete("/:id", protect, deleteOpportunity);

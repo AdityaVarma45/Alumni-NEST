@@ -3,9 +3,11 @@ import {
   Bookmark,
   MapPin,
   Trash2,
+  Pencil,
 } from "lucide-react";
 
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 
 /* badge colors */
@@ -34,6 +36,7 @@ export default function OpportunityCard({
   onDelete,
 }) {
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const typeClass =
     typeStyles[opportunity.type] ||
@@ -65,10 +68,12 @@ export default function OpportunityCard({
         </span>
       </div>
 
+      {/* description */}
       <p className="text-sm text-slate-600 mt-3 line-clamp-3">
         {opportunity.description}
       </p>
 
+      {/* skills */}
       {opportunity.skills?.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-3">
           {opportunity.skills.map((skill) => (
@@ -105,7 +110,19 @@ export default function OpportunityCard({
             <Bookmark size={15} />
           </button>
 
-          {/* DELETE (OWNER ONLY) */}
+          {/* EDIT */}
+          {isOwner && (
+            <button
+              onClick={() =>
+                navigate(`/dashboard/opportunities/edit/${opportunity._id}`)
+              }
+              className="h-8 w-8 rounded-lg border border-blue-200 text-blue-600 hover:bg-blue-50 flex items-center justify-center"
+            >
+              <Pencil size={15} />
+            </button>
+          )}
+
+          {/* DELETE */}
           {isOwner && (
             <button
               onClick={() => onDelete?.(opportunity._id)}
@@ -115,6 +132,7 @@ export default function OpportunityCard({
             </button>
           )}
 
+          {/* APPLY */}
           {opportunity.applyLink && (
             <a
               href={opportunity.applyLink}
@@ -129,9 +147,11 @@ export default function OpportunityCard({
         </div>
       </div>
 
+      {/* author */}
       <p className="text-xs text-slate-400 mt-3">
         Posted by {opportunity.postedBy?.username || "Alumni"}
       </p>
+
     </div>
   );
 }

@@ -16,6 +16,7 @@ import UserProfile from "../pages/UserProfile";
 import BlockedUsers from "../pages/BlockedUsers";
 import Opportunities from "../pages/Opportunities";
 import CreateOpportunity from "../pages/CreateOpportunity";
+import EditOpportunity from "../pages/EditOpportunity";
 import MyProfile from "../pages/MyProfile";
 
 export default function DashboardRoutes() {
@@ -138,6 +139,17 @@ export default function DashboardRoutes() {
             </ProfileGuard>
           }
         />
+
+        {/* NEW EDIT ROUTE */}
+        <Route
+          path="opportunities/edit/:id"
+          element={
+            <ProfileGuard>
+              <EditOpportunity />
+            </ProfileGuard>
+          }
+        />
+
       </Route>
     </>
   );

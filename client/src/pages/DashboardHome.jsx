@@ -18,7 +18,23 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-/* animated stat counter */
+/* ===============================
+   GREETING HELPER
+================================ */
+
+function getGreeting() {
+  const hour = new Date().getHours();
+
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+
+  return "Good evening";
+}
+
+/* ===============================
+   ANIMATED NUMBER
+================================ */
+
 function AnimatedNumber({ value }) {
   const [count, setCount] = useState(0);
 
@@ -146,17 +162,30 @@ export default function DashboardHome() {
   ]);
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-10">
 
-      {/* HEADER */}
-      <div>
-        <h1 className="text-2xl font-bold text-slate-800">
-          Welcome back, {user?.username}
-        </h1>
+      {/* ===============================
+          HEADER
+      =============================== */}
 
-        <p className="text-sm text-slate-500 mt-1">
-          Here’s what’s happening in your network.
-        </p>
+      <div className="flex items-center gap-4">
+
+        {/* Avatar */}
+        <div className="w-11 h-11 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-semibold text-base shadow-sm ring-2 ring-white">
+          {user?.username?.charAt(0)?.toUpperCase()}
+        </div>
+
+        {/* Greeting */}
+        <div>
+          <h1 className="text-xl font-semibold text-slate-800">
+            {getGreeting()}, {user?.username}
+          </h1>
+
+          <p className="text-sm text-slate-500">
+            Here’s what’s happening in your network today.
+          </p>
+        </div>
+
       </div>
 
       {/* ===============================
@@ -168,7 +197,7 @@ export default function DashboardHome() {
         {/* Opportunities */}
         <Link
           to="/dashboard/opportunities"
-          className="group bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition"
+          className="group bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition"
         >
           <div className="flex justify-between items-start">
 
@@ -189,7 +218,6 @@ export default function DashboardHome() {
               size={18}
               className="text-slate-300 group-hover:text-blue-500"
             />
-
           </div>
         </Link>
 
@@ -200,7 +228,7 @@ export default function DashboardHome() {
               ? "/dashboard/mentorship"
               : "/dashboard/mentorship-offers"
           }
-          className="group bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition"
+          className="group bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition"
         >
           <div className="flex justify-between items-start">
 
@@ -224,14 +252,13 @@ export default function DashboardHome() {
               size={18}
               className="text-slate-300 group-hover:text-indigo-500"
             />
-
           </div>
         </Link>
 
         {/* Conversations */}
         <Link
           to="/dashboard/chats"
-          className="group bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition"
+          className="group bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition"
         >
           <div className="flex justify-between items-start">
 
@@ -252,7 +279,6 @@ export default function DashboardHome() {
               size={18}
               className="text-slate-300 group-hover:text-emerald-500"
             />
-
           </div>
         </Link>
 
@@ -277,72 +303,62 @@ export default function DashboardHome() {
           LATEST OPPORTUNITIES
       =============================== */}
 
-      {/* ===============================
-    LATEST OPPORTUNITIES
-=============================== */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
 
-<div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="font-semibold text-slate-800 text-lg">
+            Latest Opportunities
+          </h2>
 
-  <div className="flex items-center justify-between mb-5">
-    <h2 className="font-semibold text-slate-800 text-lg">
-      Latest Opportunities
-    </h2>
+          <Link
+            to="/dashboard/opportunities"
+            className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700"
+          >
+            Browse All
+            <ArrowRight size={14} />
+          </Link>
+        </div>
 
-    <Link
-      to="/dashboard/opportunities"
-      className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1"
-    >
-      Browse All
-      <ArrowRight size={14} />
-    </Link>
-  </div>
+        {opportunities.length === 0 ? (
+          <p className="text-sm text-slate-500">
+            No opportunities posted yet.
+          </p>
+        ) : (
+          <div className="grid md:grid-cols-2 gap-4">
 
-  {opportunities.length === 0 ? (
-    <p className="text-sm text-slate-500">
-      No opportunities posted yet.
-    </p>
-  ) : (
-    <div className="grid md:grid-cols-2 gap-4">
+            {opportunities.slice(0, 3).map((o) => (
+              <Link
+                key={o._id}
+                to="/dashboard/opportunities"
+                className="border border-slate-200 rounded-xl p-4 hover:bg-slate-50 hover:border-blue-200 transition"
+              >
+                <div className="flex items-center justify-between">
 
-      {opportunities.slice(0, 3).map((o) => (
-        <Link
-          key={o._id}
-          to="/dashboard/opportunities"
-          className="
-            border border-slate-200
-            rounded-xl
-            p-4
-            hover:bg-slate-50
-            hover:border-blue-200
-            transition
-          "
-        >
-          <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-slate-800">
+                      {o.title}
+                    </p>
 
-            <div>
-              <p className="font-medium text-slate-800">
-                {o.title}
-              </p>
+                    <p className="text-xs text-slate-500 mt-1">
+                      {o.company}
+                    </p>
+                  </div>
 
-              <p className="text-xs text-slate-500 mt-1">
-                {o.company}
-              </p>
-            </div>
+                  {o.type && (
+                    <span className="text-xs px-2 py-1 rounded-md bg-blue-50 text-blue-600 capitalize">
+                      {o.type}
+                    </span>
+                  )}
 
-            {o.type && (
-              <span className="text-xs px-2 py-1 rounded-md bg-blue-50 text-blue-600 capitalize">
-                {o.type}
-              </span>
-            )}
+                </div>
+              </Link>
+            ))}
 
           </div>
-        </Link>
-      ))}
+        )}
 
-    </div>
-  )}
+      </div>
 
-</div>
     </div>
   );
 }

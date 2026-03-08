@@ -214,3 +214,56 @@ export const toggleSaveOpportunity = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+/* ===============================
+   UPDATE OPPORTUNITY
+=============================== */
+export const updateOpportunity = async (req, res) => {
+  try {
+    const {
+      title,
+      description,
+      company,
+      type,
+      location,
+      applyLink,
+      skills,
+      compensation,
+    } = req.body;
+
+    const opportunity = await Opportunity.findById(req.params.id);
+
+    if (!opportunity) {
+      return res.status(404).json({
+        message: "Opportunity not found",
+      });
+    }
+
+    /* owner check */
+    if (
+      opportunity.postedBy.toString() !== req.user._id.toString() &&
+      req.user.role !== "admin"
+    ) {
+      return res.status(403).json({
+        message: "Not authorized to edit this opportunity",
+      });
+    }
+
+    /* update fields */
+    opportunity.title = title ?? opportunity.title;
+    opportunity.description = description ?? opportunity.description;
+    opportunity.company = company ?? opportunity.company;
+    opportunity.type = type ?? opportunity.type;
+    opportunity.location = location ?? opportunity.location;
+    opportunity.applyLink = applyLink ?? opportunity.applyLink;
+    opportunity.skills = skills ?? opportunity.skills;
+    opportunity.compensation = compensation ?? opportunity.compensation;
+
+    await opportunity.save();
+
+    res.json(opportunity);
+  } catch (error) {
+    console.error("Update Opportunity Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

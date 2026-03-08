@@ -73,9 +73,7 @@ export default function Opportunities() {
       const res = await axios.put(`/opportunities/${id}/save`);
 
       setOpportunities((prev) =>
-        prev.map((o) =>
-          o._id === id ? { ...o, isSaved: res.data.saved } : o
-        )
+        prev.map((o) => (o._id === id ? { ...o, isSaved: res.data.saved } : o)),
       );
     } catch (err) {
       console.error(err);
@@ -89,8 +87,29 @@ export default function Opportunities() {
     try {
       await axios.delete(`/opportunities/${id}`);
 
+      setOpportunities((prev) => prev.filter((o) => o._id !== id));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  /* ===============================
+   EDIT
+=============================== */
+  const handleEdit = async (id) => {
+    const opportunity = opportunities.find((o) => o._id === id);
+
+    const newTitle = prompt("Edit Title", opportunity.title);
+    if (!newTitle) return;
+
+    try {
+      const res = await axios.put(`/opportunities/${id}`, {
+        ...opportunity,
+        title: newTitle,
+      });
+
       setOpportunities((prev) =>
-        prev.filter((o) => o._id !== id)
+        prev.map((o) => (o._id === id ? res.data : o)),
       );
     } catch (err) {
       console.error(err);
@@ -109,9 +128,7 @@ export default function Opportunities() {
 
     /* alumni → my posts */
     if (showMine) {
-      list = list.filter(
-        (o) => o.postedBy?._id === user?.id
-      );
+      list = list.filter((o) => o.postedBy?._id === user?.id);
     }
 
     /* student → saved posts */
@@ -124,11 +141,9 @@ export default function Opportunities() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-
       {/* ================= HEADER ================= */}
       <div className="bg-white rounded-2xl p-5 shadow-sm">
         <div className="flex items-center justify-between gap-3">
-
           {/* left */}
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
@@ -149,8 +164,7 @@ export default function Opportunities() {
           {user?.role === "alumni" && (
             <button
               onClick={() =>
-                (window.location.href =
-                  "/dashboard/opportunities/create")
+                (window.location.href = "/dashboard/opportunities/create")
               }
               className="
                 bg-blue-600 text-white
@@ -169,7 +183,6 @@ export default function Opportunities() {
 
       {/* ================= FILTER BAR ================= */}
       <div className="bg-white rounded-2xl p-4 shadow-sm flex flex-wrap gap-2">
-
         {filters.map((f) => (
           <button
             key={f}
@@ -215,7 +228,6 @@ export default function Opportunities() {
 
       {/* ================= FEED ================= */}
       <div className="space-y-4">
-
         {loading && (
           <>
             <OpportunitySkeleton />
@@ -226,9 +238,7 @@ export default function Opportunities() {
 
         {!loading && filteredFeed.length === 0 && (
           <div className="bg-white rounded-2xl p-6 text-center shadow-sm">
-            <p className="text-slate-500 text-sm">
-              No opportunities found
-            </p>
+            <p className="text-slate-500 text-sm">No opportunities found</p>
           </div>
         )}
 
@@ -239,6 +249,7 @@ export default function Opportunities() {
               opportunity={opportunity}
               onSave={handleSave}
               onDelete={handleDelete}
+              onEdit={handleEdit}
             />
           ))}
       </div>
