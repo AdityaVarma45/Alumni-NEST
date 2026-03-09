@@ -60,7 +60,6 @@ export const MASTER_SKILLS = [
   "Cybersecurity",
 ];
 
-
 export const MASTER_INTERESTS = [
   "Mentorship",
   "Internships",
