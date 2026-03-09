@@ -14,6 +14,8 @@ export default function NotificationBell() {
   /* ===============================
      Fetch initial notifications
   =============================== */
+
+  
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
