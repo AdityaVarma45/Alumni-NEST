@@ -2,6 +2,9 @@ import express from "express";
 import http from "http";
 import cors from "cors";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+
 import connectDB from "./config/db.js";
 
 import authRoutes from "./routes/authRoutes.js";
@@ -19,10 +22,16 @@ dotenv.config();
 connectDB();
 
 const app = express();
+const server = http.createServer(app);
 
-app.use(cors());
+app.use(cors({
+  origin: "*",
+  credentials: true
+}));
+
 app.use(express.json());
 
+/* API routes */
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/chat", chatRoutes);
@@ -32,18 +41,28 @@ app.use("/api/recommendations", recommendationRoutes);
 app.use("/api/opportunities", opportunityRoutes);
 app.use("/api/notifications", notificationRoutes);
 
-const server = http.createServer(app);
-
-// Attach socket
+/* SOCKET.IO */
 initSocket(server);
+
+/* ===============================
+   SERVE FRONTEND (PRODUCTION)
+=============================== */
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const clientPath = path.join(__dirname, "../client/dist");
+
+app.use(express.static(clientPath));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(clientPath, "index.html"));
+});
+
+/* =============================== */
 
 const PORT = process.env.PORT || 5000;
 
-app.get("/", (req, res) => {
-  res.send("Welcome to the Alumni NEST API");
-});
-
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log(`server is running at http://localhost:${PORT}`);
 });
