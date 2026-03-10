@@ -48,6 +48,7 @@ Password: 9870
 Role: Student
 
 Tech Stack
+
 Frontend
 - React
 - React Router
@@ -78,22 +79,6 @@ Main modules include:
 - Opportunity Sharing
 - Real-Time Chat
 - Notification System
-
-Project Structure
-client
- ├── components
- ├── pages
- ├── hooks
- ├── context
- ├── routes
- └── api
-
-server
- ├── models
- ├── routes
- ├── controllers
- ├── middleware
- └── socket
 
 Rendering Link: https://alumni-nest.onrender.com
 
