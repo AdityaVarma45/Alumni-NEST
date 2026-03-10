@@ -34,19 +34,6 @@ Users can add:
 These are used to improve mentor recommendations.
 
 
-Demo Accounts
-You can explore the platform using the demo accounts below.
-
-Alumni Account
-Email: srinu@gmail.com
-Password: 9870
-Role: Alumni
-
-Student Account
-Email: varma@gmail.com
-Password: 9870
-Role: Student
-
 Tech Stack
 
 Frontend
