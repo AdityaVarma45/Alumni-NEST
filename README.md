@@ -1,83 +1,190 @@
-AlumniNest
+-AlumniNest
+-
 
-AlumniNest is a mentorship networking platform that connects students with alumni mentors.
-Students can discover mentors based on skills and interests, request mentorship, and chat with alumni in real-time.
-The goal of the platform is to help students gain career guidance, industry insights, and opportunities from experienced alumni.
+-AlumniNest is a mentorship networking platform that connects students with alumni mentors.
+-Students can discover mentors based on skills and interests, request mentorship, and chat with alumni in real-time.
+-The goal of the platform is to help students gain career guidance, industry insights, and opportunities from experienced alumni.
 
-Features
+-Features
+-
 
-Mentor Discovery
-Students receive alumni recommendations based on their skills and interests.
+-Mentor Discovery
+-Students receive alumni recommendations based on their skills and interests.-
+-
 
-Mentorship Requests & Offers
+
+
+
+
+
+<img width="1920" height="1020" alt="Screenshot 2026-03-10 235345" src="https://github.com/user-attachments/assets/f5f11ef4-06de-4776-85a7-d1ed961c7af9" />
+
+
+
+
+
+<img width="1920" height="1080" alt="Screenshot (83)" src="https://github.com/user-attachments/assets/09d8c255-2cca-4c6c-8c47-b961896bfa10" />
+
+
+
+
+
+
+-Mentorship Requests & Offers
 Students can send mentorship requests while alumni can offer mentorship to students.
+-
 
-Real-Time Chat
-Once mentorship is accepted, users can communicate using real-time messaging powered by Socket.io.
 
-Opportunity Sharing
-Alumni can share internships, job openings, and referrals with students.
 
-Notifications
-Users receive notifications for:
 
+
+<img width="1920" height="1080" alt="Screenshot (84)" src="https://github.com/user-attachments/assets/83683ef4-9068-44f2-a2c0-1380a215535a" />
+
+
+<img width="1920" height="1080" alt="Screenshot (85)" src="https://github.com/user-attachments/assets/df1903e7-5cad-4045-b3bf-60a2dd76875b" />
+
+
+
+
+
+
+
+-Real-Time Chat
+-Once mentorship is accepted, users can communicate using real-time messaging powered by Socket.io.
+-
+
+
+<img width="1920" height="1080" alt="Screenshot (82)" src="https://github.com/user-attachments/assets/39ac565b-f1b8-4263-a132-4b36262212dc" />
+
+
+
+<img width="1920" height="1080" alt="Screenshot (86)" src="https://github.com/user-attachments/assets/66354347-4ce6-4747-abb7-309f2197722a" />
+
+
+
+
+
+
+
+
+-Opportunity Sharing
+-Alumni can share internships, job openings, and referrals with students.
+-
+
+
+<img width="1920" height="1080" alt="Screenshot (77)" src="https://github.com/user-attachments/assets/87ce9c35-0b95-4511-9b19-31214de50333" />
+
+
+
+
+<img width="1920" height="1080" alt="Screenshot (80)" src="https://github.com/user-attachments/assets/1e5f1a11-00e7-4286-9b2a-a8d15dbbc3f3" />
+
+
+
+
+
+
+
+-Notifications
+-Users receive notifications for:
+-
 - Mentorship requests
 - Mentorship responses
 - New opportunities
 - Chat messages
 
-Profile Customization
-Users can add:
 
+
+<img width="1920" height="1080" alt="Screenshot (88)" src="https://github.com/user-attachments/assets/f3b8bc82-aa5e-477c-9bca-b87dfd2cdbec" />
+
+
+
+
+
+
+-Profile Customization
+-Users can add:
+-
 - Skills
 - Interests
 These are used to improve mentor recommendations.
 
 
-Tech Stack
 
-Frontend
+<img width="1920" height="1080" alt="Screenshot (78)" src="https://github.com/user-attachments/assets/2e42a80b-6a22-46d0-8276-a6c0eb1293fa" />
+
+
+
+
+
+-Module Structer
+-
+<img width="1920" height="1080" alt="Screenshot (91)" src="https://github.com/user-attachments/assets/ac16d867-92c0-4625-b400-8d256ed91d58" />
+
+
+
+<img width="1920" height="1080" alt="Screenshot (90)" src="https://github.com/user-attachments/assets/0b9e0f2a-070a-4965-86d2-f0cd3594a636" />
+
+
+
+
+
+
+-Tech Stack
+-
+-Frontend
+-
 - React
 - React Router
 - Tailwind CSS
 - Lucide Icons
 
-Backend
+-Backend
+-
 - Node.js
 - Express.js
 - MongoDB
 - Mongoose
 
-Real-Time
+-Real-Time
+-
 - Socket.io
 
-Authentication
+-Authentication
+-
 - JWT
 
 
-Architecture Overview
+-Architecture Overview
+-
 The platform follows a client-server architecture.
 Frontend handles UI rendering and API communication.
 Backend manages authentication, mentorship logic, chat messaging, and notifications.
 
-Main modules include:
+-Main modules include:
+-
 - User Management
 - Mentorship System
 - Opportunity Sharing
 - Real-Time Chat
 - Notification System
 
-Rendering Link: https://alumni-nest.onrender.com
+-Rendering Link: https://alumni-nest.onrender.com
+-
 
-Future Improvements
+
+-Future Improvements
+-
 - Video mentorship sessions
 - Advanced recommendation algorithm
 - University-based alumni grouping
 - Profile verification system
 - File Sharing
 
-License
+-License
+-
 This project is for educational and portfolio purposes.
 
-Author
+-Author
+-
 Mahesh Aditya Varma
