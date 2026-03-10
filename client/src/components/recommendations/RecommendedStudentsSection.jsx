@@ -35,11 +35,16 @@ export default function RecommendedStudentsSection() {
       {/* Cards */}
       <div className="grid gap-3">
         {visibleStudents.map((student) => (
-          <RecommendedStudentCard
+          <Link
             key={student._id}
-            student={student}
-            conversations={conversations}
-          />
+            to={`/dashboard/users/${student._id}`}
+            className="block"
+          >
+            <RecommendedStudentCard
+              student={student}
+              conversations={conversations}
+            />
+          </Link>
         ))}
       </div>
 

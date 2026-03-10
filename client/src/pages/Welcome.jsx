@@ -45,6 +45,7 @@ export default function Welcome() {
                 skills and interests.
               </p>
 
+              {/* MAIN BUTTONS */}
               <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center md:justify-start">
 
                 <Link
@@ -59,6 +60,18 @@ export default function Welcome() {
                   className="border border-gray-300 px-7 py-3 rounded-lg hover:bg-gray-50 transition text-center"
                 >
                   Login
+                </Link>
+
+              </div>
+
+              {/* DEMO LINK */}
+              <div className="mt-4 text-sm text-gray-500">
+
+                <Link
+                  to="/demo"
+                  className="text-blue-600 hover:text-blue-700 font-medium transition"
+                >
+                  Explore the platform with demo credentials →
                 </Link>
 
               </div>

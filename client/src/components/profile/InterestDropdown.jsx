@@ -4,7 +4,7 @@ import { searchInterests } from "../../services/skillService";
 /*
   Interest dropdown
   - loads interests from backend
-  - simple select dropdown (no typing required)
+  - scrollable dropdown list
 */
 
 export default function InterestDropdown({
@@ -12,14 +12,13 @@ export default function InterestDropdown({
   onChange,
 }) {
   const [options, setOptions] = useState([]);
+  const [open, setOpen] = useState(false);
 
   // load interests once
   useEffect(() => {
     const fetchInterests = async () => {
       try {
-        // empty query returns default list
         const res = await searchInterests("");
-
         setOptions(res.data || []);
       } catch (err) {
         console.error(err);
@@ -29,26 +28,21 @@ export default function InterestDropdown({
     fetchInterests();
   }, []);
 
-  // add selected interest
-  const handleSelect = (e) => {
-    const selected = e.target.value;
-    if (!selected) return;
-
-    if (!value.includes(selected)) {
-      onChange([...value, selected]);
+  const handleSelect = (interest) => {
+    if (!value.includes(interest)) {
+      onChange([...value, interest]);
     }
 
-    // reset dropdown after select
-    e.target.value = "";
+    setOpen(false);
   };
 
-  // remove selected interest
   const removeInterest = (interest) => {
     onChange(value.filter((i) => i !== interest));
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full relative">
+
       {/* selected chips */}
       <div className="flex flex-wrap gap-2 mb-2">
         {value.map((interest) => (
@@ -68,19 +62,36 @@ export default function InterestDropdown({
         ))}
       </div>
 
-      {/* dropdown */}
-      <select
-        onChange={handleSelect}
-        className="w-full border rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+      {/* dropdown trigger */}
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="w-full border rounded-lg px-3 py-2 bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
-        <option value="">Select interests...</option>
+        Select interests...
+      </button>
 
-        {options.map((interest) => (
-          <option key={interest} value={interest}>
-            {interest}
-          </option>
-        ))}
-      </select>
+      {/* dropdown list */}
+      {open && (
+        <div
+          className="
+          absolute z-20
+          mt-2 w-full
+          bg-white border rounded-lg shadow
+          max-h-56 overflow-y-auto
+        "
+        >
+          {options.map((interest) => (
+            <button
+              key={interest}
+              onClick={() => handleSelect(interest)}
+              className="w-full text-left px-3 py-2 hover:bg-blue-50 text-sm"
+            >
+              {interest}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

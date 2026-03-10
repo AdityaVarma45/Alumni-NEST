@@ -34,10 +34,13 @@ export default function RecommendedAlumniSection({
       {/* Cards */}
       <div className="grid gap-3">
         {visibleAlumni.map((item) => (
-          <RecommendedAlumniCard
+          <Link
             key={item._id}
-            alumni={item}
-          />
+            to={`/dashboard/users/${item._id}`}
+            className="block"
+          >
+            <RecommendedAlumniCard alumni={item} />
+          </Link>
         ))}
       </div>
 

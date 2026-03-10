@@ -34,79 +34,75 @@ export default function Login() {
   `;
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col">
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4 py-10">
 
       {/* Logo */}
-      <div className="px-6 pt-6 sm:absolute sm:top-6 sm:left-8">
+      <div className="absolute top-6 left-6">
         <Logo size="text-2xl sm:text-3xl" />
       </div>
 
-      {/* Center */}
-      <div className="flex flex-1 items-center justify-center px-4 sm:px-6">
+      <div className="w-full max-w-xl">
 
-        <div className="w-full max-w-xl">
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 sm:p-10">
 
-          <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 sm:p-10">
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 text-center">
+            Welcome Back
+          </h1>
 
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 text-center">
-              Welcome Back
-            </h1>
+          <p className="text-slate-500 text-center mt-2 mb-6 sm:mb-8 text-sm sm:text-base">
+            Sign in to continue to AlumniNest
+          </p>
 
-            <p className="text-slate-500 text-center mt-2 mb-6 sm:mb-8 text-sm sm:text-base">
-              Sign in to continue to AlumniNest
-            </p>
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
 
-            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+            <div className="relative">
+              <FiMail className="absolute left-3 top-3.5 text-slate-400" />
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className={inputStyle}
+              />
+            </div>
 
-              <div className="relative">
-                <FiMail className="absolute left-3 top-3.5 text-slate-400" />
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className={inputStyle}
-                />
-              </div>
+            <div className="relative">
+              <FiLock className="absolute left-3 top-3.5 text-slate-400" />
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className={inputStyle}
+              />
+            </div>
 
-              <div className="relative">
-                <FiLock className="absolute left-3 top-3.5 text-slate-400" />
-                <input
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className={inputStyle}
-                />
-              </div>
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition"
+            >
+              Login
+            </button>
 
-              <button
-                type="submit"
-                className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition"
-              >
-                Login
-              </button>
+          </form>
 
-            </form>
+          <p className="text-sm text-center mt-6 text-slate-600">
+            Don’t have an account?{" "}
+            <Link to="/register" className="text-blue-600 hover:underline">
+              Register
+            </Link>
+          </p>
 
-            <p className="text-sm text-center mt-6 text-slate-600">
-              Don’t have an account?{" "}
-              <Link to="/register" className="text-blue-600 hover:underline">
-                Register
-              </Link>
-            </p>
-
-            <p className="text-sm text-center mt-2">
-              <Link to="/" className="text-slate-500 hover:underline">
-                ← Back to Welcome
-              </Link>
-            </p>
-
-          </div>
+          <p className="text-sm text-center mt-2">
+            <Link to="/" className="text-slate-500 hover:underline">
+              ← Back to Welcome
+            </Link>
+          </p>
 
         </div>
+
       </div>
     </div>
   );
