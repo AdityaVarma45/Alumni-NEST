@@ -77,26 +77,26 @@ export default function CreateOpportunity() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="max-w-5xl mx-auto px-1 sm:px-0">
 
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-slate-800">
+        <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">
           Post an Opportunity
         </h1>
 
-        <p className="text-slate-500 mt-1">
+        <p className="text-slate-500 mt-1 text-sm sm:text-base">
           Help students by sharing internships, referrals, or career guidance.
         </p>
       </div>
 
       {/* Form Card */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-8">
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 sm:p-8">
 
         <form onSubmit={handleSubmit} className="space-y-6">
 
           {/* Title + Company */}
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
 
             <div>
               <label className="text-sm font-medium text-slate-700">
@@ -131,7 +131,7 @@ export default function CreateOpportunity() {
           </div>
 
           {/* Type + Location */}
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
 
             <div>
               <label className="text-sm font-medium text-slate-700">
@@ -169,7 +169,7 @@ export default function CreateOpportunity() {
           </div>
 
           {/* Apply Link + Compensation */}
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
 
             <div>
               <label className="text-sm font-medium text-slate-700">
@@ -246,14 +246,7 @@ export default function CreateOpportunity() {
             <button
               type="submit"
               disabled={loading}
-              className="
-                bg-blue-600 text-white
-                px-6 py-3 rounded-xl
-                font-medium
-                hover:bg-blue-700
-                transition
-                disabled:opacity-60
-              "
+              className="bg-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-700 transition disabled:opacity-60 w-full sm:w-auto"
             >
               {loading ? "Posting..." : "Post Opportunity"}
             </button>

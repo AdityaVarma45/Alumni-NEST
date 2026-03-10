@@ -74,8 +74,9 @@ export default function MentorshipOffers() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-2xl font-bold text-slate-800">
+      {/* HEADER */}
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
+        <h2 className="text-xl sm:text-2xl font-bold text-slate-800">
           Mentorship Offers
         </h2>
 
@@ -84,7 +85,7 @@ export default function MentorshipOffers() {
         </p>
       </section>
 
-      {loading && <p>Loading...</p>}
+      {loading && <p className="text-sm text-slate-500">Loading...</p>}
 
       {/* OFFERS FROM ALUMNI */}
       {!loading && incomingOffers.length > 0 && (
@@ -97,30 +98,34 @@ export default function MentorshipOffers() {
           {incomingOffers.map((offer) => (
             <div
               key={offer._id}
-              className="relative rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+              className="relative rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm"
             >
 
               {offer.status === "accepted" && (
                 <button
                   onClick={() => openChat(offer.alumni?._id)}
-                  className="absolute top-4 right-4 text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700"
+                  className="absolute top-3 right-3 text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700"
                 >
                   Open Chat
                 </button>
               )}
 
-              <p className="font-semibold text-slate-800">
-                {offer.alumni?.username}
-              </p>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
 
-              <span
-                className={`text-xs px-2 py-1 rounded-full ${getStatusStyle(offer.status)}`}
-              >
-                {offer.status}
-              </span>
+                <p className="font-semibold text-slate-800">
+                  {offer.alumni?.username}
+                </p>
+
+                <span
+                  className={`text-xs px-2 py-1 rounded-full w-fit ${getStatusStyle(offer.status)}`}
+                >
+                  {offer.status}
+                </span>
+
+              </div>
 
               {offer.status === "pending" && (
-                <div className="flex gap-2 mt-3">
+                <div className="flex flex-wrap gap-2 mt-3">
 
                   <button
                     onClick={() => respond(offer._id, "accepted")}
@@ -156,27 +161,31 @@ export default function MentorshipOffers() {
           {sentRequests.map((req) => (
             <div
               key={req._id}
-              className="relative rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+              className="relative rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm"
             >
 
               {req.status === "accepted" && (
                 <button
                   onClick={() => openChat(req.alumni?._id)}
-                  className="absolute top-4 right-4 text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700"
+                  className="absolute top-3 right-3 text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700"
                 >
                   Open Chat
                 </button>
               )}
 
-              <p className="font-semibold text-slate-800">
-                {req.alumni?.username}
-              </p>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
 
-              <span
-                className={`text-xs px-2 py-1 rounded-full ${getStatusStyle(req.status)}`}
-              >
-                {req.status}
-              </span>
+                <p className="font-semibold text-slate-800">
+                  {req.alumni?.username}
+                </p>
+
+                <span
+                  className={`text-xs px-2 py-1 rounded-full w-fit ${getStatusStyle(req.status)}`}
+                >
+                  {req.status}
+                </span>
+
+              </div>
 
             </div>
           ))}

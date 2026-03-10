@@ -151,9 +151,7 @@ export default function Users() {
   }, [mentorships, user?.role]);
 
   const findConversation = (id) =>
-    conversations.find((c) =>
-      c.participants?.some((p) => p._id === id)
-    );
+    conversations.find((c) => c.participants?.some((p) => p._id === id));
 
   /* ===============================
      FILTER USERS
@@ -170,7 +168,7 @@ export default function Users() {
       if (
         skillFilter &&
         !u.skills?.some((s) =>
-          s.toLowerCase().includes(skillFilter.toLowerCase())
+          s.toLowerCase().includes(skillFilter.toLowerCase()),
         )
       )
         return false;
@@ -268,7 +266,6 @@ export default function Users() {
     return (
       <Link key={u._id} to={`/dashboard/users/${u._id}`} className="block">
         <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md hover:bg-slate-50 transition">
-
           <div className="flex justify-between items-start">
             <div>
               <h3 className="font-semibold text-slate-800">{u.username}</h3>
@@ -295,7 +292,6 @@ export default function Users() {
           <p className="text-sm text-slate-500 mt-2">{u.email}</p>
 
           <div className="mt-3">{renderAction(u)}</div>
-
         </div>
       </Link>
     );
@@ -317,13 +313,10 @@ export default function Users() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
-
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 md:p-6 shadow-sm space-y-6">
-
+      <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-6 shadow-sm space-y-6">
         <div className="flex items-center justify-between">
-
           <div>
-            <h2 className="text-xl font-bold text-slate-800">
+            <h2 className="text-lg sm:text-xl font-bold text-slate-800">
               Browse Users
             </h2>
 
@@ -338,15 +331,13 @@ export default function Users() {
           >
             {showFilters ? <X size={18} /> : <Search size={18} />}
           </button>
-
         </div>
 
         {showFilters && (
-          <div className="flex flex-wrap gap-3 border-t border-slate-200 pt-4">
-
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 border-t border-slate-200 pt-4">
             <input
               placeholder="Search users..."
-              className="border border-slate-200 rounded-lg px-3 py-2 text-sm"
+              className="border border-slate-200 rounded-lg px-3 py-2 text-sm w-full sm:w-auto"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -354,7 +345,7 @@ export default function Users() {
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="border border-slate-200 rounded-lg px-3 py-2 text-sm"
+              className="border border-slate-200 rounded-lg px-3 py-2 text-sm w-full sm:w-auto"
             >
               <option value="all">All Roles</option>
               <option value="student">Students</option>
@@ -365,9 +356,8 @@ export default function Users() {
               placeholder="Filter by skill..."
               value={skillFilter}
               onChange={(e) => setSkillFilter(e.target.value)}
-              className="border border-slate-200 rounded-lg px-3 py-2 text-sm"
+              className="border border-slate-200 rounded-lg px-3 py-2 text-sm w-full sm:w-auto"
             />
-
           </div>
         )}
 
@@ -384,9 +374,7 @@ export default function Users() {
             {renderSection("Others", groupedUsers.others)}
           </>
         )}
-
       </section>
-
     </div>
   );
 }

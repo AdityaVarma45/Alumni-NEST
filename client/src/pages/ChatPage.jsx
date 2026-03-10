@@ -17,7 +17,6 @@ export default function ChatPage() {
   const { user } = useContext(AuthContext);
   const { conversations } = useContext(ChatContext);
 
-  // keep socket active
   useSocket(user?.id);
 
   const currentConversation = useMemo(
@@ -56,9 +55,8 @@ export default function ChatPage() {
         overflow-hidden
       "
     >
-      {/* ===============================
-          HEADER
-      =============================== */}
+
+      {/* Header */}
       <div className="shrink-0 bg-white">
         <ChatHeader
           userName={otherUser?.username || "User"}
@@ -68,9 +66,7 @@ export default function ChatPage() {
         />
       </div>
 
-      {/* ===============================
-          MESSAGES (takes remaining space)
-      =============================== */}
+      {/* Messages */}
       <div className="flex-1 min-h-0">
         <ChatMessages
           messages={messages}
@@ -81,9 +77,7 @@ export default function ChatPage() {
         />
       </div>
 
-      {/* ===============================
-          INPUT AREA
-      =============================== */}
+      {/* Input */}
       <div className="shrink-0 bg-white">
         <ChatInput
           newMessage={newMessage}
@@ -92,14 +86,12 @@ export default function ChatPage() {
         />
       </div>
 
-      {/* ===============================
-          FLOATING SCROLL BUTTON
-      =============================== */}
+      {/* Scroll button */}
       {showScrollButton && (
         <button
           onClick={scrollToBottom}
           className="
-            absolute bottom-24 right-6 z-30
+            absolute bottom-20 md:bottom-24 right-6 z-30
             bg-blue-600 text-white
             px-3 py-2 rounded-full
             shadow-lg hover:bg-blue-700
@@ -109,6 +101,7 @@ export default function ChatPage() {
           ↓ New
         </button>
       )}
+
     </div>
   );
 }

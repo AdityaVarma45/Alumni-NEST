@@ -16,7 +16,6 @@ export default function ProfileSetup() {
   const [selectedInterests, setSelectedInterests] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  /* prefill existing data */
   useEffect(() => {
     if (!user) return;
 
@@ -24,7 +23,6 @@ export default function ProfileSetup() {
     setSelectedInterests(user.interests || []);
   }, [user]);
 
-  /* progress score */
   const progress = Math.min(
     100,
     selectedSkills.length * 10 + selectedInterests.length * 10,
@@ -65,24 +63,24 @@ export default function ProfileSetup() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      {/* HEADER CARD */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+
+      {/* HEADER */}
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
         <div className="flex items-start gap-4">
+
           <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
             <FiUser size={20} />
           </div>
 
           <div className="flex-1">
-            <h1 className="text-2xl font-bold text-slate-800">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-800">
               Update Profile
             </h1>
 
             <p className="text-sm text-slate-500 mt-1">
-              Keep your skills and interests updated for smarter alumni
-              recommendations.
+              Keep your skills and interests updated for smarter alumni recommendations.
             </p>
 
-            {/* progress */}
             <div className="mt-4">
               <div className="flex justify-between text-xs text-slate-500 mb-1">
                 <span>Profile Strength</span>
@@ -97,13 +95,14 @@ export default function ProfileSetup() {
               </div>
             </div>
           </div>
+
         </div>
       </section>
 
-      {/* MAIN GRID */}
-      <section className="grid md:grid-cols-2 gap-6">
-        {/* Skills Card */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      {/* GRID */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <FiStar className="text-blue-600" />
             <h2 className="font-semibold text-slate-800">Skills</h2>
@@ -112,8 +111,7 @@ export default function ProfileSetup() {
           <SkillPicker value={selectedSkills} onChange={setSelectedSkills} />
         </div>
 
-        {/* Interests Card */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <FiTarget className="text-blue-600" />
             <h2 className="font-semibold text-slate-800">Interests</h2>
@@ -124,10 +122,12 @@ export default function ProfileSetup() {
             onChange={setSelectedInterests}
           />
         </div>
+
       </section>
 
-      {/* ACTION CARD */}
+      {/* ACTION */}
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+
         <div className="flex items-center gap-2 text-sm text-slate-600">
           <FiCheckCircle className="text-green-600" />
           Changes update your recommendations instantly
@@ -136,18 +136,13 @@ export default function ProfileSetup() {
         <button
           onClick={handleSave}
           disabled={loading}
-          className="
-            bg-blue-600 text-white
-            px-6 py-2.5 rounded-lg
-            hover:bg-blue-700
-            transition
-            disabled:opacity-60
-            shadow-sm
-          "
+          className="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition disabled:opacity-60 shadow-sm"
         >
           {loading ? "Saving..." : "Save Changes"}
         </button>
+
       </section>
+
     </div>
   );
 }

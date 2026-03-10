@@ -72,10 +72,6 @@ export default function DashboardHome() {
     loading: recommendationsLoading,
   } = useRecommendedAlumni();
 
-  /* ===============================
-     INITIAL FETCH
-  =============================== */
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -95,10 +91,6 @@ export default function DashboardHome() {
 
     fetchData();
   }, []);
-
-  /* ===============================
-     REALTIME SOCKET UPDATES
-  =============================== */
 
   useEffect(() => {
     if (!user) return;
@@ -130,10 +122,6 @@ export default function DashboardHome() {
     };
   }, [user]);
 
-  /* ===============================
-     DERIVED DATA
-  =============================== */
-
   const pendingRequests =
     user?.role === "alumni"
       ? mentorships.filter((m) => m.status === "pending")
@@ -162,22 +150,17 @@ export default function DashboardHome() {
   ]);
 
   return (
-    <div className="max-w-6xl mx-auto space-y-10">
+    <div className="max-w-6xl mx-auto space-y-8">
 
-      {/* ===============================
-          HEADER
-      =============================== */}
-
+      {/* HEADER */}
       <div className="flex items-center gap-4">
 
-        {/* Avatar */}
         <div className="w-11 h-11 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-semibold text-base shadow-sm ring-2 ring-white">
           {user?.username?.charAt(0)?.toUpperCase()}
         </div>
 
-        {/* Greeting */}
         <div>
-          <h1 className="text-xl font-semibold text-slate-800">
+          <h1 className="text-lg sm:text-xl font-semibold text-slate-800">
             {getGreeting()}, {user?.username}
           </h1>
 
@@ -188,13 +171,9 @@ export default function DashboardHome() {
 
       </div>
 
-      {/* ===============================
-          STATS CARDS
-      =============================== */}
+      {/* STATS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
 
-      <div className="grid md:grid-cols-3 gap-4">
-
-        {/* Opportunities */}
         <Link
           to="/dashboard/opportunities"
           className="group bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition"
@@ -214,14 +193,11 @@ export default function DashboardHome() {
               </p>
             </div>
 
-            <ArrowUpRight
-              size={18}
-              className="text-slate-300 group-hover:text-blue-500"
-            />
+            <ArrowUpRight size={18} className="text-slate-300 group-hover:text-blue-500" />
+
           </div>
         </Link>
 
-        {/* Mentorship */}
         <Link
           to={
             user?.role === "alumni"
@@ -248,14 +224,11 @@ export default function DashboardHome() {
               </p>
             </div>
 
-            <ArrowUpRight
-              size={18}
-              className="text-slate-300 group-hover:text-indigo-500"
-            />
+            <ArrowUpRight size={18} className="text-slate-300 group-hover:text-indigo-500" />
+
           </div>
         </Link>
 
-        {/* Conversations */}
         <Link
           to="/dashboard/chats"
           className="group bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition"
@@ -275,18 +248,12 @@ export default function DashboardHome() {
               </p>
             </div>
 
-            <ArrowUpRight
-              size={18}
-              className="text-slate-300 group-hover:text-emerald-500"
-            />
+            <ArrowUpRight size={18} className="text-slate-300 group-hover:text-emerald-500" />
+
           </div>
         </Link>
 
       </div>
-
-      {/* ===============================
-          RECOMMENDATIONS
-      =============================== */}
 
       {user?.role === "student" && (
         <RecommendedAlumniSection
@@ -295,15 +262,11 @@ export default function DashboardHome() {
         />
       )}
 
-      {user?.role === "alumni" && (
-        <RecommendedStudentsSection />
-      )}
+      {user?.role === "alumni" && <RecommendedStudentsSection />}
 
-      {/* ===============================
-          LATEST OPPORTUNITIES
-      =============================== */}
+      {/* LATEST OPPORTUNITIES */}
 
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+      <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm">
 
         <div className="flex items-center justify-between mb-5">
           <h2 className="font-semibold text-slate-800 text-lg">
@@ -324,7 +287,7 @@ export default function DashboardHome() {
             No opportunities posted yet.
           </p>
         ) : (
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             {opportunities.slice(0, 3).map((o) => (
               <Link
@@ -332,7 +295,7 @@ export default function DashboardHome() {
                 to="/dashboard/opportunities"
                 className="border border-slate-200 rounded-xl p-4 hover:bg-slate-50 hover:border-blue-200 transition"
               >
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-3">
 
                   <div>
                     <p className="font-medium text-slate-800">

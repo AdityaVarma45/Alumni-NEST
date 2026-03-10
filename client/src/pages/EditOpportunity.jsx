@@ -3,14 +3,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "../api/axios";
 import { Briefcase } from "lucide-react";
 
-/* ===============================
-   Skeleton Loader
-=============================== */
+/* Skeleton */
 function EditOpportunitySkeleton() {
   return (
     <div className="max-w-5xl mx-auto space-y-6 animate-pulse">
 
-      {/* header skeleton */}
       <div className="bg-white rounded-2xl p-5 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-slate-200 rounded-xl" />
@@ -21,7 +18,6 @@ function EditOpportunitySkeleton() {
         </div>
       </div>
 
-      {/* form skeleton */}
       <div className="bg-white rounded-2xl p-6 shadow-sm space-y-4">
         <div className="h-10 bg-slate-200 rounded" />
         <div className="h-24 bg-slate-200 rounded" />
@@ -55,9 +51,6 @@ export default function EditOpportunity() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  /* ===============================
-     FETCH OPPORTUNITY
-  =============================== */
   useEffect(() => {
     const fetchOpportunity = async () => {
       try {
@@ -84,9 +77,6 @@ export default function EditOpportunity() {
     fetchOpportunity();
   }, [id]);
 
-  /* ===============================
-     INPUT CHANGE
-  =============================== */
   const handleChange = (e) => {
     setForm({
       ...form,
@@ -94,9 +84,6 @@ export default function EditOpportunity() {
     });
   };
 
-  /* ===============================
-     UPDATE OPPORTUNITY
-  =============================== */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -119,9 +106,6 @@ export default function EditOpportunity() {
     }
   };
 
-  /* ===============================
-     LOADING
-  =============================== */
   if (loading) {
     return <EditOpportunitySkeleton />;
   }
@@ -131,6 +115,7 @@ export default function EditOpportunity() {
 
       {/* HEADER */}
       <div className="bg-white rounded-2xl p-5 shadow-sm">
+
         <div className="flex items-center gap-3">
 
           <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
@@ -138,7 +123,7 @@ export default function EditOpportunity() {
           </div>
 
           <div>
-            <h1 className="text-xl font-bold text-slate-800">
+            <h1 className="text-lg sm:text-xl font-bold text-slate-800">
               Edit Opportunity
             </h1>
 
@@ -148,10 +133,11 @@ export default function EditOpportunity() {
           </div>
 
         </div>
+
       </div>
 
       {/* FORM */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm">
+      <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-sm">
 
         <form onSubmit={handleSubmit} className="space-y-4">
 
@@ -160,7 +146,7 @@ export default function EditOpportunity() {
             value={form.title}
             onChange={handleChange}
             placeholder="Title"
-            className="w-full border border-slate-200 rounded-lg px-3 py-2"
+            className="w-full border border-slate-200 rounded-lg px-3 py-2.5"
             required
           />
 
@@ -170,7 +156,7 @@ export default function EditOpportunity() {
             onChange={handleChange}
             placeholder="Description"
             rows="4"
-            className="w-full border border-slate-200 rounded-lg px-3 py-2"
+            className="w-full border border-slate-200 rounded-lg px-3 py-2.5"
             required
           />
 
@@ -179,7 +165,7 @@ export default function EditOpportunity() {
             value={form.company}
             onChange={handleChange}
             placeholder="Company"
-            className="w-full border border-slate-200 rounded-lg px-3 py-2"
+            className="w-full border border-slate-200 rounded-lg px-3 py-2.5"
           />
 
           <input
@@ -187,7 +173,7 @@ export default function EditOpportunity() {
             value={form.location}
             onChange={handleChange}
             placeholder="Location"
-            className="w-full border border-slate-200 rounded-lg px-3 py-2"
+            className="w-full border border-slate-200 rounded-lg px-3 py-2.5"
           />
 
           <input
@@ -195,7 +181,7 @@ export default function EditOpportunity() {
             value={form.skills}
             onChange={handleChange}
             placeholder="Skills (comma separated)"
-            className="w-full border border-slate-200 rounded-lg px-3 py-2"
+            className="w-full border border-slate-200 rounded-lg px-3 py-2.5"
           />
 
           <input
@@ -203,7 +189,7 @@ export default function EditOpportunity() {
             value={form.applyLink}
             onChange={handleChange}
             placeholder="Apply Link"
-            className="w-full border border-slate-200 rounded-lg px-3 py-2"
+            className="w-full border border-slate-200 rounded-lg px-3 py-2.5"
           />
 
           <input
@@ -211,13 +197,13 @@ export default function EditOpportunity() {
             value={form.compensation}
             onChange={handleChange}
             placeholder="Compensation"
-            className="w-full border border-slate-200 rounded-lg px-3 py-2"
+            className="w-full border border-slate-200 rounded-lg px-3 py-2.5"
           />
 
           <button
             type="submit"
             disabled={saving}
-            className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-60"
+            className="w-full sm:w-auto bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition disabled:opacity-60"
           >
             {saving ? "Updating..." : "Update Opportunity"}
           </button>

@@ -83,13 +83,14 @@ export default function Notifications() {
   return (
     <div className="space-y-6">
 
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
+      {/* HEADER */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-800">
             Notifications
           </h1>
+
           <p className="text-sm text-slate-500">
             Stay updated with mentorship, opportunities and messages
           </p>
@@ -97,13 +98,14 @@ export default function Notifications() {
 
         <button
           onClick={markAllRead}
-          className="text-sm text-blue-600 hover:underline"
+          className="text-sm text-blue-600 hover:underline self-start sm:self-auto"
         >
           Mark all as read
         </button>
+
       </div>
 
-      {/* Filters */}
+      {/* FILTERS */}
       <div className="flex gap-2 flex-wrap">
 
         {["all", "unread", "mentorship", "opportunity"].map((f) => (
@@ -122,11 +124,11 @@ export default function Notifications() {
 
       </div>
 
-      {/* Notification List */}
+      {/* LIST */}
       <div className="space-y-3">
 
         {filtered.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-slate-200 p-10 text-center text-sm text-slate-500">
+          <div className="bg-white rounded-2xl border border-slate-200 p-8 sm:p-10 text-center text-sm text-slate-500">
             No notifications yet
           </div>
         ) : (
@@ -142,11 +144,12 @@ export default function Notifications() {
                 ${!n.read ? "bg-blue-50 border-blue-200" : ""}
               `}
             >
+
               <div className="flex items-start justify-between gap-4">
 
                 <div className="flex-1">
 
-                  <p className="text-sm text-slate-800">
+                  <p className="text-sm text-slate-800 leading-relaxed">
                     {n.message}
                   </p>
 
@@ -157,12 +160,13 @@ export default function Notifications() {
                 </div>
 
                 {!n.read && (
-                  <span className="text-xs text-blue-600 font-medium">
+                  <span className="text-xs text-blue-600 font-medium whitespace-nowrap">
                     New
                   </span>
                 )}
 
               </div>
+
             </div>
           ))
         )}

@@ -2,12 +2,9 @@ import { useEffect, useMemo, useState, useContext } from "react";
 import axios from "../api/axios";
 import OpportunityCard from "../components/opportunity/OpportunityCard";
 import { AuthContext } from "../context/AuthContext";
-
 import { Briefcase } from "lucide-react";
 
-/* ===============================
-   Skeleton Loader
-=============================== */
+/* Skeleton */
 function OpportunitySkeleton() {
   return (
     <div className="bg-white rounded-2xl p-5 shadow-sm animate-pulse">
@@ -18,9 +15,6 @@ function OpportunitySkeleton() {
   );
 }
 
-/* ===============================
-   FILTER OPTIONS
-=============================== */
 const filters = [
   "all",
   "internship",
@@ -41,9 +35,6 @@ export default function Opportunities() {
   const [showMine, setShowMine] = useState(false);
   const [showSaved, setShowSaved] = useState(false);
 
-  /* ===============================
-     FETCH FEED
-  =============================== */
   useEffect(() => {
     const fetchFeed = async () => {
       try {
@@ -65,37 +56,29 @@ export default function Opportunities() {
     fetchFeed();
   }, []);
 
-  /* ===============================
-     SAVE / UNSAVE
-  =============================== */
   const handleSave = async (id) => {
     try {
       const res = await axios.put(`/opportunities/${id}/save`);
 
       setOpportunities((prev) =>
-        prev.map((o) => (o._id === id ? { ...o, isSaved: res.data.saved } : o)),
+        prev.map((o) =>
+          o._id === id ? { ...o, isSaved: res.data.saved } : o
+        )
       );
     } catch (err) {
       console.error(err);
     }
   };
 
-  /* ===============================
-     DELETE
-  =============================== */
   const handleDelete = async (id) => {
     try {
       await axios.delete(`/opportunities/${id}`);
-
       setOpportunities((prev) => prev.filter((o) => o._id !== id));
     } catch (err) {
       console.error(err);
     }
   };
 
-  /* ===============================
-   EDIT
-=============================== */
   const handleEdit = async (id) => {
     const opportunity = opportunities.find((o) => o._id === id);
 
@@ -109,16 +92,13 @@ export default function Opportunities() {
       });
 
       setOpportunities((prev) =>
-        prev.map((o) => (o._id === id ? res.data : o)),
+        prev.map((o) => (o._id === id ? res.data : o))
       );
     } catch (err) {
       console.error(err);
     }
   };
 
-  /* ===============================
-     SMART FILTERED FEED
-  =============================== */
   const filteredFeed = useMemo(() => {
     let list = [...opportunities];
 
@@ -126,12 +106,10 @@ export default function Opportunities() {
       list = list.filter((o) => o.type === activeFilter);
     }
 
-    /* alumni → my posts */
     if (showMine) {
       list = list.filter((o) => o.postedBy?._id === user?.id);
     }
 
-    /* student → saved posts */
     if (showSaved) {
       list = list.filter((o) => o.isSaved);
     }
@@ -140,94 +118,93 @@ export default function Opportunities() {
   }, [opportunities, activeFilter, showMine, showSaved, user]);
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
-      {/* ================= HEADER ================= */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm">
-        <div className="flex items-center justify-between gap-3">
-          {/* left */}
+    <div className="max-w-5xl mx-auto space-y-6 px-1 sm:px-0">
+
+      {/* HEADER */}
+      <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
               <Briefcase size={18} />
             </div>
 
             <div>
-              <h1 className="text-xl font-bold text-slate-800">
+              <h1 className="text-lg sm:text-xl font-bold text-slate-800">
                 Opportunities Feed
               </h1>
-              <p className="text-sm text-slate-500">
+              <p className="text-xs sm:text-sm text-slate-500">
                 Alumni shared opportunities for students 🚀
               </p>
             </div>
           </div>
 
-          {/* alumni post button */}
           {user?.role === "alumni" && (
             <button
               onClick={() =>
-                (window.location.href = "/dashboard/opportunities/create")
+                (window.location.href =
+                  "/dashboard/opportunities/create")
               }
-              className="
-                bg-blue-600 text-white
-                px-4 py-2 rounded-xl
-                text-sm font-medium
-                hover:bg-blue-700
-                transition-all
-                shadow-sm
-              "
+              className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700 transition shadow-sm w-full sm:w-auto"
             >
               + Post Opportunity
             </button>
           )}
+
         </div>
       </div>
 
-      {/* ================= FILTER BAR ================= */}
-      <div className="bg-white rounded-2xl p-4 shadow-sm flex flex-wrap gap-2">
-        {filters.map((f) => (
-          <button
-            key={f}
-            onClick={() => setActiveFilter(f)}
-            className={`px-3 py-1.5 rounded-lg text-sm capitalize transition ${
-              activeFilter === f
-                ? "bg-blue-600 text-white"
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-            }`}
-          >
-            {f}
-          </button>
-        ))}
+      {/* FILTER BAR */}
+      <div className="bg-white rounded-2xl p-4 shadow-sm">
 
-        {/* alumni filter */}
-        {user?.role === "alumni" && (
-          <button
-            onClick={() => setShowMine((p) => !p)}
-            className={`ml-auto px-3 py-1.5 rounded-lg text-sm transition ${
-              showMine
-                ? "bg-green-600 text-white"
-                : "bg-slate-100 text-slate-600"
-            }`}
-          >
-            {showMine ? "Showing My Posts" : "My Opportunities"}
-          </button>
-        )}
+        <div className="flex gap-2 overflow-x-auto pb-1">
 
-        {/* student filter */}
-        {user?.role === "student" && (
-          <button
-            onClick={() => setShowSaved((p) => !p)}
-            className={`ml-auto px-3 py-1.5 rounded-lg text-sm transition ${
-              showSaved
-                ? "bg-yellow-500 text-white"
-                : "bg-slate-100 text-slate-600"
-            }`}
-          >
-            {showSaved ? "Saved Only" : "Bookmarked"}
-          </button>
-        )}
+          {filters.map((f) => (
+            <button
+              key={f}
+              onClick={() => setActiveFilter(f)}
+              className={`px-3 py-1.5 rounded-lg text-sm capitalize whitespace-nowrap transition ${
+                activeFilter === f
+                  ? "bg-blue-600 text-white"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              }`}
+            >
+              {f}
+            </button>
+          ))}
+
+          {user?.role === "alumni" && (
+            <button
+              onClick={() => setShowMine((p) => !p)}
+              className={`ml-auto px-3 py-1.5 rounded-lg text-sm whitespace-nowrap transition ${
+                showMine
+                  ? "bg-green-600 text-white"
+                  : "bg-slate-100 text-slate-600"
+              }`}
+            >
+              {showMine ? "Showing My Posts" : "My Opportunities"}
+            </button>
+          )}
+
+          {user?.role === "student" && (
+            <button
+              onClick={() => setShowSaved((p) => !p)}
+              className={`ml-auto px-3 py-1.5 rounded-lg text-sm whitespace-nowrap transition ${
+                showSaved
+                  ? "bg-yellow-500 text-white"
+                  : "bg-slate-100 text-slate-600"
+              }`}
+            >
+              {showSaved ? "Saved Only" : "Bookmarked"}
+            </button>
+          )}
+
+        </div>
       </div>
 
-      {/* ================= FEED ================= */}
+      {/* FEED */}
       <div className="space-y-4">
+
         {loading && (
           <>
             <OpportunitySkeleton />
@@ -238,7 +215,9 @@ export default function Opportunities() {
 
         {!loading && filteredFeed.length === 0 && (
           <div className="bg-white rounded-2xl p-6 text-center shadow-sm">
-            <p className="text-slate-500 text-sm">No opportunities found</p>
+            <p className="text-slate-500 text-sm">
+              No opportunities found
+            </p>
           </div>
         )}
 
@@ -253,6 +232,7 @@ export default function Opportunities() {
             />
           ))}
       </div>
+
     </div>
   );
 }

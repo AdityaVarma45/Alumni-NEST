@@ -16,16 +16,14 @@ import {
   LogOut,
 } from "lucide-react";
 
-function Sidebar({ user }) {
+function Sidebar({ user, closeMobile }) {
   const { logout } = useContext(AuthContext);
   const location = useLocation();
 
   const [requestCount, setRequestCount] = useState(0);
   const [opportunityCount, setOpportunityCount] = useState(0);
 
-  /* ===============================
-     mentorship request count (alumni)
-  =============================== */
+  /* mentorship request count (alumni) */
   useEffect(() => {
     if (user?.role !== "alumni") return;
 
@@ -37,9 +35,7 @@ function Sidebar({ user }) {
       socket.off("mentorshipRequestCount", handleCount);
   }, [user?.role]);
 
-  /* ===============================
-     opportunity count
-  =============================== */
+  /* opportunity count */
   useEffect(() => {
     const handleOpportunityCount = (count = 0) =>
       setOpportunityCount(count);
@@ -50,18 +46,13 @@ function Sidebar({ user }) {
       socket.off("opportunityCount", handleOpportunityCount);
   }, []);
 
-  /* ===============================
-     active route helper
-  =============================== */
+  /* active route helper */
   const isActive = (path, exact = false) =>
     exact
       ? location.pathname === path
       : location.pathname.startsWith(path);
 
-  /* ===============================
-     PROFILE WARNING
-  =============================== */
-
+  /* profile warning */
   const warnProfileIncomplete = () => {
     if (!user?.profileCompleted) {
       toast.error(
@@ -70,9 +61,7 @@ function Sidebar({ user }) {
     }
   };
 
-  /* ===============================
-     navigation item
-  =============================== */
+  /* navigation item */
   const NavItem = ({
     to,
     icon,
@@ -85,7 +74,10 @@ function Sidebar({ user }) {
     return (
       <Link
         to={to}
-        onClick={warnProfileIncomplete}
+        onClick={() => {
+          warnProfileIncomplete();
+          closeMobile?.();
+        }}
         className={`
           flex items-center justify-between
           px-3 py-2.5 rounded-xl text-sm
@@ -121,12 +113,12 @@ function Sidebar({ user }) {
     <div className="h-full p-3">
       <div className="w-72 h-full bg-white rounded-2xl shadow-sm flex flex-col">
 
-        {/* ================= BRAND ================= */}
+        {/* Brand */}
         <div className="h-16 flex items-center px-5">
           <Logo size="text-2xl" />
         </div>
 
-        {/* ================= USER CARD ================= */}
+        {/* User card */}
         <div className="px-4 pb-4">
           <div className="bg-gray-50 rounded-xl p-3">
             <p className="font-semibold text-gray-800">
@@ -138,7 +130,7 @@ function Sidebar({ user }) {
           </div>
         </div>
 
-        {/* ================= NAVIGATION ================= */}
+        {/* Navigation */}
         <div className="flex-1 px-3 space-y-2 overflow-y-auto">
 
           <NavItem
@@ -198,7 +190,7 @@ function Sidebar({ user }) {
 
         </div>
 
-        {/* ================= LOGOUT ================= */}
+        {/* Logout */}
         <div className="p-3">
           <button
             onClick={logout}
@@ -208,6 +200,7 @@ function Sidebar({ user }) {
             Logout
           </button>
         </div>
+
       </div>
     </div>
   );

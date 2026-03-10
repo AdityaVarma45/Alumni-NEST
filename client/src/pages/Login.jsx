@@ -34,29 +34,29 @@ export default function Login() {
   `;
 
   return (
-    <div className="min-h-screen bg-slate-100">
+    <div className="min-h-screen bg-slate-100 flex flex-col">
 
       {/* Logo */}
-      <div className="absolute top-6 left-8">
-        <Logo size="text-3xl" />
+      <div className="px-6 pt-6 sm:absolute sm:top-6 sm:left-8">
+        <Logo size="text-2xl sm:text-3xl" />
       </div>
 
       {/* Center */}
-      <div className="flex items-center justify-center min-h-screen px-6">
+      <div className="flex flex-1 items-center justify-center px-4 sm:px-6">
 
         <div className="w-full max-w-xl">
 
-          <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-10">
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 sm:p-10">
 
-            <h1 className="text-3xl font-bold text-slate-800 text-center">
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 text-center">
               Welcome Back
             </h1>
 
-            <p className="text-slate-500 text-center mt-2 mb-8">
+            <p className="text-slate-500 text-center mt-2 mb-6 sm:mb-8 text-sm sm:text-base">
               Sign in to continue to AlumniNest
             </p>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
 
               <div className="relative">
                 <FiMail className="absolute left-3 top-3.5 text-slate-400" />

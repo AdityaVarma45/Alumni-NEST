@@ -34,8 +34,6 @@ export default function UserProfile() {
 
   const [conversations, setConversations] = useState([]);
   const [mentorships, setMentorships] = useState([]);
-
-  /* local mentorship status (instant UI update) */
   const [localStatus, setLocalStatus] = useState(null);
 
   useEffect(() => {
@@ -78,8 +76,6 @@ export default function UserProfile() {
     }
   };
 
-  /* helpers */
-
   const findConversation = () =>
     conversations.find((c) =>
       c.participants?.some((p) => p._id === profile?._id)
@@ -89,13 +85,9 @@ export default function UserProfile() {
     const alumniId = m.alumni?._id || m.alumni;
     const studentId = m.student?._id || m.student;
 
-    return (
-      alumniId === profile?._id ||
-      studentId === profile?._id
-    );
+    return alumniId === profile?._id || studentId === profile?._id;
   });
 
-  /* student sends mentorship request */
   const sendRequest = async () => {
     try {
       await axios.post("/mentorship/request", {
@@ -109,7 +101,6 @@ export default function UserProfile() {
     }
   };
 
-  /* alumni offers mentorship */
   const offerMentorship = async () => {
     try {
       await axios.post("/mentorship/offer", {
@@ -128,18 +119,9 @@ export default function UserProfile() {
 
     const conversation = findConversation();
 
-    /* ==============================
-       STUDENT VIEWING ALUMNI
-    ============================== */
-
     if (user?.role === "student" && profile.role === "alumni") {
-
       if (localStatus === "pending" || mentorship?.status === "pending")
-        return (
-          <span className="text-yellow-600 text-sm">
-            Request Pending
-          </span>
-        );
+        return <span className="text-yellow-600 text-sm">Request Pending</span>;
 
       if (mentorship?.status === "accepted" && conversation)
         return (
@@ -153,11 +135,7 @@ export default function UserProfile() {
         );
 
       if (mentorship?.status === "rejected")
-        return (
-          <span className="text-red-500 text-sm">
-            Request Rejected
-          </span>
-        );
+        return <span className="text-red-500 text-sm">Request Rejected</span>;
 
       return (
         <button
@@ -169,18 +147,9 @@ export default function UserProfile() {
       );
     }
 
-    /* ==============================
-       ALUMNI VIEWING STUDENT
-    ============================== */
-
     if (user?.role === "alumni" && profile.role === "student") {
-
       if (localStatus === "pending" || mentorship?.status === "pending")
-        return (
-          <span className="text-yellow-600 text-sm">
-            Offer Pending
-          </span>
-        );
+        return <span className="text-yellow-600 text-sm">Offer Pending</span>;
 
       if (mentorship?.status === "accepted" && conversation)
         return (
@@ -206,8 +175,6 @@ export default function UserProfile() {
     return null;
   };
 
-  /* states */
-
   if (loading) return <ProfileSkeleton />;
 
   if (!profile) {
@@ -224,51 +191,51 @@ export default function UserProfile() {
     ? `Last seen ${new Date(profile.lastSeen).toLocaleString()}`
     : "Offline";
 
-  const initial =
-    profile.username?.charAt(0)?.toUpperCase() || "U";
+  const initial = profile.username?.charAt(0)?.toUpperCase() || "U";
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
 
       {/* HEADER */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="flex items-center gap-4">
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
 
           <div className="w-16 h-16 rounded-full bg-blue-600 text-white flex items-center justify-center text-xl font-bold shadow-sm">
             {initial}
           </div>
 
           <div className="flex-1">
-            <h2 className="text-2xl font-bold text-slate-800">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-800">
               {profile.username}
             </h2>
 
-            <div className="flex items-center gap-2 mt-1">
+            <div className="flex flex-wrap items-center gap-2 mt-1">
               <span className="text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-600 capitalize">
                 {profile.role}
               </span>
 
-              <span
-                className={`text-xs flex items-center gap-1 ${
-                  profile.online ? "text-green-600" : "text-slate-500"
-                }`}
-              >
+              <span className={`text-xs flex items-center gap-1 ${
+                profile.online ? "text-green-600" : "text-slate-500"
+              }`}>
                 <FiClock size={12} />
                 {statusLabel}
               </span>
             </div>
 
-            <p className="text-sm text-slate-500 mt-2">
+            <p className="text-sm text-slate-500 mt-2 break-all">
               {profile.email}
             </p>
           </div>
 
-          {renderActionButton()}
+          <div className="sm:ml-auto">
+            {renderActionButton()}
+          </div>
+
         </div>
       </section>
 
-      {/* QUICK STATS */}
-      <section className="grid grid-cols-3 gap-3">
+      {/* STATS */}
+      <section className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
           <p className="text-lg font-bold text-slate-800">
             {profile.skills?.length || 0}
@@ -292,54 +259,40 @@ export default function UserProfile() {
       </section>
 
       {/* SKILLS */}
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
         <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-800 mb-3">
           <FiStar className="text-blue-600" />
           Skills
         </h3>
 
-        {profile.skills?.length ? (
-          <div className="flex flex-wrap gap-2">
-            {profile.skills.map((skill) => (
-              <span
-                key={skill}
-                className="px-3 py-1 text-sm rounded-full bg-blue-50 text-blue-600"
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-slate-500">No skills added</p>
-        )}
+        <div className="flex flex-wrap gap-2">
+          {profile.skills?.map((skill) => (
+            <span key={skill} className="px-3 py-1 text-sm rounded-full bg-blue-50 text-blue-600">
+              {skill}
+            </span>
+          ))}
+        </div>
       </section>
 
       {/* INTERESTS */}
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
         <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-800 mb-3">
           <FiTarget className="text-blue-600" />
           Interests
         </h3>
 
-        {profile.interests?.length ? (
-          <div className="flex flex-wrap gap-2">
-            {profile.interests.map((interest) => (
-              <span
-                key={interest}
-                className="px-3 py-1 text-sm rounded-full bg-slate-100 text-slate-700"
-              >
-                {interest}
-              </span>
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-slate-500">No interests added</p>
-        )}
+        <div className="flex flex-wrap gap-2">
+          {profile.interests?.map((interest) => (
+            <span key={interest} className="px-3 py-1 text-sm rounded-full bg-slate-100 text-slate-700">
+              {interest}
+            </span>
+          ))}
+        </div>
       </section>
 
       {/* BLOCK */}
       {profile._id !== user?.id && (
-        <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <section className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
           <button
             onClick={handleBlock}
             disabled={blocking}
@@ -350,6 +303,7 @@ export default function UserProfile() {
           </button>
         </section>
       )}
+
     </div>
   );
 }

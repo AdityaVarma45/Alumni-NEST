@@ -47,12 +47,13 @@ export default function OpportunityCard({
     user?.role === "admin";
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
+    <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md transition">
 
       {/* top */}
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+
         <div>
-          <h2 className="text-lg font-semibold text-slate-800">
+          <h2 className="text-base sm:text-lg font-semibold text-slate-800">
             {opportunity.title}
           </h2>
 
@@ -62,10 +63,11 @@ export default function OpportunityCard({
         </div>
 
         <span
-          className={`text-xs px-2 py-1 rounded-full capitalize ${typeClass}`}
+          className={`text-xs px-2 py-1 rounded-full capitalize w-fit ${typeClass}`}
         >
           {opportunity.type}
         </span>
+
       </div>
 
       {/* description */}
@@ -88,7 +90,7 @@ export default function OpportunityCard({
       )}
 
       {/* footer */}
-      <div className="flex items-center justify-between mt-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4">
 
         <div className="text-xs text-slate-500 flex items-center gap-2">
           <MapPin size={13} />
@@ -96,7 +98,7 @@ export default function OpportunityCard({
           {timeAgo(opportunity.createdAt)}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
 
           {/* SAVE */}
           <button
@@ -144,6 +146,7 @@ export default function OpportunityCard({
               <ExternalLink size={14} />
             </a>
           )}
+
         </div>
       </div>
 

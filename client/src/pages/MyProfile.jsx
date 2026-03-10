@@ -10,9 +10,7 @@ import {
   FiTrendingUp,
 } from "react-icons/fi";
 
-/* ===============================
-   Skeleton Loader (SPA style)
-=============================== */
+/* Skeleton */
 function ProfileSkeleton() {
   return (
     <div className="max-w-6xl mx-auto space-y-4 animate-pulse">
@@ -46,24 +44,21 @@ export default function MyProfile() {
   const initial = user.username?.[0]?.toUpperCase() || "U";
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="max-w-6xl mx-auto space-y-6 px-2 sm:px-0">
 
-      {/* ===============================
-          HEADER CARD
-      =============================== */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      {/* HEADER */}
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
 
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
 
-          {/* LEFT INFO */}
           <div className="flex items-center gap-4">
 
-            <div className="w-16 h-16 rounded-full bg-blue-600 text-white flex items-center justify-center text-2xl font-bold shadow-sm">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-blue-600 text-white flex items-center justify-center text-xl sm:text-2xl font-bold shadow-sm">
               {initial}
             </div>
 
             <div>
-              <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
                 <FiUser className="text-slate-500" />
                 {user.username}
               </h1>
@@ -77,25 +72,20 @@ export default function MyProfile() {
                 {user.role}
               </span>
             </div>
+
           </div>
 
-          {/* ACTION BUTTON */}
           <Link
             to="/dashboard/profile-setup"
-            className="
-              inline-flex items-center gap-2
-              bg-blue-600 text-white
-              px-4 py-2 rounded-lg
-              hover:bg-blue-700
-              text-sm shadow-sm transition
-            "
+            className="w-full md:w-auto inline-flex justify-center items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm shadow-sm transition"
           >
             <FiEdit />
             Update Profile
           </Link>
+
         </div>
 
-        {/* Progress */}
+        {/* PROFILE COMPLETION */}
         <div className="mt-6">
           <div className="flex justify-between text-sm text-slate-600 mb-1">
             <span className="flex items-center gap-2">
@@ -112,12 +102,11 @@ export default function MyProfile() {
             />
           </div>
         </div>
+
       </section>
 
-      {/* ===============================
-          QUICK STATS
-      =============================== */}
-      <section className="grid grid-cols-3 gap-3">
+      {/* QUICK STATS */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
 
         <div className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
           <p className="text-lg font-bold text-slate-800">
@@ -144,10 +133,8 @@ export default function MyProfile() {
 
       </section>
 
-      {/* ===============================
-          SKILLS CARD
-      =============================== */}
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      {/* SKILLS */}
+      <section className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
         <h2 className="font-semibold text-slate-800 mb-3">Skills</h2>
 
         {user.skills?.length ? (
@@ -166,10 +153,8 @@ export default function MyProfile() {
         )}
       </section>
 
-      {/* ===============================
-          INTERESTS CARD
-      =============================== */}
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      {/* INTERESTS */}
+      <section className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
         <h2 className="font-semibold text-slate-800 mb-3">Interests</h2>
 
         {user.interests?.length ? (
