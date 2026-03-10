@@ -11,23 +11,23 @@ export default function Welcome() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50">
 
-      {/* ===== LOGO ===== */}
+      {/* LOGO */}
       <div className="absolute top-5 left-5 sm:top-6 sm:left-6 z-20">
         <Logo size="text-2xl sm:text-3xl" />
       </div>
 
-      {/* ===== BACKGROUND BLOBS ===== */}
+      {/* BACKGROUND BLOBS */}
       <div className="absolute top-[-120px] left-[-120px] w-80 h-80 bg-blue-200 rounded-full blur-3xl opacity-40 animate-floatSlow" />
       <div className="absolute bottom-[-100px] right-[-100px] w-96 h-96 bg-indigo-200 rounded-full blur-3xl opacity-40 animate-floatSlowReverse" />
 
       <div className="relative z-10">
 
-        {/* ================= HERO ================= */}
+        {/* HERO */}
         <section className="min-h-screen flex items-center justify-center px-5 sm:px-6">
 
-          <div className="max-w-6xl w-full grid md:grid-cols-2 gap-10 md:gap-12 items-center">
+          <div className="max-w-6xl w-full grid md:grid-cols-2 gap-10 items-center">
 
-            {/* ===== HERO TEXT ===== */}
+            {/* HERO TEXT */}
             <div className="animate-fadeUp text-center md:text-left">
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
@@ -35,18 +35,17 @@ export default function Welcome() {
                 <span className="text-blue-600"> Students & Alumni</span>
               </h1>
 
-              <p className="mt-5 text-gray-600 text-base sm:text-lg">
+              <p className="mt-4 text-gray-600 text-base sm:text-lg">
                 Discover mentors, request guidance, and build meaningful
                 career connections with alumni who were once in your place.
               </p>
 
-              <p className="mt-3 text-sm text-gray-500">
-                Get personalized mentor recommendations based on your
-                skills and interests.
+              <p className="mt-2 text-sm text-gray-500">
+                Skill-based mentor discovery and real-time conversations.
               </p>
 
-              {/* MAIN BUTTONS */}
-              <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center md:justify-start">
+              {/* ACTION BUTTONS */}
+              <div className="mt-7 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center md:justify-start">
 
                 <Link
                   to="/register"
@@ -66,52 +65,50 @@ export default function Welcome() {
 
               {/* DEMO LINK */}
               <div className="mt-4 text-sm text-gray-500">
-
                 <Link
                   to="/demo"
                   className="text-blue-600 hover:text-blue-700 font-medium transition"
                 >
                   Explore the platform with demo credentials →
                 </Link>
-
               </div>
 
             </div>
 
-            {/* ===== FEATURE CARD ===== */}
+            {/* FEATURE PREVIEW CARD */}
             <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border p-5 sm:p-6 animate-fadeUp delay-200">
 
-              <h3 className="text-lg font-semibold text-gray-800 mb-5">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
                 What you can do on AlumniNest
               </h3>
 
-              <div className="space-y-4">
+              <div className="space-y-3 text-sm">
 
                 <div className="flex items-start gap-3">
-                  <GraduationCap className="text-blue-600" size={20} />
-                  <p className="text-gray-600 text-sm">
-                    Discover alumni mentors based on your skills and interests.
+                  <GraduationCap className="text-blue-600" size={18} />
+                  <p className="text-gray-600">
+                    Discover alumni mentors based on your skills.
                   </p>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <MessageSquare className="text-blue-600" size={20} />
-                  <p className="text-gray-600 text-sm">
-                    Chat with mentors and receive real-time career guidance.
+                  <MessageSquare className="text-blue-600" size={18} />
+                  <p className="text-gray-600">
+                    Chat with mentors and receive career guidance.
                   </p>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <Briefcase className="text-blue-600" size={20} />
-                  <p className="text-gray-600 text-sm">
-                    Explore internships, job referrals, and opportunities shared by alumni.
+                  <Briefcase className="text-blue-600" size={18} />
+                  <p className="text-gray-600">
+                    Explore internships and job opportunities.
                   </p>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <Users className="text-blue-600" size={20} />
-                  <p className="text-gray-600 text-sm">
-                    Build a strong professional network with students and alumni.
+                  <Users className="text-blue-600" size={18} />
+                  <p className="text-gray-600">
+                    Build your professional network.
                   </p>
                 </div>
 
@@ -123,49 +120,31 @@ export default function Welcome() {
 
         </section>
 
-        {/* ================= FEATURES ================= */}
-        <section className="py-16 sm:py-20 px-5 sm:px-6">
+        {/* COMPACT FEATURE STRIP */}
+        <section className="py-8 px-5 sm:px-6">
 
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-5xl mx-auto">
 
-            <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-900">
-              Designed for Meaningful Mentorship
-            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
 
-            <p className="text-center text-gray-600 mt-3">
-              AlumniNest helps students connect with alumni mentors and grow their careers.
-            </p>
-
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 mt-10 md:mt-12">
-
-              <div className="bg-white rounded-2xl border shadow-sm p-6">
-                <h3 className="font-semibold text-gray-800">
-                  Skill-Based Matching
-                </h3>
-                <p className="text-sm text-gray-600 mt-2">
-                  Our recommendation engine suggests alumni mentors based on
-                  your skills and career interests.
-                </p>
+              <div className="bg-white border rounded-lg py-3 px-4 shadow-sm flex flex-col items-center gap-1 text-sm">
+                <GraduationCap size={18} className="text-blue-600" />
+                Mentor Discovery
               </div>
 
-              <div className="bg-white rounded-2xl border shadow-sm p-6">
-                <h3 className="font-semibold text-gray-800">
-                  Mentorship Requests
-                </h3>
-                <p className="text-sm text-gray-600 mt-2">
-                  Send mentorship requests or receive mentorship offers from alumni
-                  interested in guiding you.
-                </p>
+              <div className="bg-white border rounded-lg py-3 px-4 shadow-sm flex flex-col items-center gap-1 text-sm">
+                <MessageSquare size={18} className="text-blue-600" />
+                Real-Time Chat
               </div>
 
-              <div className="bg-white rounded-2xl border shadow-sm p-6">
-                <h3 className="font-semibold text-gray-800">
-                  Opportunity Sharing
-                </h3>
-                <p className="text-sm text-gray-600 mt-2">
-                  Alumni share internships, job openings, and referrals
-                  to help students grow professionally.
-                </p>
+              <div className="bg-white border rounded-lg py-3 px-4 shadow-sm flex flex-col items-center gap-1 text-sm">
+                <Briefcase size={18} className="text-blue-600" />
+                Opportunities
+              </div>
+
+              <div className="bg-white border rounded-lg py-3 px-4 shadow-sm flex flex-col items-center gap-1 text-sm">
+                <Users size={18} className="text-blue-600" />
+                Alumni Network
               </div>
 
             </div>
@@ -174,21 +153,20 @@ export default function Welcome() {
 
         </section>
 
-        {/* ================= CTA ================= */}
-        <section className="py-16 sm:py-20 px-5 sm:px-6">
+        {/* CTA */}
+        <section className="py-12 px-5 sm:px-6">
 
-          <div className="max-w-4xl mx-auto text-center bg-blue-600 rounded-2xl text-white p-8 sm:p-12 shadow-xl">
+          <div className="max-w-4xl mx-auto text-center bg-blue-600 rounded-2xl text-white p-8 shadow-xl">
 
             <h2 className="text-2xl sm:text-3xl font-bold">
               Start Your Mentorship Journey
             </h2>
 
-            <p className="mt-3 text-blue-100 text-sm sm:text-base">
-              Join AlumniNest to connect with mentors, explore opportunities,
-              and grow your professional network.
+            <p className="mt-2 text-blue-100 text-sm sm:text-base">
+              Connect with alumni mentors and explore real opportunities.
             </p>
 
-            <div className="mt-8">
+            <div className="mt-6">
               <Link
                 to="/register"
                 className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition"
@@ -200,6 +178,36 @@ export default function Welcome() {
           </div>
 
         </section>
+
+        {/* FOOTER */}
+        <footer className="border-t bg-white/70 backdrop-blur-sm py-6">
+
+          <div className="max-w-6xl mx-auto px-5 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-500">
+
+            <div className="flex items-center gap-2">
+              <Logo size="text-lg" />
+              <span>© {new Date().getFullYear()} AlumniNest</span>
+            </div>
+
+            <div className="flex gap-4">
+
+              <Link to="/login" className="hover:text-blue-600">
+                Login
+              </Link>
+
+              <Link to="/register" className="hover:text-blue-600">
+                Register
+              </Link>
+
+              <Link to="/demo" className="hover:text-blue-600">
+                Demo
+              </Link>
+
+            </div>
+
+          </div>
+
+        </footer>
 
       </div>
     </div>
