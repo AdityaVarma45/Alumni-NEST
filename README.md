@@ -94,6 +94,3 @@ This project is for educational and portfolio purposes.
 
 Author
 Mahesh Aditya Varma
-
-GitHub
-https://github.com/yourusername
