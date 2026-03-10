@@ -2,7 +2,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import Sidebar from "../components/Sidebar";
-import NotificationBell from "../components/Notificationbell";
+import NotificationBell from "../components/NotificationBell";
 import { useSocket } from "../hooks/useSocket";
 
 export default function DashboardLayout() {

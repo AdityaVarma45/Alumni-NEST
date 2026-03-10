@@ -53,12 +53,13 @@ export default function Users() {
 
   /* search UI */
   const [showFilters, setShowFilters] = useState(false);
-
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [skillFilter, setSkillFilter] = useState("");
 
-  /* fetch */
+  /* ===============================
+     FETCH DATA
+  =============================== */
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -84,6 +85,53 @@ export default function Users() {
     fetchData();
   }, []);
 
+  /* ===============================
+     SEND MENTORSHIP REQUEST
+  =============================== */
+  const sendRequest = async (e, alumniId) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    try {
+      await axios.post("/mentorship/request", {
+        alumniId,
+        message: "I would like mentorship",
+      });
+
+      setLocalMentorshipStatus((prev) => ({
+        ...prev,
+        [alumniId]: "pending",
+      }));
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed");
+    }
+  };
+
+  /* ===============================
+     OFFER MENTORSHIP
+  =============================== */
+  const offerMentorship = async (e, studentId) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    try {
+      await axios.post("/mentorship/offer", {
+        studentId,
+        message: "I'd like to mentor you.",
+      });
+
+      setLocalMentorshipStatus((prev) => ({
+        ...prev,
+        [studentId]: "pending",
+      }));
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed");
+    }
+  };
+
+  /* ===============================
+     MENTORSHIP MAP
+  =============================== */
   const mentorshipMap = useMemo(() => {
     const map = {};
 
@@ -107,7 +155,9 @@ export default function Users() {
       c.participants?.some((p) => p._id === id)
     );
 
-  /* FILTER USERS */
+  /* ===============================
+     FILTER USERS
+  =============================== */
   const filteredUsers = useMemo(() => {
     return users.filter((u) => {
       if (u._id === user?.id) return false;
@@ -129,7 +179,9 @@ export default function Users() {
     });
   }, [users, search, roleFilter, skillFilter, user]);
 
-  /* GROUP USERS */
+  /* ===============================
+     GROUP USERS
+  =============================== */
   const groupedUsers = useMemo(() => {
     const active = [];
     const recommended = [];
@@ -155,6 +207,9 @@ export default function Users() {
     return { active, recommended, others };
   }, [filteredUsers, user, conversations, mentorshipMap]);
 
+  /* ===============================
+     ACTION BUTTON
+  =============================== */
   const renderAction = (u) => {
     const conversation = findConversation(u._id);
     const mentorship = mentorshipMap[u._id];
@@ -181,6 +236,7 @@ export default function Users() {
     if (user?.role === "student" && u.role === "alumni") {
       return (
         <button
+          onClick={(e) => sendRequest(e, u._id)}
           className="text-sm bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700"
         >
           Request Mentorship
@@ -191,6 +247,7 @@ export default function Users() {
     if (user?.role === "alumni" && u.role === "student") {
       return (
         <button
+          onClick={(e) => offerMentorship(e, u._id)}
           className="text-sm bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700"
         >
           Offer Mentorship
@@ -201,6 +258,9 @@ export default function Users() {
     return null;
   };
 
+  /* ===============================
+     USER CARD
+  =============================== */
   const renderUserCard = (u) => {
     const statusLabel = getLastSeenLabel(u.lastSeen, u.online);
     const match = getMatchLabel(u.matchScore || 0);
@@ -210,7 +270,6 @@ export default function Users() {
         <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md hover:bg-slate-50 transition">
 
           <div className="flex justify-between items-start">
-
             <div>
               <h3 className="font-semibold text-slate-800">{u.username}</h3>
               <p className="text-xs text-slate-500 mt-1">{statusLabel}</p>
@@ -227,9 +286,7 @@ export default function Users() {
                 {u.matchScore}% match
               </span>
 
-              <span
-                className={`text-xs px-2 py-0.5 rounded-md ${match.color}`}
-              >
+              <span className={`text-xs px-2 py-0.5 rounded-md ${match.color}`}>
                 {match.label}
               </span>
             </div>
@@ -261,10 +318,8 @@ export default function Users() {
   return (
     <div className="max-w-6xl mx-auto space-y-8">
 
-      {/* USERS SECTION */}
       <section className="rounded-2xl border border-slate-200 bg-white p-5 md:p-6 shadow-sm space-y-6">
 
-        {/* HEADER */}
         <div className="flex items-center justify-between">
 
           <div>
@@ -286,7 +341,6 @@ export default function Users() {
 
         </div>
 
-        {/* FILTER PANEL */}
         {showFilters && (
           <div className="flex flex-wrap gap-3 border-t border-slate-200 pt-4">
 

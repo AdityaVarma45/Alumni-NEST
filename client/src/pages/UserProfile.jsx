@@ -35,6 +35,9 @@ export default function UserProfile() {
   const [conversations, setConversations] = useState([]);
   const [mentorships, setMentorships] = useState([]);
 
+  /* local mentorship status (instant UI update) */
+  const [localStatus, setLocalStatus] = useState(null);
+
   useEffect(() => {
     const fetchAll = async () => {
       try {
@@ -75,17 +78,24 @@ export default function UserProfile() {
     }
   };
 
-  /* ---------- helpers ---------- */
+  /* helpers */
 
   const findConversation = () =>
     conversations.find((c) =>
       c.participants?.some((p) => p._id === profile?._id)
     );
 
-  const mentorship = mentorships.find(
-    (m) => (m.alumni?._id || m.alumni) === profile?._id
-  );
+  const mentorship = mentorships.find((m) => {
+    const alumniId = m.alumni?._id || m.alumni;
+    const studentId = m.student?._id || m.student;
 
+    return (
+      alumniId === profile?._id ||
+      studentId === profile?._id
+    );
+  });
+
+  /* student sends mentorship request */
   const sendRequest = async () => {
     try {
       await axios.post("/mentorship/request", {
@@ -93,7 +103,21 @@ export default function UserProfile() {
         message: "I would like mentorship",
       });
 
-      alert("Mentorship request sent");
+      setLocalStatus("pending");
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed");
+    }
+  };
+
+  /* alumni offers mentorship */
+  const offerMentorship = async () => {
+    try {
+      await axios.post("/mentorship/offer", {
+        studentId: profile._id,
+        message: "I'd like to mentor you.",
+      });
+
+      setLocalStatus("pending");
     } catch (err) {
       alert(err.response?.data?.message || "Failed");
     }
@@ -104,27 +128,36 @@ export default function UserProfile() {
 
     const conversation = findConversation();
 
-    if (conversation) {
-      return (
-        <Link
-          to={`/dashboard/chat/${conversation._id}`}
-          className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm shadow-sm transition"
-        >
-          <FiMessageCircle />
-          Start Chat
-        </Link>
-      );
-    }
+    /* ==============================
+       STUDENT VIEWING ALUMNI
+    ============================== */
 
     if (user?.role === "student" && profile.role === "alumni") {
-      if (mentorship?.status === "pending")
-        return <span className="text-yellow-600 text-sm">Request Pending</span>;
 
-      if (mentorship?.status === "accepted")
-        return <span className="text-green-600 text-sm">Mentorship Active</span>;
+      if (localStatus === "pending" || mentorship?.status === "pending")
+        return (
+          <span className="text-yellow-600 text-sm">
+            Request Pending
+          </span>
+        );
+
+      if (mentorship?.status === "accepted" && conversation)
+        return (
+          <Link
+            to={`/dashboard/chat/${conversation._id}`}
+            className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm shadow-sm transition"
+          >
+            <FiMessageCircle />
+            Start Chat
+          </Link>
+        );
 
       if (mentorship?.status === "rejected")
-        return <span className="text-red-500 text-sm">Request Rejected</span>;
+        return (
+          <span className="text-red-500 text-sm">
+            Request Rejected
+          </span>
+        );
 
       return (
         <button
@@ -136,10 +169,36 @@ export default function UserProfile() {
       );
     }
 
+    /* ==============================
+       ALUMNI VIEWING STUDENT
+    ============================== */
+
     if (user?.role === "alumni" && profile.role === "student") {
+
+      if (localStatus === "pending" || mentorship?.status === "pending")
+        return (
+          <span className="text-yellow-600 text-sm">
+            Offer Pending
+          </span>
+        );
+
+      if (mentorship?.status === "accepted" && conversation)
+        return (
+          <Link
+            to={`/dashboard/chat/${conversation._id}`}
+            className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm shadow-sm transition"
+          >
+            <FiMessageCircle />
+            Start Chat
+          </Link>
+        );
+
       return (
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm shadow-sm transition">
-          Start Chat
+        <button
+          onClick={offerMentorship}
+          className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 text-sm shadow-sm transition"
+        >
+          Offer Mentorship
         </button>
       );
     }
@@ -147,7 +206,7 @@ export default function UserProfile() {
     return null;
   };
 
-  /* ---------- states ---------- */
+  /* states */
 
   if (loading) return <ProfileSkeleton />;
 
@@ -171,7 +230,7 @@ export default function UserProfile() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
 
-      {/* HEADER CARD */}
+      {/* HEADER */}
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex items-center gap-4">
 
@@ -189,9 +248,11 @@ export default function UserProfile() {
                 {profile.role}
               </span>
 
-              <span className={`text-xs flex items-center gap-1 ${
-                profile.online ? "text-green-600" : "text-slate-500"
-              }`}>
+              <span
+                className={`text-xs flex items-center gap-1 ${
+                  profile.online ? "text-green-600" : "text-slate-500"
+                }`}
+              >
                 <FiClock size={12} />
                 {statusLabel}
               </span>
@@ -240,7 +301,10 @@ export default function UserProfile() {
         {profile.skills?.length ? (
           <div className="flex flex-wrap gap-2">
             {profile.skills.map((skill) => (
-              <span key={skill} className="px-3 py-1 text-sm rounded-full bg-blue-50 text-blue-600">
+              <span
+                key={skill}
+                className="px-3 py-1 text-sm rounded-full bg-blue-50 text-blue-600"
+              >
                 {skill}
               </span>
             ))}
@@ -260,7 +324,10 @@ export default function UserProfile() {
         {profile.interests?.length ? (
           <div className="flex flex-wrap gap-2">
             {profile.interests.map((interest) => (
-              <span key={interest} className="px-3 py-1 text-sm rounded-full bg-slate-100 text-slate-700">
+              <span
+                key={interest}
+                className="px-3 py-1 text-sm rounded-full bg-slate-100 text-slate-700"
+              >
                 {interest}
               </span>
             ))}
@@ -270,7 +337,7 @@ export default function UserProfile() {
         )}
       </section>
 
-      {/* BLOCK CARD */}
+      {/* BLOCK */}
       {profile._id !== user?.id && (
         <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
           <button
