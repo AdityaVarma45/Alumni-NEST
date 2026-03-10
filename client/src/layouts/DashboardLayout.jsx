@@ -2,7 +2,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import Sidebar from "../components/Sidebar";
-import NotificationBell from "../components/NotificationBell";
+import NotificationBell from "../components/Notificationbell";
 import { useSocket } from "../hooks/useSocket";
 import { Menu } from "lucide-react";
 
