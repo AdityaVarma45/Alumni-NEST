@@ -4,7 +4,7 @@ import axios from "../api/axios";
 import { AuthContext } from "../context/AuthContext";
 import { Search, X } from "lucide-react";
 
-/* helper */
+/* last seen helper */
 const getLastSeenLabel = (date, online) => {
   if (online) return "Online";
   if (!date) return "Offline";
@@ -30,6 +30,13 @@ const getMatchLabel = (score) => {
     return { label: "Good match", color: "text-amber-600 bg-amber-50" };
 
   return { label: "Possible match", color: "text-slate-500 bg-slate-100" };
+};
+
+/* common skills */
+const getCommonSkills = (userSkills = [], otherSkills = []) => {
+  return userSkills.filter((skill) =>
+    otherSkills.includes(skill)
+  );
 };
 
 /* skeleton */
@@ -144,7 +151,9 @@ export default function Users() {
   }, [mentorships, user?.role]);
 
   const findConversation = (id) =>
-    conversations.find((c) => c.participants?.some((p) => p._id === id));
+    conversations.find((c) =>
+      c.participants?.some((p) => p._id === id)
+    );
 
   const filteredUsers = useMemo(() => {
     return users.filter((u) => {
@@ -193,73 +202,62 @@ export default function Users() {
   }, [filteredUsers, user, conversations, mentorshipMap]);
 
   const renderAction = (u) => {
-  const conversation = findConversation(u._id);
-  const mentorship = mentorshipMap[u._id];
-  const localStatus = localMentorshipStatus[u._id];
+    const conversation = findConversation(u._id);
+    const mentorship = mentorshipMap[u._id];
+    const localStatus = localMentorshipStatus[u._id];
 
-  /* Continue chat → text link */
-  if (conversation) {
-    return (
-      <Link
-        to={`/dashboard/chat/${conversation._id}`}
-        onClick={(e) => e.stopPropagation()}
-        className="text-sm text-green-600 hover:underline font-medium"
-      >
-        Continue Chat
-      </Link>
-    );
-  }
+    if (conversation) {
+      return (
+        <Link
+          to={`/dashboard/chat/${conversation._id}`}
+          onClick={(e) => e.stopPropagation()}
+          className="text-sm text-green-600 hover:underline font-medium"
+        >
+          Continue Chat
+        </Link>
+      );
+    }
 
-  if (localStatus === "pending" || mentorship?.status === "pending")
-    return (
-      <span className="text-sm text-yellow-600">
-        Request Pending
-      </span>
-    );
+    if (localStatus === "pending" || mentorship?.status === "pending")
+      return <span className="text-sm text-yellow-600">Request Pending</span>;
 
-  if (mentorship?.status === "accepted")
-    return (
-      <span className="text-sm text-green-600">
-        Mentorship Active
-      </span>
-    );
+    if (mentorship?.status === "accepted")
+      return <span className="text-sm text-green-600">Mentorship Active</span>;
 
-  /* Student requesting alumni */
-  if (user?.role === "student" && u.role === "alumni") {
-    return (
-      <button
-        onClick={(e) => sendRequest(e, u._id)}
-        className="text-sm bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700"
-      >
-        Request Mentorship
-      </button>
-    );
-  }
+    if (user?.role === "student" && u.role === "alumni") {
+      return (
+        <button
+          onClick={(e) => sendRequest(e, u._id)}
+          className="text-sm bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700"
+        >
+          Request Mentorship
+        </button>
+      );
+    }
 
-  /* Alumni offering mentorship */
-  if (user?.role === "alumni" && u.role === "student") {
-    return (
-      <button
-        onClick={(e) => offerMentorship(e, u._id)}
-        className="text-sm bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700"
-      >
-        Offer Mentorship
-      </button>
-    );
-  }
+    if (user?.role === "alumni" && u.role === "student") {
+      return (
+        <button
+          onClick={(e) => offerMentorship(e, u._id)}
+          className="text-sm bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700"
+        >
+          Offer Mentorship
+        </button>
+      );
+    }
 
-  return null;
-};
-
+    return null;
+  };
 
   const renderUserCard = (u) => {
     const statusLabel = getLastSeenLabel(u.lastSeen, u.online);
     const match = getMatchLabel(u.matchScore || 0);
     const initial = u.username?.charAt(0)?.toUpperCase();
+    const commonSkills = getCommonSkills(user?.skills || [], u.skills || []);
 
     return (
       <Link key={u._id} to={`/dashboard/users/${u._id}`} className="block">
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md hover:bg-slate-50 transition flex flex-col">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md hover:bg-slate-50 transition">
 
           <div className="flex items-start justify-between">
 
@@ -292,10 +290,29 @@ export default function Users() {
             </div>
           )}
 
-          <p className="text-sm text-slate-500 mt-2">{u.email}</p>
+          {commonSkills.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {commonSkills.slice(0, 4).map((skill) => (
+                <span
+                  key={skill}
+                  className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-md"
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+          )}
 
-          <div className="flex justify-end mt-4 pt-3 border-t border-slate-100">
-            {renderAction(u)}
+          <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-100">
+
+            <p className="text-sm text-slate-500 truncate">
+              {u.email}
+            </p>
+
+            <div className="flex items-center gap-3">
+              {renderAction(u)}
+            </div>
+
           </div>
 
         </div>
