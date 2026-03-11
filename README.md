@@ -5,6 +5,9 @@
 -Students can discover mentors based on skills and interests, request mentorship, and chat with alumni in real-time.
 -The goal of the platform is to help students gain career guidance, industry insights, and opportunities from experienced alumni.
 
+<img width="1920" height="1080" alt="Screenshot (92)" src="https://github.com/user-attachments/assets/463fec54-8cfd-460d-a8fa-8d087377b8e5" />
+
+
 -Features
 -
 
