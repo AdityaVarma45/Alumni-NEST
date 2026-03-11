@@ -26,8 +26,6 @@
 
 
 
-<img width="1920" height="1080" alt="Screenshot (83)" src="https://github.com/user-attachments/assets/09d8c255-2cca-4c6c-8c47-b961896bfa10" />
-
 
 
 
@@ -40,8 +38,9 @@ Students can send mentorship requests while alumni can offer mentorship to stude
 
 
 
+<img width="1920" height="1080" alt="Screenshot (97)" src="https://github.com/user-attachments/assets/0accded9-b467-4a25-9ba3-7b6792115d73" />
 
-<img width="1920" height="1080" alt="Screenshot (84)" src="https://github.com/user-attachments/assets/83683ef4-9068-44f2-a2c0-1380a215535a" />
+<img width="1920" height="1080" alt="Screenshot (98)" src="https://github.com/user-attachments/assets/f6df5f77-9d53-4ffc-8a22-a778584d06ba" />
 
 
 <img width="1920" height="1080" alt="Screenshot (85)" src="https://github.com/user-attachments/assets/df1903e7-5cad-4045-b3bf-60a2dd76875b" />
@@ -172,8 +171,10 @@ Backend manages authentication, mentorship logic, chat messaging, and notificati
 - Real-Time Chat
 - Notification System
 
--Rendering Link: https://alumni-nest.onrender.com
+-#Live Demo: https://alumni-nest.onrender.com
 -
+- Try the platform here
+. 
 
 
 -Future Improvements
