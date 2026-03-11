@@ -9,6 +9,7 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("student");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -16,6 +17,8 @@ export default function Register() {
     e.preventDefault();
 
     try {
+      setLoading(true);
+
       await axios.post("/auth/register", {
         username,
         email,
@@ -26,6 +29,8 @@ export default function Register() {
       navigate("/login");
     } catch (error) {
       alert(error.response?.data?.message || "Registration failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -48,7 +53,7 @@ export default function Register() {
 
       <div className="w-full max-w-xl">
 
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 sm:p-10">
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-lg p-6 sm:p-10">
 
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 text-center">
             Create Account
@@ -60,8 +65,9 @@ export default function Register() {
 
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
 
+            {/* Username */}
             <div className="relative">
-              <FiUser className="absolute left-3 top-3.5 text-slate-400" />
+              <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
                 placeholder="Username"
@@ -72,8 +78,9 @@ export default function Register() {
               />
             </div>
 
+            {/* Email */}
             <div className="relative">
-              <FiMail className="absolute left-3 top-3.5 text-slate-400" />
+              <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="email"
                 placeholder="Email"
@@ -84,8 +91,9 @@ export default function Register() {
               />
             </div>
 
+            {/* Password */}
             <div className="relative">
-              <FiLock className="absolute left-3 top-3.5 text-slate-400" />
+              <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="password"
                 placeholder="Password"
@@ -96,33 +104,42 @@ export default function Register() {
               />
             </div>
 
+            {/* Role */}
             <select
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              className="w-full px-3 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              className="w-full px-3 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
             >
               <option value="student">Student</option>
               <option value="alumni">Alumni</option>
             </select>
 
+            {/* Submit */}
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition"
+              disabled={loading}
+              className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Create Account
+              {loading ? "Creating account..." : "Create Account"}
             </button>
 
           </form>
 
           <p className="text-sm text-center mt-6 text-slate-600">
             Already have an account?{" "}
-            <Link to="/login" className="text-blue-600 hover:underline">
+            <Link
+              to="/login"
+              className="text-blue-600 hover:underline font-medium"
+            >
               Login
             </Link>
           </p>
 
           <p className="text-sm text-center mt-2">
-            <Link to="/" className="text-slate-500 hover:underline">
+            <Link
+              to="/"
+              className="text-slate-500 hover:underline"
+            >
               ← Back to Welcome
             </Link>
           </p>
@@ -130,6 +147,7 @@ export default function Register() {
         </div>
 
       </div>
+
     </div>
   );
 }

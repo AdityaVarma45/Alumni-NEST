@@ -72,12 +72,15 @@ export default function MentorshipRequests() {
     return "bg-yellow-50 text-yellow-600";
   };
 
+  const getInitial = (name) =>
+    name?.charAt(0)?.toUpperCase() || "U";
+
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
+    <div className="max-w-6xl mx-auto px-4 space-y-8">
 
       {/* HEADER */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
-        <h2 className="text-xl sm:text-2xl font-bold text-slate-800">
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 className="text-2xl font-bold text-slate-800">
           Mentorship Requests
         </h2>
 
@@ -86,110 +89,142 @@ export default function MentorshipRequests() {
         </p>
       </section>
 
-      {loading && <p className="text-sm text-slate-500">Loading...</p>}
+      {loading && (
+        <p className="text-sm text-slate-500">
+          Loading mentorship data...
+        </p>
+      )}
 
       {/* STUDENT REQUESTS */}
       {!loading && studentRequests.length > 0 && (
-        <section className="space-y-3">
+        <section className="space-y-4">
 
-          <h3 className="text-sm font-semibold text-slate-600">
+          <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wide">
             Student Requests
           </h3>
 
-          {studentRequests.map((req) => (
-            <div
-              key={req._id}
-              className="relative rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm"
-            >
+          {studentRequests.map((req) => {
+            const username = req.student?.username;
 
-              {req.status === "accepted" && (
-                <button
-                  onClick={() => openChat(req.student?._id)}
-                  className="absolute top-3 right-3 text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700"
-                >
-                  Open Chat
-                </button>
-              )}
+            return (
+              <div
+                key={req._id}
+                className="relative rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition"
+              >
 
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-
-                <p className="font-semibold text-slate-800">
-                  {req.student?.username}
-                </p>
-
-                <span
-                  className={`text-xs px-2 py-1 rounded-full w-fit ${getStatusStyle(req.status)}`}
-                >
-                  {req.status}
-                </span>
-
-              </div>
-
-              {req.status === "pending" && (
-                <div className="flex flex-wrap gap-2 mt-3">
-
+                {req.status === "accepted" && (
                   <button
-                    onClick={() => respond(req._id, "accepted")}
-                    className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm"
+                    onClick={() => openChat(req.student?._id)}
+                    className="absolute top-3 right-3 text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition"
                   >
-                    Accept
+                    Open Chat
                   </button>
+                )}
 
-                  <button
-                    onClick={() => respond(req._id, "rejected")}
-                    className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm"
-                  >
-                    Reject
-                  </button>
+                <div className="flex items-center gap-3">
+
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-sm font-semibold">
+                    {getInitial(username)}
+                  </div>
+
+                  <div>
+
+                    <p className="font-semibold text-slate-800">
+                      {username}
+                    </p>
+
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded-full ${getStatusStyle(
+                        req.status
+                      )}`}
+                    >
+                      {req.status}
+                    </span>
+
+                  </div>
 
                 </div>
-              )}
 
-            </div>
-          ))}
+                {req.status === "pending" && (
+                  <div className="flex gap-2 mt-4">
+
+                    <button
+                      onClick={() => respond(req._id, "accepted")}
+                      className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 transition"
+                    >
+                      Accept
+                    </button>
+
+                    <button
+                      onClick={() => respond(req._id, "rejected")}
+                      className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-600 transition"
+                    >
+                      Reject
+                    </button>
+
+                  </div>
+                )}
+
+              </div>
+            );
+          })}
 
         </section>
       )}
 
       {/* SENT OFFERS */}
       {!loading && sentOffers.length > 0 && (
-        <section className="space-y-3">
+        <section className="space-y-4">
 
-          <h3 className="text-sm font-semibold text-slate-600">
+          <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wide">
             Your Sent Offers
           </h3>
 
-          {sentOffers.map((offer) => (
-            <div
-              key={offer._id}
-              className="relative rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm"
-            >
+          {sentOffers.map((offer) => {
+            const username = offer.student?.username;
 
-              {offer.status === "accepted" && (
-                <button
-                  onClick={() => openChat(offer.student?._id)}
-                  className="absolute top-3 right-3 text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700"
-                >
-                  Open Chat
-                </button>
-              )}
+            return (
+              <div
+                key={offer._id}
+                className="relative rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition"
+              >
 
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                {offer.status === "accepted" && (
+                  <button
+                    onClick={() => openChat(offer.student?._id)}
+                    className="absolute top-3 right-3 text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition"
+                  >
+                    Open Chat
+                  </button>
+                )}
 
-                <p className="font-semibold text-slate-800">
-                  {offer.student?.username}
-                </p>
+                <div className="flex items-center gap-3">
 
-                <span
-                  className={`text-xs px-2 py-1 rounded-full w-fit ${getStatusStyle(offer.status)}`}
-                >
-                  {offer.status}
-                </span>
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-sm font-semibold">
+                    {getInitial(username)}
+                  </div>
+
+                  <div>
+
+                    <p className="font-semibold text-slate-800">
+                      {username}
+                    </p>
+
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded-full ${getStatusStyle(
+                        offer.status
+                      )}`}
+                    >
+                      {offer.status}
+                    </span>
+
+                  </div>
+
+                </div>
 
               </div>
-
-            </div>
-          ))}
+            );
+          })}
 
         </section>
       )}

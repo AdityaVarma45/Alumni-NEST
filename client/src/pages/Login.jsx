@@ -8,6 +8,7 @@ import { FiMail, FiLock } from "react-icons/fi";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -16,11 +17,17 @@ export default function Login() {
     e.preventDefault();
 
     try {
+      setLoading(true);
+
       const res = await axios.post("/auth/login", { email, password });
+
       login(res.data);
+
       navigate("/dashboard");
     } catch (error) {
       alert(error.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -43,7 +50,7 @@ export default function Login() {
 
       <div className="w-full max-w-xl">
 
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 sm:p-10">
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-lg p-6 sm:p-10">
 
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 text-center">
             Welcome Back
@@ -55,8 +62,10 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
 
+            {/* Email */}
             <div className="relative">
-              <FiMail className="absolute left-3 top-3.5 text-slate-400" />
+              <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+
               <input
                 type="email"
                 placeholder="Email"
@@ -67,8 +76,10 @@ export default function Login() {
               />
             </div>
 
+            {/* Password */}
             <div className="relative">
-              <FiLock className="absolute left-3 top-3.5 text-slate-400" />
+              <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+
               <input
                 type="password"
                 placeholder="Password"
@@ -79,24 +90,32 @@ export default function Login() {
               />
             </div>
 
+            {/* Submit */}
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition"
+              disabled={loading}
+              className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Login
+              {loading ? "Signing in..." : "Login"}
             </button>
 
           </form>
 
           <p className="text-sm text-center mt-6 text-slate-600">
             Don’t have an account?{" "}
-            <Link to="/register" className="text-blue-600 hover:underline">
+            <Link
+              to="/register"
+              className="text-blue-600 hover:underline font-medium"
+            >
               Register
             </Link>
           </p>
 
           <p className="text-sm text-center mt-2">
-            <Link to="/" className="text-slate-500 hover:underline">
+            <Link
+              to="/"
+              className="text-slate-500 hover:underline"
+            >
               ← Back to Welcome
             </Link>
           </p>

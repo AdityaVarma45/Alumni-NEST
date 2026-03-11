@@ -13,34 +13,56 @@ export default function ChatHeader({
   typing,
   lastSeen,
 }) {
+
   const getStatusText = () => {
-    if (typing) return "typing...";
+    if (typing) return "Typing...";
     if (online) return "Online";
+    if (!lastSeen) return "Offline";
     return `Last seen ${formatLastSeen(lastSeen)}`;
   };
 
-  const initial = userName?.charAt(0)?.toUpperCase() || "U";
+  const initial = userName?.[0]?.toUpperCase() || "U";
 
   return (
     <header className="h-16 bg-white border-b border-slate-200 px-5 md:px-6 flex items-center justify-between">
-      
-      {/* Left side */}
+
+      {/* Left */}
       <div className="flex items-center gap-3">
 
         {/* Avatar */}
         <div className="relative">
-          <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold text-sm shadow-sm">
+
+          <div
+            className="
+              w-10 h-10
+              rounded-full
+              bg-gradient-to-br from-blue-500 to-indigo-600
+              text-white
+              flex items-center justify-center
+              font-semibold text-sm
+              shadow-sm
+            "
+          >
             {initial}
           </div>
 
           {/* Online indicator */}
           {online && (
-            <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-white animate-pulse" />
+            <span
+              className="
+                absolute bottom-0 right-0
+                w-3 h-3 rounded-full
+                bg-green-500
+                border-2 border-white
+              "
+            />
           )}
+
         </div>
 
         {/* Name + status */}
         <div className="flex flex-col leading-tight">
+
           <span className="font-semibold text-slate-800">
             {userName}
           </span>
@@ -56,13 +78,16 @@ export default function ChatHeader({
           >
             {getStatusText()}
           </span>
+
         </div>
+
       </div>
 
       {/* Right label */}
       <span className="text-xs text-slate-400 font-medium hidden sm:block">
         AlumniNest Chat
       </span>
+
     </header>
   );
 }

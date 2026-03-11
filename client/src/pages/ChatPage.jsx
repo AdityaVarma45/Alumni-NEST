@@ -30,7 +30,7 @@ export default function ChatPage() {
   const otherUser =
     currentConversation?.participants?.find(
       (p) => p._id !== user?.id
-    );
+    ) || {};
 
   const {
     messages,
@@ -52,12 +52,13 @@ export default function ChatPage() {
         bg-slate-50
         rounded-2xl
         border border-slate-200
+        shadow-sm
         overflow-hidden
       "
     >
 
       {/* Header */}
-      <div className="shrink-0 bg-white">
+      <div className="shrink-0 bg-white border-b border-slate-200">
         <ChatHeader
           userName={otherUser?.username || "User"}
           online={currentConversation?.online}
@@ -67,7 +68,7 @@ export default function ChatPage() {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 min-h-0">
+      <div className="flex-1 min-h-0 overflow-hidden">
         <ChatMessages
           messages={messages}
           user={user}
@@ -78,7 +79,7 @@ export default function ChatPage() {
       </div>
 
       {/* Input */}
-      <div className="shrink-0 bg-white">
+      <div className="shrink-0 bg-white border-t border-slate-200">
         <ChatInput
           newMessage={newMessage}
           onChange={handleTyping}
@@ -86,13 +87,14 @@ export default function ChatPage() {
         />
       </div>
 
-      {/* Scroll button */}
+      {/* Scroll Button */}
       {showScrollButton && (
         <button
           onClick={scrollToBottom}
           className="
-            absolute bottom-20 md:bottom-24 right-6 z-30
+            absolute bottom-20 md:bottom-24 right-6
             bg-blue-600 text-white
+            text-sm font-medium
             px-3 py-2 rounded-full
             shadow-lg hover:bg-blue-700
             transition-all duration-200

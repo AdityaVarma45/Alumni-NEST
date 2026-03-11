@@ -47,11 +47,10 @@ export default function RecommendedAlumniCard({ alumni }) {
     return conversations.find((conv) =>
       conv.participants?.some((p) => p._id === alumni._id)
     );
-  }, [conversations, alumni._id]);
+  }, [conversations, alumni]);
 
   const isOnline = useMemo(() => {
-    if (!existingConversation) return false;
-    return existingConversation.online;
+    return existingConversation?.online || false;
   }, [existingConversation]);
 
   useEffect(() => {
@@ -81,7 +80,7 @@ export default function RecommendedAlumniCard({ alumni }) {
       return (
         <Link
           to={`/dashboard/chat/${existingConversation._id}`}
-          className="text-sm text-green-600 hover:underline font-medium"
+          className="text-sm font-medium text-green-600 hover:underline"
         >
           Continue Chat
         </Link>
@@ -92,7 +91,7 @@ export default function RecommendedAlumniCard({ alumni }) {
       return (
         <Link
           to={`/dashboard/chat/${conversationId}`}
-          className="text-sm text-green-600 hover:underline font-medium"
+          className="text-sm font-medium text-green-600 hover:underline"
         >
           Start Chat
         </Link>
@@ -118,7 +117,7 @@ export default function RecommendedAlumniCard({ alumni }) {
     return (
       <button
         onClick={sendRequest}
-        className="text-sm bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition"
+        className="text-sm bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition font-medium"
       >
         Request Mentorship
       </button>
@@ -128,38 +127,47 @@ export default function RecommendedAlumniCard({ alumni }) {
   return (
     <div
       className="
-      bg-white border border-slate-200
-      rounded-2xl p-4
-      shadow-sm
-      hover:shadow-lg hover:-translate-y-0.5
-      transition-all duration-200
+        bg-white border border-slate-200
+        rounded-2xl p-4
+        shadow-sm
+        hover:shadow-lg hover:-translate-y-0.5
+        transition-all duration-200
       "
     >
+
       <div className="flex items-start justify-between">
 
         <div>
+
           <h3 className="font-semibold text-slate-800">
             {alumni.username}
           </h3>
 
-          <p className="text-xs mt-1 flex items-center gap-1">
+          <p className="text-xs mt-1 flex items-center gap-2">
+
             {isOnline ? (
               <>
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                 </span>
-                <span className="text-green-600">Online</span>
+
+                <span className="text-green-600 font-medium">
+                  Online
+                </span>
               </>
             ) : (
               <span className="text-slate-500">
                 {getLastSeenLabel(alumni.lastSeen)}
               </span>
             )}
+
           </p>
+
         </div>
 
         <div className="flex flex-col items-end gap-1">
+
           <span className="text-xs font-semibold text-slate-700">
             {alumni.matchScore}% match
           </span>
@@ -169,6 +177,7 @@ export default function RecommendedAlumniCard({ alumni }) {
           >
             {matchInfo.label}
           </span>
+
         </div>
 
       </div>
@@ -179,27 +188,30 @@ export default function RecommendedAlumniCard({ alumni }) {
 
       {alumni.commonSkills?.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-2">
+
           {alumni.commonSkills.slice(0, 4).map((skill) => (
             <span
               key={skill}
               className="
-              text-xs
-              bg-slate-100
-              text-slate-600
-              px-2 py-1
-              rounded-md
-              border border-slate-200
+                text-xs
+                bg-slate-100
+                text-slate-700
+                px-2 py-1
+                rounded-md
+                border border-slate-200
               "
             >
               {skill}
             </span>
           ))}
+
         </div>
       )}
 
       <div className="mt-4">
         {renderActionButton()}
       </div>
+
     </div>
   );
 }

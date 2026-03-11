@@ -12,15 +12,22 @@ export default function ChatInput({
   onChange,
   onSend,
 }) {
+
   const handleKeyDown = (e) => {
-    if (e.key === "Enter" && newMessage.trim()) {
-      onSend();
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+
+      if (newMessage.trim()) {
+        onSend();
+      }
     }
   };
 
+  const isDisabled = !newMessage?.trim();
+
   return (
     <div className="bg-white border-t border-slate-200 px-4 md:px-6 py-3">
-      
+
       <div
         className="
           flex items-center gap-3
@@ -31,10 +38,12 @@ export default function ChatInput({
           shadow-sm
           focus-within:ring-2
           focus-within:ring-blue-100
+          focus-within:border-blue-200
           transition-all
         "
       >
-        {/* Message input */}
+
+        {/* Input */}
         <input
           value={newMessage}
           onChange={(e) => onChange(e.target.value)}
@@ -51,12 +60,13 @@ export default function ChatInput({
         {/* Send button */}
         <button
           onClick={onSend}
-          disabled={!newMessage.trim()}
+          disabled={isDisabled}
           className="
             h-9 w-9 rounded-lg
-            bg-blue-600 text-white
+            bg-gradient-to-r from-blue-600 to-indigo-600
+            text-white
             flex items-center justify-center
-            hover:bg-blue-700
+            hover:opacity-90
             active:scale-95
             transition-all duration-150
             disabled:opacity-50
@@ -65,6 +75,7 @@ export default function ChatInput({
         >
           <Send size={16} />
         </button>
+
       </div>
 
     </div>

@@ -6,9 +6,9 @@ import { Briefcase } from "lucide-react";
 /* Skeleton */
 function EditOpportunitySkeleton() {
   return (
-    <div className="max-w-5xl mx-auto space-y-6 animate-pulse">
+    <div className="max-w-6xl mx-auto px-4 space-y-6 animate-pulse">
 
-      <div className="bg-white rounded-2xl p-5 shadow-sm">
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-slate-200 rounded-xl" />
           <div className="space-y-2">
@@ -18,7 +18,7 @@ function EditOpportunitySkeleton() {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl p-6 shadow-sm space-y-4">
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4">
         <div className="h-10 bg-slate-200 rounded" />
         <div className="h-24 bg-slate-200 rounded" />
         <div className="h-10 bg-slate-200 rounded" />
@@ -111,10 +111,10 @@ export default function EditOpportunity() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
+    <div className="max-w-6xl mx-auto px-4 space-y-6">
 
       {/* HEADER */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm">
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
 
         <div className="flex items-center gap-3">
 
@@ -123,7 +123,7 @@ export default function EditOpportunity() {
           </div>
 
           <div>
-            <h1 className="text-lg sm:text-xl font-bold text-slate-800">
+            <h1 className="text-xl font-bold text-slate-800">
               Edit Opportunity
             </h1>
 
@@ -137,7 +137,7 @@ export default function EditOpportunity() {
       </div>
 
       {/* FORM */}
-      <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-sm">
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
 
         <form onSubmit={handleSubmit} className="space-y-4">
 
@@ -146,7 +146,7 @@ export default function EditOpportunity() {
             value={form.title}
             onChange={handleChange}
             placeholder="Title"
-            className="w-full border border-slate-200 rounded-lg px-3 py-2.5"
+            className="w-full border border-slate-200 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
 
@@ -156,7 +156,7 @@ export default function EditOpportunity() {
             onChange={handleChange}
             placeholder="Description"
             rows="4"
-            className="w-full border border-slate-200 rounded-lg px-3 py-2.5"
+            className="w-full border border-slate-200 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
 
@@ -165,7 +165,7 @@ export default function EditOpportunity() {
             value={form.company}
             onChange={handleChange}
             placeholder="Company"
-            className="w-full border border-slate-200 rounded-lg px-3 py-2.5"
+            className="w-full border border-slate-200 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
           <input
@@ -173,7 +173,7 @@ export default function EditOpportunity() {
             value={form.location}
             onChange={handleChange}
             placeholder="Location"
-            className="w-full border border-slate-200 rounded-lg px-3 py-2.5"
+            className="w-full border border-slate-200 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
           <input
@@ -181,7 +181,7 @@ export default function EditOpportunity() {
             value={form.skills}
             onChange={handleChange}
             placeholder="Skills (comma separated)"
-            className="w-full border border-slate-200 rounded-lg px-3 py-2.5"
+            className="w-full border border-slate-200 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
           <input
@@ -189,7 +189,7 @@ export default function EditOpportunity() {
             value={form.applyLink}
             onChange={handleChange}
             placeholder="Apply Link"
-            className="w-full border border-slate-200 rounded-lg px-3 py-2.5"
+            className="w-full border border-slate-200 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
           <input
@@ -197,13 +197,13 @@ export default function EditOpportunity() {
             value={form.compensation}
             onChange={handleChange}
             placeholder="Compensation"
-            className="w-full border border-slate-200 rounded-lg px-3 py-2.5"
+            className="w-full border border-slate-200 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
           <button
             type="submit"
             disabled={saving}
-            className="w-full sm:w-auto bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition disabled:opacity-60"
+            className="w-full sm:w-auto bg-blue-600 text-white px-6 py-2.5 rounded-lg shadow-sm hover:bg-blue-700 transition disabled:opacity-60"
           >
             {saving ? "Updating..." : "Update Opportunity"}
           </button>

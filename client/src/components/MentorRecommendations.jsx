@@ -1,46 +1,66 @@
-export default function MentorRecommendations({ mentors }) {
-  if (!mentors?.length) return null;
+export default function MentorRecommendations({ mentors = [] }) {
+  if (!mentors.length) return null;
 
   return (
-    <div>
-      <h2 className="text-xl font-bold mb-3">
+    <section className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm">
+
+      {/* Header */}
+      <h2 className="text-lg font-semibold text-slate-800 mb-4">
         🔥 Recommended Mentors For You
       </h2>
 
+      {/* Grid */}
       <div className="grid md:grid-cols-2 gap-3">
+
         {mentors.slice(0, 4).map((mentor) => (
           <div
             key={mentor._id}
             className="
-              bg-white p-4 rounded-2xl
-              shadow-sm hover:shadow-md
-              transition-all
+              border border-slate-200
+              rounded-xl p-4
+              hover:bg-slate-50 hover:shadow-sm
+              transition
             "
           >
-            <h3 className="font-semibold">
+
+            {/* Name */}
+            <h3 className="font-semibold text-slate-800">
               {mentor.username}
             </h3>
 
-            <p className="text-sm text-gray-500">
-              Match Score: {mentor.matchScore}%
+            {/* Match */}
+            <p className="text-xs text-slate-500 mt-1">
+              Match Score:{" "}
+              <span className="font-medium text-blue-600">
+                {mentor.matchScore}%
+              </span>
             </p>
 
-            <div className="flex flex-wrap gap-2 mt-2">
-              {mentor.commonSkills?.map((skill) => (
-                <span
-                  key={skill}
-                  className="
-                    text-xs bg-blue-100 text-blue-600
-                    px-2 py-1 rounded-full
-                  "
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
+            {/* Skills */}
+            {mentor.commonSkills?.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-3">
+                {mentor.commonSkills.slice(0, 4).map((skill) => (
+                  <span
+                    key={skill}
+                    className="
+                      text-xs
+                      bg-slate-100 text-slate-700
+                      px-2 py-1
+                      rounded-md
+                      border border-slate-200
+                    "
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            )}
+
           </div>
         ))}
+
       </div>
-    </div>
+
+    </section>
   );
 }

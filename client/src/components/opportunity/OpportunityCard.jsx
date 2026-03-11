@@ -21,6 +21,8 @@ const typeStyles = {
 };
 
 const timeAgo = (date) => {
+  if (!date) return "";
+
   const diff = (Date.now() - new Date(date)) / 1000;
 
   if (diff < 60) return "Just now";
@@ -43,11 +45,19 @@ export default function OpportunityCard({
     "bg-slate-100 text-slate-600";
 
   const isOwner =
-    opportunity.postedBy?._id === user?.id ||
+    opportunity.postedBy?._id?.toString() === user?.id ||
     user?.role === "admin";
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md transition">
+    <div
+      className="
+      bg-white border border-slate-200
+      rounded-2xl p-4 sm:p-5
+      shadow-sm
+      hover:shadow-md hover:-translate-y-[1px]
+      transition
+      "
+    >
 
       {/* top */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
@@ -81,7 +91,14 @@ export default function OpportunityCard({
           {opportunity.skills.map((skill) => (
             <span
               key={skill}
-              className="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-600"
+              className="
+              text-xs
+              px-2 py-1
+              rounded-full
+              bg-slate-100
+              text-slate-700
+              border border-slate-200
+              "
             >
               {skill}
             </span>
@@ -103,11 +120,15 @@ export default function OpportunityCard({
           {/* SAVE */}
           <button
             onClick={() => onSave?.(opportunity._id)}
-            className={`h-8 w-8 rounded-lg border flex items-center justify-center ${
-              opportunity.isSaved
-                ? "bg-blue-600 text-white border-blue-600"
-                : "border-slate-200 hover:bg-slate-50"
-            }`}
+            className={`
+              h-8 w-8 rounded-lg border flex items-center justify-center
+              transition
+              ${
+                opportunity.isSaved
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "border-slate-200 hover:bg-slate-50"
+              }
+            `}
           >
             <Bookmark size={15} />
           </button>
@@ -118,7 +139,13 @@ export default function OpportunityCard({
               onClick={() =>
                 navigate(`/dashboard/opportunities/edit/${opportunity._id}`)
               }
-              className="h-8 w-8 rounded-lg border border-blue-200 text-blue-600 hover:bg-blue-50 flex items-center justify-center"
+              className="
+                h-8 w-8 rounded-lg
+                border border-blue-200 text-blue-600
+                hover:bg-blue-50
+                flex items-center justify-center
+                transition
+              "
             >
               <Pencil size={15} />
             </button>
@@ -128,7 +155,13 @@ export default function OpportunityCard({
           {isOwner && (
             <button
               onClick={() => onDelete?.(opportunity._id)}
-              className="h-8 w-8 rounded-lg border border-red-200 text-red-500 hover:bg-red-50 flex items-center justify-center"
+              className="
+                h-8 w-8 rounded-lg
+                border border-red-200 text-red-500
+                hover:bg-red-50
+                flex items-center justify-center
+                transition
+              "
             >
               <Trash2 size={15} />
             </button>
@@ -140,7 +173,16 @@ export default function OpportunityCard({
               href={opportunity.applyLink}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1 text-sm bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700"
+              className="
+                inline-flex items-center gap-1
+                text-sm
+                bg-gradient-to-r from-blue-600 to-indigo-600
+                text-white
+                px-3 py-1.5
+                rounded-lg
+                hover:opacity-90
+                transition
+              "
             >
               Apply
               <ExternalLink size={14} />

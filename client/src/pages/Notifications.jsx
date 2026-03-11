@@ -81,24 +81,27 @@ export default function Notifications() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-6xl mx-auto px-4 space-y-6">
 
       {/* HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-800">
+
+          <h1 className="text-2xl font-bold text-slate-800">
             Notifications
           </h1>
 
           <p className="text-sm text-slate-500">
             Stay updated with mentorship, opportunities and messages
           </p>
+
         </div>
 
         <button
           onClick={markAllRead}
-          className="text-sm text-blue-600 hover:underline self-start sm:self-auto"
+          className="text-sm font-medium text-blue-600 hover:text-blue-700 transition"
         >
           Mark all as read
         </button>
@@ -106,43 +109,49 @@ export default function Notifications() {
       </div>
 
       {/* FILTERS */}
-      <div className="flex gap-2 flex-wrap">
+
+      <div className="flex flex-wrap gap-2">
 
         {["all", "unread", "mentorship", "opportunity"].map((f) => (
+
           <button
             key={f}
             onClick={() => setFilter(f)}
             className={`px-3 py-1.5 rounded-lg text-sm capitalize transition ${
               filter === f
-                ? "bg-blue-600 text-white"
+                ? "bg-blue-600 text-white shadow-sm"
                 : "bg-slate-100 text-slate-600 hover:bg-slate-200"
             }`}
           >
             {f}
+
           </button>
+
         ))}
 
       </div>
 
       {/* LIST */}
+
       <div className="space-y-3">
 
         {filtered.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-slate-200 p-8 sm:p-10 text-center text-sm text-slate-500">
+
+          <div className="bg-white rounded-2xl border border-slate-200 p-10 text-center shadow-sm text-sm text-slate-500">
+
             No notifications yet
+
           </div>
+
         ) : (
+
           filtered.map((n) => (
+
             <div
               key={n._id}
               onClick={() => handleNotificationClick(n)}
-              className={`
-                bg-white border border-slate-200
-                rounded-xl p-4
-                hover:shadow-sm transition
-                cursor-pointer
-                ${!n.read ? "bg-blue-50 border-blue-200" : ""}
-              `}
+              className={`bg-white border rounded-xl p-4 cursor-pointer transition hover:shadow-md
+              ${!n.read ? "border-blue-200 bg-blue-50" : "border-slate-200"}`}
             >
 
               <div className="flex items-start justify-between gap-4">
@@ -160,15 +169,21 @@ export default function Notifications() {
                 </div>
 
                 {!n.read && (
-                  <span className="text-xs text-blue-600 font-medium whitespace-nowrap">
+
+                  <span className="text-xs text-blue-600 font-semibold whitespace-nowrap">
+
                     New
+
                   </span>
+
                 )}
 
               </div>
 
             </div>
+
           ))
+
         )}
 
       </div>

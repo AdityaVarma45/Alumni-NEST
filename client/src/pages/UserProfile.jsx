@@ -12,13 +12,14 @@ import {
 } from "react-icons/fi";
 
 /* skeleton */
+
 function ProfileSkeleton() {
   return (
-    <div className="max-w-5xl mx-auto space-y-4 animate-pulse">
-      <div className="rounded-2xl border border-slate-200 bg-white h-36" />
-      <div className="rounded-xl border border-slate-200 bg-white h-24" />
-      <div className="rounded-xl border border-slate-200 bg-white h-28" />
-      <div className="rounded-xl border border-slate-200 bg-white h-28" />
+    <div className="max-w-6xl mx-auto space-y-6 animate-pulse px-4">
+      <div className="rounded-2xl border border-slate-200 bg-white h-40 shadow-sm" />
+      <div className="rounded-xl border border-slate-200 bg-white h-28 shadow-sm" />
+      <div className="rounded-xl border border-slate-200 bg-white h-32 shadow-sm" />
+      <div className="rounded-xl border border-slate-200 bg-white h-32 shadow-sm" />
     </div>
   );
 }
@@ -127,7 +128,7 @@ export default function UserProfile() {
         return (
           <Link
             to={`/dashboard/chat/${conversation._id}`}
-            className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm shadow-sm transition"
+            className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 shadow-md hover:shadow-lg transition text-sm"
           >
             <FiMessageCircle />
             Start Chat
@@ -140,7 +141,7 @@ export default function UserProfile() {
       return (
         <button
           onClick={sendRequest}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm shadow-sm transition"
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 shadow-md hover:shadow-lg text-sm transition"
         >
           Request Mentorship
         </button>
@@ -155,7 +156,7 @@ export default function UserProfile() {
         return (
           <Link
             to={`/dashboard/chat/${conversation._id}`}
-            className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm shadow-sm transition"
+            className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 shadow-md hover:shadow-lg transition text-sm"
           >
             <FiMessageCircle />
             Start Chat
@@ -165,7 +166,7 @@ export default function UserProfile() {
       return (
         <button
           onClick={offerMentorship}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 text-sm shadow-sm transition"
+          className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 shadow-md hover:shadow-lg text-sm transition"
         >
           Offer Mentorship
         </button>
@@ -194,114 +195,164 @@ export default function UserProfile() {
   const initial = profile.username?.charAt(0)?.toUpperCase() || "U";
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
+    <div className="max-w-6xl mx-auto space-y-8 px-4">
 
       {/* HEADER */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
 
-          <div className="w-16 h-16 rounded-full bg-blue-600 text-white flex items-center justify-center text-xl font-bold shadow-sm">
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+
+        <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-xl font-bold shadow-md">
             {initial}
           </div>
 
           <div className="flex-1">
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-800">
+
+            <h2 className="text-2xl font-bold text-slate-800">
               {profile.username}
             </h2>
 
             <div className="flex flex-wrap items-center gap-2 mt-1">
+
               <span className="text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-600 capitalize">
                 {profile.role}
               </span>
 
-              <span className={`text-xs flex items-center gap-1 ${
-                profile.online ? "text-green-600" : "text-slate-500"
-              }`}>
+              <span
+                className={`text-xs flex items-center gap-1 ${
+                  profile.online ? "text-green-600" : "text-slate-500"
+                }`}
+              >
                 <FiClock size={12} />
                 {statusLabel}
               </span>
+
             </div>
 
             <p className="text-sm text-slate-500 mt-2 break-all">
               {profile.email}
             </p>
+
           </div>
 
-          <div className="sm:ml-auto">
-            {renderActionButton()}
-          </div>
+          <div>{renderActionButton()}</div>
 
         </div>
+
       </section>
 
       {/* STATS */}
-      <section className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
-          <p className="text-lg font-bold text-slate-800">
+
+      <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+        <div className="rounded-xl border border-slate-200 bg-white p-5 text-center shadow-sm hover:shadow-md transition">
+
+          <p className="text-2xl font-bold text-slate-800">
             {profile.skills?.length || 0}
           </p>
-          <p className="text-xs text-slate-500">Skills</p>
+
+          <p className="text-xs text-slate-500 mt-1">
+            Skills
+          </p>
+
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
-          <p className="text-lg font-bold text-slate-800">
+        <div className="rounded-xl border border-slate-200 bg-white p-5 text-center shadow-sm hover:shadow-md transition">
+
+          <p className="text-2xl font-bold text-slate-800">
             {profile.interests?.length || 0}
           </p>
-          <p className="text-xs text-slate-500">Interests</p>
+
+          <p className="text-xs text-slate-500 mt-1">
+            Interests
+          </p>
+
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
-          <p className="text-lg font-bold text-slate-800 capitalize">
+        <div className="rounded-xl border border-slate-200 bg-white p-5 text-center shadow-sm hover:shadow-md transition">
+
+          <p className="text-2xl font-bold text-slate-800 capitalize">
             {profile.role}
           </p>
-          <p className="text-xs text-slate-500">Role</p>
+
+          <p className="text-xs text-slate-500 mt-1">
+            Role
+          </p>
+
         </div>
+
       </section>
 
       {/* SKILLS */}
-      <section className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
-        <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-800 mb-3">
+
+      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+
+        <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-800 mb-4">
           <FiStar className="text-blue-600" />
           Skills
         </h3>
 
         <div className="flex flex-wrap gap-2">
+
           {profile.skills?.map((skill) => (
-            <span key={skill} className="px-3 py-1 text-sm rounded-full bg-blue-50 text-blue-600">
+
+            <span
+              key={skill}
+              className="px-3 py-1 text-sm rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
+            >
               {skill}
             </span>
+
           ))}
+
         </div>
+
       </section>
 
       {/* INTERESTS */}
-      <section className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
-        <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-800 mb-3">
+
+      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+
+        <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-800 mb-4">
           <FiTarget className="text-blue-600" />
           Interests
         </h3>
 
         <div className="flex flex-wrap gap-2">
+
           {profile.interests?.map((interest) => (
-            <span key={interest} className="px-3 py-1 text-sm rounded-full bg-slate-100 text-slate-700">
+
+            <span
+              key={interest}
+              className="px-3 py-1 text-sm rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 transition"
+            >
               {interest}
             </span>
+
           ))}
+
         </div>
+
       </section>
 
-      {/* BLOCK */}
+      {/* BLOCK USER */}
+
       {profile._id !== user?.id && (
-        <section className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
+
+        <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+
           <button
             onClick={handleBlock}
             disabled={blocking}
-            className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg text-sm transition"
+            className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg text-sm shadow-md hover:shadow-lg transition"
           >
             <FiShield />
             {blocking ? "Blocking..." : "Block User"}
           </button>
+
         </section>
+
       )}
 
     </div>

@@ -17,17 +17,14 @@ const getLastSeenLabel = (date) => {
 
 /* match quality helper */
 const getMatchLabel = (score) => {
-  if (score >= 80) {
+  if (score >= 80)
     return { label: "Excellent match", color: "text-green-600 bg-green-50" };
-  }
 
-  if (score >= 60) {
+  if (score >= 60)
     return { label: "Strong match", color: "text-blue-600 bg-blue-50" };
-  }
 
-  if (score >= 40) {
+  if (score >= 40)
     return { label: "Good match", color: "text-amber-600 bg-amber-50" };
-  }
 
   return { label: "Possible match", color: "text-slate-500 bg-slate-100" };
 };
@@ -42,11 +39,10 @@ export default function RecommendedStudentCard({ student, conversations = [] }) 
     return conversations.find((conv) =>
       conv.participants?.some((p) => p._id === student._id)
     );
-  }, [conversations, student._id]);
+  }, [conversations, student]);
 
   const isOnline = useMemo(() => {
-    if (!existingConversation) return false;
-    return existingConversation.online;
+    return existingConversation?.online || false;
   }, [existingConversation]);
 
   const offerMentorship = async () => {
@@ -67,7 +63,7 @@ export default function RecommendedStudentCard({ student, conversations = [] }) 
       return (
         <Link
           to={`/dashboard/chat/${existingConversation._id}`}
-          className="text-sm text-green-600 hover:underline font-medium"
+          className="text-sm font-medium text-green-600 hover:underline"
         >
           Continue Chat
         </Link>
@@ -78,7 +74,7 @@ export default function RecommendedStudentCard({ student, conversations = [] }) 
       return (
         <Link
           to={`/dashboard/chat/${conversationId}`}
-          className="text-sm text-green-600 hover:underline font-medium"
+          className="text-sm font-medium text-green-600 hover:underline"
         >
           Start Chat
         </Link>
@@ -104,7 +100,7 @@ export default function RecommendedStudentCard({ student, conversations = [] }) 
     return (
       <button
         onClick={offerMentorship}
-        className="text-sm bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition"
+        className="text-sm font-medium bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition"
       >
         Offer Mentorship
       </button>
@@ -114,39 +110,48 @@ export default function RecommendedStudentCard({ student, conversations = [] }) 
   return (
     <div
       className="
-      bg-white border border-slate-200
-      rounded-2xl p-4
-      shadow-sm
-      hover:shadow-lg hover:-translate-y-0.5
-      transition-all duration-200
+        bg-white border border-slate-200
+        rounded-2xl p-4
+        shadow-sm
+        hover:shadow-lg hover:-translate-y-0.5
+        transition-all duration-200
       "
     >
+
       {/* HEADER */}
       <div className="flex items-start justify-between">
 
         <div>
+
           <h3 className="font-semibold text-slate-800">
             {student.username}
           </h3>
 
-          <p className="text-xs mt-1 flex items-center gap-1">
+          <p className="text-xs mt-1 flex items-center gap-2">
+
             {isOnline ? (
               <>
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                 </span>
-                <span className="text-green-600">Online</span>
+
+                <span className="text-green-600 font-medium">
+                  Online
+                </span>
               </>
             ) : (
               <span className="text-slate-500">
                 {getLastSeenLabel(student.lastSeen)}
               </span>
             )}
+
           </p>
+
         </div>
 
         <div className="flex flex-col items-end gap-1">
+
           <span className="text-xs font-semibold text-slate-700">
             {student.matchScore}% match
           </span>
@@ -156,6 +161,7 @@ export default function RecommendedStudentCard({ student, conversations = [] }) 
           >
             {matchInfo.label}
           </span>
+
         </div>
 
       </div>
@@ -166,27 +172,30 @@ export default function RecommendedStudentCard({ student, conversations = [] }) 
 
       {student.commonSkills?.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-2">
+
           {student.commonSkills.slice(0, 4).map((skill) => (
             <span
               key={skill}
               className="
-              text-xs
-              bg-slate-100
-              text-slate-600
-              px-2 py-1
-              rounded-md
-              border border-slate-200
+                text-xs
+                bg-slate-100
+                text-slate-700
+                px-2 py-1
+                rounded-md
+                border border-slate-200
               "
             >
               {skill}
             </span>
           ))}
+
         </div>
       )}
 
       <div className="mt-4">
         {renderAction()}
       </div>
+
     </div>
   );
 }

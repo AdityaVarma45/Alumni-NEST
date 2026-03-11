@@ -68,7 +68,7 @@ export default function CreateOpportunity() {
 
   if (user?.role !== "alumni" && user?.role !== "admin") {
     return (
-      <div>
+      <div className="max-w-4xl mx-auto px-4 py-10 text-center">
         <p className="text-slate-500">
           Only alumni can post opportunities.
         </p>
@@ -77,10 +77,10 @@ export default function CreateOpportunity() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-1 sm:px-0">
+    <div className="max-w-6xl mx-auto px-4 space-y-6">
 
       {/* Header */}
-      <div className="mb-6">
+      <div>
         <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">
           Post an Opportunity
         </h1>
@@ -96,7 +96,7 @@ export default function CreateOpportunity() {
         <form onSubmit={handleSubmit} className="space-y-6">
 
           {/* Title + Company */}
-          <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
+          <div className="grid md:grid-cols-2 gap-5">
 
             <div>
               <label className="text-sm font-medium text-slate-700">
@@ -131,7 +131,7 @@ export default function CreateOpportunity() {
           </div>
 
           {/* Type + Location */}
-          <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
+          <div className="grid md:grid-cols-2 gap-5">
 
             <div>
               <label className="text-sm font-medium text-slate-700">
@@ -143,7 +143,7 @@ export default function CreateOpportunity() {
                 onChange={(e) =>
                   handleChange("type", e.target.value)
                 }
-                className="mt-2 w-full border border-slate-200 rounded-xl px-4 py-3"
+                className="mt-2 w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 {OPPORTUNITY_TYPES.map((t) => (
                   <option key={t}>{t}</option>
@@ -161,7 +161,7 @@ export default function CreateOpportunity() {
                 onChange={(e) =>
                   handleChange("location", e.target.value)
                 }
-                className="mt-2 w-full border border-slate-200 rounded-xl px-4 py-3"
+                className="mt-2 w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Remote / Hyderabad"
               />
             </div>
@@ -169,7 +169,7 @@ export default function CreateOpportunity() {
           </div>
 
           {/* Apply Link + Compensation */}
-          <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
+          <div className="grid md:grid-cols-2 gap-5">
 
             <div>
               <label className="text-sm font-medium text-slate-700">
@@ -181,7 +181,7 @@ export default function CreateOpportunity() {
                 onChange={(e) =>
                   handleChange("applyLink", e.target.value)
                 }
-                className="mt-2 w-full border border-slate-200 rounded-xl px-4 py-3"
+                className="mt-2 w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="https://job-link.com"
               />
             </div>
@@ -196,7 +196,7 @@ export default function CreateOpportunity() {
                 onChange={(e) =>
                   handleChange("compensation", e.target.value)
                 }
-                className="mt-2 w-full border border-slate-200 rounded-xl px-4 py-3"
+                className="mt-2 w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="₹20k stipend / 8 LPA"
               />
             </div>
@@ -214,7 +214,7 @@ export default function CreateOpportunity() {
               onChange={(e) =>
                 handleChange("skills", e.target.value)
               }
-              className="mt-2 w-full border border-slate-200 rounded-xl px-4 py-3"
+              className="mt-2 w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="React, Node.js, MongoDB"
             />
 
@@ -235,7 +235,7 @@ export default function CreateOpportunity() {
               onChange={(e) =>
                 handleChange("description", e.target.value)
               }
-              className="mt-2 w-full border border-slate-200 rounded-xl px-4 py-3 resize-none"
+              className="mt-2 w-full border border-slate-200 rounded-xl px-4 py-3 resize-y focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Explain the role, requirements, and application process..."
             />
           </div>
@@ -254,7 +254,9 @@ export default function CreateOpportunity() {
           </div>
 
         </form>
+
       </div>
+
     </div>
   );
 }

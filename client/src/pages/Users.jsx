@@ -34,9 +34,15 @@ const getMatchLabel = (score) => {
 
 /* skeleton */
 const UserCardSkeleton = () => (
-  <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm animate-pulse">
-    <div className="h-4 w-32 bg-slate-200 rounded mb-3" />
-    <div className="h-3 w-48 bg-slate-200 rounded" />
+  <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm animate-pulse">
+    <div className="flex items-center gap-3 mb-3">
+      <div className="w-10 h-10 rounded-full bg-slate-200" />
+      <div className="space-y-1">
+        <div className="h-3 w-24 bg-slate-200 rounded" />
+        <div className="h-2 w-20 bg-slate-200 rounded" />
+      </div>
+    </div>
+    <div className="h-3 w-40 bg-slate-200 rounded" />
   </div>
 );
 
@@ -51,15 +57,11 @@ export default function Users() {
 
   const [localMentorshipStatus, setLocalMentorshipStatus] = useState({});
 
-  /* search UI */
   const [showFilters, setShowFilters] = useState(false);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [skillFilter, setSkillFilter] = useState("");
 
-  /* ===============================
-     FETCH DATA
-  =============================== */
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -85,9 +87,6 @@ export default function Users() {
     fetchData();
   }, []);
 
-  /* ===============================
-     SEND MENTORSHIP REQUEST
-  =============================== */
   const sendRequest = async (e, alumniId) => {
     e.preventDefault();
     e.stopPropagation();
@@ -107,9 +106,6 @@ export default function Users() {
     }
   };
 
-  /* ===============================
-     OFFER MENTORSHIP
-  =============================== */
   const offerMentorship = async (e, studentId) => {
     e.preventDefault();
     e.stopPropagation();
@@ -129,9 +125,6 @@ export default function Users() {
     }
   };
 
-  /* ===============================
-     MENTORSHIP MAP
-  =============================== */
   const mentorshipMap = useMemo(() => {
     const map = {};
 
@@ -153,9 +146,6 @@ export default function Users() {
   const findConversation = (id) =>
     conversations.find((c) => c.participants?.some((p) => p._id === id));
 
-  /* ===============================
-     FILTER USERS
-  =============================== */
   const filteredUsers = useMemo(() => {
     return users.filter((u) => {
       if (u._id === user?.id) return false;
@@ -168,7 +158,7 @@ export default function Users() {
       if (
         skillFilter &&
         !u.skills?.some((s) =>
-          s.toLowerCase().includes(skillFilter.toLowerCase()),
+          s.toLowerCase().includes(skillFilter.toLowerCase())
         )
       )
         return false;
@@ -177,9 +167,6 @@ export default function Users() {
     });
   }, [users, search, roleFilter, skillFilter, user]);
 
-  /* ===============================
-     GROUP USERS
-  =============================== */
   const groupedUsers = useMemo(() => {
     const active = [];
     const recommended = [];
@@ -205,9 +192,6 @@ export default function Users() {
     return { active, recommended, others };
   }, [filteredUsers, user, conversations, mentorshipMap]);
 
-  /* ===============================
-     ACTION BUTTON
-  =============================== */
   const renderAction = (u) => {
     const conversation = findConversation(u._id);
     const mentorship = mentorshipMap[u._id];
@@ -256,25 +240,34 @@ export default function Users() {
     return null;
   };
 
-  /* ===============================
-     USER CARD
-  =============================== */
   const renderUserCard = (u) => {
     const statusLabel = getLastSeenLabel(u.lastSeen, u.online);
     const match = getMatchLabel(u.matchScore || 0);
+    const initial = u.username?.charAt(0)?.toUpperCase();
 
     return (
       <Link key={u._id} to={`/dashboard/users/${u._id}`} className="block">
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md hover:bg-slate-50 transition">
-          <div className="flex justify-between items-start">
-            <div>
-              <h3 className="font-semibold text-slate-800">{u.username}</h3>
-              <p className="text-xs text-slate-500 mt-1">{statusLabel}</p>
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md hover:bg-slate-50 transition">
+
+          <div className="flex items-center justify-between">
+
+            <div className="flex items-center gap-3">
+
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-sm font-semibold">
+                {initial}
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-slate-800">{u.username}</h3>
+                <p className="text-xs text-slate-500">{statusLabel}</p>
+              </div>
+
             </div>
 
             <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 capitalize">
               {u.role}
             </span>
+
           </div>
 
           {u.matchScore !== undefined && (
@@ -292,6 +285,7 @@ export default function Users() {
           <p className="text-sm text-slate-500 mt-2">{u.email}</p>
 
           <div className="mt-3">{renderAction(u)}</div>
+
         </div>
       </Link>
     );
@@ -312,11 +306,14 @@ export default function Users() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-6 shadow-sm space-y-6">
+    <div className="max-w-7xl mx-auto px-4 space-y-8">
+
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-6">
+
         <div className="flex items-center justify-between">
+
           <div>
-            <h2 className="text-lg sm:text-xl font-bold text-slate-800">
+            <h2 className="text-xl font-bold text-slate-800">
               Browse Users
             </h2>
 
@@ -331,13 +328,15 @@ export default function Users() {
           >
             {showFilters ? <X size={18} /> : <Search size={18} />}
           </button>
+
         </div>
 
         {showFilters && (
           <div className="flex flex-col sm:flex-row flex-wrap gap-3 border-t border-slate-200 pt-4">
+
             <input
               placeholder="Search users..."
-              className="border border-slate-200 rounded-lg px-3 py-2 text-sm w-full sm:w-auto"
+              className="border border-slate-200 rounded-lg px-3 py-2 text-sm"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -345,7 +344,7 @@ export default function Users() {
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="border border-slate-200 rounded-lg px-3 py-2 text-sm w-full sm:w-auto"
+              className="border border-slate-200 rounded-lg px-3 py-2 text-sm"
             >
               <option value="all">All Roles</option>
               <option value="student">Students</option>
@@ -356,8 +355,9 @@ export default function Users() {
               placeholder="Filter by skill..."
               value={skillFilter}
               onChange={(e) => setSkillFilter(e.target.value)}
-              className="border border-slate-200 rounded-lg px-3 py-2 text-sm w-full sm:w-auto"
+              className="border border-slate-200 rounded-lg px-3 py-2 text-sm"
             />
+
           </div>
         )}
 
@@ -374,7 +374,9 @@ export default function Users() {
             {renderSection("Others", groupedUsers.others)}
           </>
         )}
+
       </section>
+
     </div>
   );
 }

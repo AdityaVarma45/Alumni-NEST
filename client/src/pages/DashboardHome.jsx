@@ -150,17 +150,18 @@ export default function DashboardHome() {
   ]);
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="max-w-7xl mx-auto px-4 space-y-8">
 
       {/* HEADER */}
+
       <div className="flex items-center gap-4">
 
-        <div className="w-11 h-11 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-semibold text-base shadow-sm ring-2 ring-white">
+        <div className="w-11 h-11 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-semibold text-base shadow-sm">
           {user?.username?.charAt(0)?.toUpperCase()}
         </div>
 
         <div>
-          <h1 className="text-lg sm:text-xl font-semibold text-slate-800">
+          <h1 className="text-xl font-bold text-slate-800">
             {getGreeting()}, {user?.username}
           </h1>
 
@@ -172,6 +173,7 @@ export default function DashboardHome() {
       </div>
 
       {/* STATS */}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
 
         <Link
@@ -181,19 +183,27 @@ export default function DashboardHome() {
           <div className="flex justify-between items-start">
 
             <div>
+
               <div className="flex items-center gap-2 text-sm text-slate-500">
+
                 <span className="p-1.5 rounded-lg bg-blue-50 text-blue-600">
                   <Briefcase size={16} />
                 </span>
+
                 Opportunities
+
               </div>
 
               <p className="text-2xl font-bold text-slate-800 mt-2">
                 <AnimatedNumber value={stats.opportunities} />
               </p>
+
             </div>
 
-            <ArrowUpRight size={18} className="text-slate-300 group-hover:text-blue-500" />
+            <ArrowUpRight
+              size={18}
+              className="text-slate-300 group-hover:text-blue-500"
+            />
 
           </div>
         </Link>
@@ -209,7 +219,9 @@ export default function DashboardHome() {
           <div className="flex justify-between items-start">
 
             <div>
+
               <div className="flex items-center gap-2 text-sm text-slate-500">
+
                 <span className="p-1.5 rounded-lg bg-indigo-50 text-indigo-600">
                   <GraduationCap size={16} />
                 </span>
@@ -217,14 +229,19 @@ export default function DashboardHome() {
                 {user?.role === "alumni"
                   ? "Pending Requests"
                   : "Active Mentorships"}
+
               </div>
 
               <p className="text-2xl font-bold text-slate-800 mt-2">
                 <AnimatedNumber value={stats.mentorship} />
               </p>
+
             </div>
 
-            <ArrowUpRight size={18} className="text-slate-300 group-hover:text-indigo-500" />
+            <ArrowUpRight
+              size={18}
+              className="text-slate-300 group-hover:text-indigo-500"
+            />
 
           </div>
         </Link>
@@ -236,19 +253,27 @@ export default function DashboardHome() {
           <div className="flex justify-between items-start">
 
             <div>
+
               <div className="flex items-center gap-2 text-sm text-slate-500">
+
                 <span className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600">
                   <MessageSquare size={16} />
                 </span>
+
                 Conversations
+
               </div>
 
               <p className="text-2xl font-bold text-slate-800 mt-2">
                 <AnimatedNumber value={stats.conversations} />
               </p>
+
             </div>
 
-            <ArrowUpRight size={18} className="text-slate-300 group-hover:text-emerald-500" />
+            <ArrowUpRight
+              size={18}
+              className="text-slate-300 group-hover:text-emerald-500"
+            />
 
           </div>
         </Link>
@@ -266,9 +291,10 @@ export default function DashboardHome() {
 
       {/* LATEST OPPORTUNITIES */}
 
-      <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm">
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
 
         <div className="flex items-center justify-between mb-5">
+
           <h2 className="font-semibold text-slate-800 text-lg">
             Latest Opportunities
           </h2>
@@ -280,6 +306,7 @@ export default function DashboardHome() {
             Browse All
             <ArrowRight size={14} />
           </Link>
+
         </div>
 
         {opportunities.length === 0 ? (
@@ -287,6 +314,7 @@ export default function DashboardHome() {
             No opportunities posted yet.
           </p>
         ) : (
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             {opportunities.slice(0, 3).map((o) => (
@@ -295,9 +323,11 @@ export default function DashboardHome() {
                 to="/dashboard/opportunities"
                 className="border border-slate-200 rounded-xl p-4 hover:bg-slate-50 hover:border-blue-200 transition"
               >
+
                 <div className="flex items-center justify-between gap-3">
 
                   <div>
+
                     <p className="font-medium text-slate-800">
                       {o.title}
                     </p>
@@ -305,6 +335,7 @@ export default function DashboardHome() {
                     <p className="text-xs text-slate-500 mt-1">
                       {o.company}
                     </p>
+
                   </div>
 
                   {o.type && (
@@ -314,10 +345,12 @@ export default function DashboardHome() {
                   )}
 
                 </div>
+
               </Link>
             ))}
 
           </div>
+
         )}
 
       </div>

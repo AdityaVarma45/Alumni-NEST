@@ -5,9 +5,10 @@ import { AuthContext } from "../context/AuthContext";
 import { Briefcase } from "lucide-react";
 
 /* Skeleton */
+
 function OpportunitySkeleton() {
   return (
-    <div className="bg-white rounded-2xl p-5 shadow-sm animate-pulse">
+    <div className="bg-white rounded-2xl p-5 shadow-sm animate-pulse border border-slate-200">
       <div className="h-4 w-1/3 bg-slate-200 rounded mb-3" />
       <div className="h-3 w-2/3 bg-slate-200 rounded mb-2" />
       <div className="h-3 w-1/2 bg-slate-200 rounded" />
@@ -118,25 +119,32 @@ export default function Opportunities() {
   }, [opportunities, activeFilter, showMine, showSaved, user]);
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 px-1 sm:px-0">
+    <div className="max-w-6xl mx-auto space-y-6 px-4">
 
       {/* HEADER */}
-      <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-sm">
+
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+
+            <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
               <Briefcase size={18} />
             </div>
 
             <div>
-              <h1 className="text-lg sm:text-xl font-bold text-slate-800">
+
+              <h1 className="text-xl font-bold text-slate-800">
                 Opportunities Feed
               </h1>
-              <p className="text-xs sm:text-sm text-slate-500">
+
+              <p className="text-sm text-slate-500">
                 Alumni shared opportunities for students 🚀
               </p>
+
             </div>
+
           </div>
 
           {user?.role === "alumni" && (
@@ -145,19 +153,21 @@ export default function Opportunities() {
                 (window.location.href =
                   "/dashboard/opportunities/create")
               }
-              className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700 transition shadow-sm w-full sm:w-auto"
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-md hover:bg-blue-700 hover:shadow-lg transition"
             >
               + Post Opportunity
             </button>
           )}
 
         </div>
+
       </div>
 
       {/* FILTER BAR */}
-      <div className="bg-white rounded-2xl p-4 shadow-sm">
 
-        <div className="flex gap-2 overflow-x-auto pb-1">
+      <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+
+        <div className="flex gap-2 overflow-x-auto">
 
           {filters.map((f) => (
             <button
@@ -165,7 +175,7 @@ export default function Opportunities() {
               onClick={() => setActiveFilter(f)}
               className={`px-3 py-1.5 rounded-lg text-sm capitalize whitespace-nowrap transition ${
                 activeFilter === f
-                  ? "bg-blue-600 text-white"
+                  ? "bg-blue-600 text-white shadow-sm"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
@@ -200,9 +210,11 @@ export default function Opportunities() {
           )}
 
         </div>
+
       </div>
 
       {/* FEED */}
+
       <div className="space-y-4">
 
         {loading && (
@@ -214,11 +226,15 @@ export default function Opportunities() {
         )}
 
         {!loading && filteredFeed.length === 0 && (
-          <div className="bg-white rounded-2xl p-6 text-center shadow-sm">
+
+          <div className="bg-white rounded-2xl p-8 text-center shadow-sm border border-slate-200">
+
             <p className="text-slate-500 text-sm">
               No opportunities found
             </p>
+
           </div>
+
         )}
 
         {!loading &&
@@ -231,6 +247,7 @@ export default function Opportunities() {
               onEdit={handleEdit}
             />
           ))}
+
       </div>
 
     </div>
