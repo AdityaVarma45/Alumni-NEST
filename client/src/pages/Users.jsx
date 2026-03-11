@@ -193,52 +193,64 @@ export default function Users() {
   }, [filteredUsers, user, conversations, mentorshipMap]);
 
   const renderAction = (u) => {
-    const conversation = findConversation(u._id);
-    const mentorship = mentorshipMap[u._id];
-    const localStatus = localMentorshipStatus[u._id];
+  const conversation = findConversation(u._id);
+  const mentorship = mentorshipMap[u._id];
+  const localStatus = localMentorshipStatus[u._id];
 
-    if (conversation) {
-      return (
-        <Link
-          to={`/dashboard/chat/${conversation._id}`}
-          onClick={(e) => e.stopPropagation()}
-          className="text-sm text-green-600 hover:underline font-medium"
-        >
-          Continue Chat
-        </Link>
-      );
-    }
+  /* Continue chat → text link */
+  if (conversation) {
+    return (
+      <Link
+        to={`/dashboard/chat/${conversation._id}`}
+        onClick={(e) => e.stopPropagation()}
+        className="text-sm text-green-600 hover:underline font-medium"
+      >
+        Continue Chat
+      </Link>
+    );
+  }
 
-    if (localStatus === "pending" || mentorship?.status === "pending")
-      return <span className="text-sm text-yellow-600">Request Pending</span>;
+  if (localStatus === "pending" || mentorship?.status === "pending")
+    return (
+      <span className="text-sm text-yellow-600">
+        Request Pending
+      </span>
+    );
 
-    if (mentorship?.status === "accepted")
-      return <span className="text-sm text-green-600">Mentorship Active</span>;
+  if (mentorship?.status === "accepted")
+    return (
+      <span className="text-sm text-green-600">
+        Mentorship Active
+      </span>
+    );
 
-    if (user?.role === "student" && u.role === "alumni") {
-      return (
-        <button
-          onClick={(e) => sendRequest(e, u._id)}
-          className="text-sm bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700"
-        >
-          Request Mentorship
-        </button>
-      );
-    }
+  /* Student requesting alumni */
+  if (user?.role === "student" && u.role === "alumni") {
+    return (
+      <button
+        onClick={(e) => sendRequest(e, u._id)}
+        className="text-sm bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700"
+      >
+        Request Mentorship
+      </button>
+    );
+  }
 
-    if (user?.role === "alumni" && u.role === "student") {
-      return (
-        <button
-          onClick={(e) => offerMentorship(e, u._id)}
-          className="text-sm bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700"
-        >
-          Offer Mentorship
-        </button>
-      );
-    }
+  /* Alumni offering mentorship */
+  if (user?.role === "alumni" && u.role === "student") {
+    return (
+      <button
+        onClick={(e) => offerMentorship(e, u._id)}
+        className="text-sm bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700"
+      >
+        Offer Mentorship
+      </button>
+    );
+  }
 
-    return null;
-  };
+  return null;
+};
+
 
   const renderUserCard = (u) => {
     const statusLabel = getLastSeenLabel(u.lastSeen, u.online);
@@ -247,21 +259,19 @@ export default function Users() {
 
     return (
       <Link key={u._id} to={`/dashboard/users/${u._id}`} className="block">
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md hover:bg-slate-50 transition">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md hover:bg-slate-50 transition flex flex-col">
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-start justify-between">
 
-            <div className="flex items-center gap-3">
-
+            <div className="flex items-start gap-4">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-sm font-semibold">
                 {initial}
               </div>
 
               <div>
                 <h3 className="font-semibold text-slate-800">{u.username}</h3>
-                <p className="text-xs text-slate-500">{statusLabel}</p>
+                <p className="text-xs text-slate-500 mt-1">{statusLabel}</p>
               </div>
-
             </div>
 
             <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 capitalize">
@@ -284,7 +294,9 @@ export default function Users() {
 
           <p className="text-sm text-slate-500 mt-2">{u.email}</p>
 
-          <div className="mt-3">{renderAction(u)}</div>
+          <div className="flex justify-end mt-4 pt-3 border-t border-slate-100">
+            {renderAction(u)}
+          </div>
 
         </div>
       </Link>
