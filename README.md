@@ -1,18 +1,43 @@
 # AlumniNest 🎓
 
-**AlumniNest** is a mentorship networking platform that connects **students with alumni mentors**.
+![React](https://img.shields.io/badge/Frontend-React-blue)
+![Node.js](https://img.shields.io/badge/Backend-Node.js-green)
+![MongoDB](https://img.shields.io/badge/Database-MongoDB-darkgreen)
+![Socket.io](https://img.shields.io/badge/Realtime-Socket.io-black)
+![JWT](https://img.shields.io/badge/Auth-JWT-orange)
+![License](https://img.shields.io/badge/License-Educational-lightgrey)
 
-Students can discover mentors based on **skills and interests**, request mentorship, and communicate with alumni through **real-time chat**.
+A mentorship networking platform that connects **students with alumni mentors** for career guidance, industry insights, and opportunities.
 
-The goal of the platform is to help students gain **career guidance, industry insights, and opportunities** from experienced alumni.
+AlumniNest enables students to discover mentors based on their **skills and interests**, send mentorship requests, and communicate with alumni through **real-time chat**.
 
 <img width="1920" height="1080" alt="Screenshot (92)" src="https://github.com/user-attachments/assets/463fec54-8cfd-460d-a8fa-8d087377b8e5" />
+
+---
+
+## Problem It Solves
+
+Students often struggle to connect with experienced alumni for career advice, networking, and opportunities.
+
+**AlumniNest bridges this gap** by creating a platform where students can discover alumni mentors, request mentorship, and build meaningful professional relationships.
+
+---
+
+## Key Features
+
+- 🎓 Mentor discovery based on skills and interests  
+- 🤝 Mentorship request and offer system  
+- 💬 Real-time chat using Socket.io  
+- 📢 Opportunity sharing for internships and jobs  
+- 🔔 Notification system for mentorship and opportunities  
+- 👤 Customizable user profiles  
 
 ---
 
 # Features
 
 ## Mentor Discovery
+
 Students receive **alumni recommendations** based on their skills and interests, helping them connect with relevant mentors.
 
 <img width="1920" height="1020" alt="Screenshot 2026-03-10 235345" src="https://github.com/user-attachments/assets/f5f11ef4-06de-4776-85a7-d1ed961c7af9" />
@@ -20,6 +45,7 @@ Students receive **alumni recommendations** based on their skills and interests,
 ---
 
 ## Mentorship Requests & Offers
+
 Students can send **mentorship requests**, while alumni can **offer mentorship** to students they wish to guide.
 
 <img width="1920" height="1080" alt="Screenshot (97)" src="https://github.com/user-attachments/assets/0accded9-b467-4a25-9ba3-7b6792115d73" />
@@ -31,6 +57,7 @@ Students can send **mentorship requests**, while alumni can **offer mentorship**
 ---
 
 ## Real-Time Chat
+
 Once mentorship is accepted, users can communicate using **real-time messaging powered by Socket.io**.
 
 <img width="1920" height="1080" alt="Screenshot (82)" src="https://github.com/user-attachments/assets/39ac565b-f1b8-4263-a132-4b36262212dc" />
@@ -40,6 +67,7 @@ Once mentorship is accepted, users can communicate using **real-time messaging p
 ---
 
 ## Opportunity Sharing
+
 Alumni can share **internships, job openings, and referrals** with students through the platform.
 
 <img width="1920" height="1080" alt="Screenshot (77)" src="https://github.com/user-attachments/assets/87ce9c35-0b95-4511-9b19-31214de50333" />
@@ -49,6 +77,7 @@ Alumni can share **internships, job openings, and referrals** with students thro
 ---
 
 ## Notifications
+
 Users receive notifications for important events such as:
 
 - Mentorship requests  
@@ -61,6 +90,7 @@ Users receive notifications for important events such as:
 ---
 
 ## Profile Customization
+
 Users can enhance their profiles by adding:
 
 - Skills  
@@ -80,24 +110,48 @@ These details are used to **improve mentor recommendations**.
 
 ---
 
+# Project Structure
+
+```
+alumninest
+│
+├── client
+│   ├── components
+│   ├── pages
+│   └── context
+│
+├── server
+│   ├── controllers
+│   ├── models
+│   ├── routes
+│   ├── services
+│   └── middleware
+```
+
+---
+
 # Tech Stack
 
 ## Frontend
+
 - React  
 - React Router  
 - Tailwind CSS  
 - Lucide Icons  
 
 ## Backend
+
 - Node.js  
 - Express.js  
 - MongoDB  
 - Mongoose  
 
 ## Real-Time Communication
+
 - Socket.io  
 
 ## Authentication
+
 - JWT (JSON Web Tokens)
 
 ---
@@ -110,6 +164,7 @@ The platform follows a **client–server architecture**.
 - The **backend** manages authentication, mentorship logic, chat messaging, and notifications.
 
 ### Core Modules
+
 - User Management  
 - Mentorship System  
 - Opportunity Sharing  
