@@ -25,12 +25,16 @@ Students often struggle to connect with experienced alumni for career advice, ne
 
 ## Key Features
 
-- 🎓 Mentor discovery based on skills and interests  
-- 🤝 Mentorship request and offer system  
-- 💬 Real-time chat using Socket.io  
-- 📢 Opportunity sharing for internships and jobs  
-- 🔔 Notification system for mentorship and opportunities  
-- 👤 Customizable user profiles  
+- 🎓 Mentor discovery based on shared skills and interests  
+- 🤝 Mentorship request and offer system between students and alumni  
+- 💬 Real-time chat using Socket.io after mentorship acceptance  
+- 📢 Opportunity sharing for internships, jobs, and referrals  
+- 🔔 Notification system for mentorship updates and new opportunities  
+- 👤 Customizable user profiles with skills and interests  
+- 🔐 Secure authentication using JWT-based login system  
+- 🔑 Password protection using bcrypt hashing  
+- 🛡️ Role-based access control for students and alumni  
+- 📱 Responsive UI supporting both desktop and mobile devices
 
 ---
 
