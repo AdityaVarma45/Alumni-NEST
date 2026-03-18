@@ -197,7 +197,13 @@ Try the platform and explore the mentorship features.
 
 # License
 
-This project is built for **educational and portfolio purposes**.
+This project is shared publicly for learning and portfolio purposes.
+
+You’re welcome to explore the code and take inspiration, but please avoid copying or reusing it directly for your own projects.
+
+If you’d like to use any part of it, feel free to reach out for permission.
+
+© 2026 Mahesh Aditya Varma
 
 ---
 
