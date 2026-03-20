@@ -2,13 +2,7 @@ import { useContext } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
-/*
-  ProfileGuard
-  -------------
-  Prevents user entering dashboard pages
-  if profile is not completed.
-*/
-
+// This component protects routes that require a completed profile.
 export default function ProfileGuard({ children }) {
   const { user } = useContext(AuthContext);
   const location = useLocation();
