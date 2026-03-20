@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "../api/axios";
-import Logo from "../components/Logo";
+import AuthHeader from "../components/AuthHeader";
 import { FiUser, FiMail, FiLock } from "react-icons/fi";
 
 export default function Register() {
@@ -44,110 +44,70 @@ export default function Register() {
   `;
 
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4 py-10">
+    <div className="min-h-screen bg-slate-100">
 
-      {/* Logo */}
-      <div className="absolute top-6 left-6">
-        <Logo size="text-2xl sm:text-3xl" />
-      </div>
+      <AuthHeader />
 
-      <div className="w-full max-w-xl">
+      <div className="flex items-center justify-center px-4 py-10 pt-24">
 
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-lg p-6 sm:p-10">
+        <div className="w-full max-w-xl">
 
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 text-center">
-            Create Account
-          </h1>
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-lg p-6 sm:p-10">
 
-          <p className="text-slate-500 text-center mt-2 mb-6 sm:mb-8 text-sm sm:text-base">
-            Join AlumniNest and start building meaningful connections
-          </p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 text-center">
+              Create Account
+            </h1>
 
-          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+            <p className="text-slate-500 text-center mt-2 mb-6 sm:mb-8 text-sm sm:text-base">
+              Join AlumniNest and start building meaningful connections
+            </p>
 
-            {/* Username */}
-            <div className="relative">
-              <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-                className={inputStyle}
-              />
-            </div>
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
 
-            {/* Email */}
-            <div className="relative">
-              <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className={inputStyle}
-              />
-            </div>
+              <div className="relative">
+                <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required className={inputStyle} />
+              </div>
 
-            {/* Password */}
-            <div className="relative">
-              <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className={inputStyle}
-              />
-            </div>
+              <div className="relative">
+                <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className={inputStyle} />
+              </div>
 
-            {/* Role */}
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full px-3 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-            >
-              <option value="student">Student</option>
-              <option value="alumni">Alumni</option>
-            </select>
+              <div className="relative">
+                <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required className={inputStyle} />
+              </div>
 
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {loading ? "Creating account..." : "Create Account"}
-            </button>
+              <select value={role} onChange={(e) => setRole(e.target.value)} className="w-full px-3 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                <option value="student">Student</option>
+                <option value="alumni">Alumni</option>
+              </select>
 
-          </form>
+              <button type="submit" disabled={loading} className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition disabled:opacity-60">
+                {loading ? "Creating account..." : "Create Account"}
+              </button>
 
-          <p className="text-sm text-center mt-6 text-slate-600">
-            Already have an account?{" "}
-            <Link
-              to="/login"
-              className="text-blue-600 hover:underline font-medium"
-            >
-              Login
-            </Link>
-          </p>
+            </form>
 
-          <p className="text-sm text-center mt-2">
-            <Link
-              to="/"
-              className="text-slate-500 hover:underline"
-            >
-              ← Back to Welcome
-            </Link>
-          </p>
+            <p className="text-sm text-center mt-6 text-slate-600">
+              Already have an account?{" "}
+              <Link to="/login" className="text-blue-600 hover:underline font-medium">
+                Login
+              </Link>
+            </p>
+
+            <p className="text-sm text-center mt-2">
+              <Link to="/" className="text-slate-500 hover:underline">
+                ← Back to Welcome
+              </Link>
+            </p>
+
+          </div>
 
         </div>
 
       </div>
-
     </div>
   );
 }

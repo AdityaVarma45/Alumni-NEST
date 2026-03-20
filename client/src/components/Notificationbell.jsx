@@ -11,9 +11,6 @@ export default function NotificationBell() {
   const navigate = useNavigate();
   const dropdownRef = useRef();
 
-  /* ===============================
-     Fetch initial notifications
-  =============================== */
 
   
   useEffect(() => {

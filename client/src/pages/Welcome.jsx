@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import AuthHeader from "../components/AuthHeader";
 import Logo from "../components/Logo";
 import {
   GraduationCap,
@@ -11,16 +12,13 @@ export default function Welcome() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50">
 
-      {/* LOGO */}
-      <div className="absolute top-6 left-6 z-20">
-        <Logo size="text-2xl sm:text-3xl" />
-      </div>
+      <AuthHeader />
 
       {/* BACKGROUND BLOBS */}
       <div className="absolute top-[-120px] left-[-120px] w-80 h-80 bg-blue-200 rounded-full blur-3xl opacity-40 animate-floatSlow" />
       <div className="absolute bottom-[-100px] right-[-100px] w-96 h-96 bg-indigo-200 rounded-full blur-3xl opacity-40 animate-floatSlowReverse" />
 
-      <div className="relative z-10">
+      <div className="relative z-10 pt-16">
 
         {/* HERO */}
         <section className="min-h-screen flex items-center justify-center px-6">
