@@ -24,10 +24,7 @@ connectDB();
 const app = express();
 const server = http.createServer(app);
 
-/* ===============================
-   MIDDLEWARE
-=============================== */
-
+// CORS setup
 app.use(
   cors({
     origin: "*",
@@ -37,10 +34,7 @@ app.use(
 
 app.use(express.json());
 
-/* ===============================
-   API ROUTES
-=============================== */
-
+// API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/chat", chatRoutes);
@@ -50,15 +44,10 @@ app.use("/api/recommendations", recommendationRoutes);
 app.use("/api/opportunities", opportunityRoutes);
 app.use("/api/notifications", notificationRoutes);
 
-/* ===============================
-   SOCKET.IO
-=============================== */
+// SOCKET.IO
 
 initSocket(server);
 
-/* ===============================
-   SERVE REACT BUILD
-=============================== */
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -67,18 +56,11 @@ const clientPath = path.join(__dirname, "../client/dist");
 
 app.use(express.static(clientPath));
 
-/*
-  React Router SPA fallback
-  Express 5 safe version
-*/
 app.use((req, res) => {
   res.sendFile(path.join(clientPath, "index.html"));
 });
 
-/* ===============================
-   SERVER START
-=============================== */
-
+// Start server
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
