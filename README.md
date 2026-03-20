@@ -11,7 +11,13 @@ A mentorship networking platform that connects **students with alumni mentors** 
 
 AlumniNest enables students to discover mentors based on their **skills and interests**, send mentorship requests, and communicate with alumni through **real-time chat**.
 
-<img width="1920" height="1080" alt="Screenshot (92)" src="https://github.com/user-attachments/assets/463fec54-8cfd-460d-a8fa-8d087377b8e5" />
+🔗 Live: https://alumni-nest.onrender.com
+
+Try the platform and explore the mentorship features.
+
+
+<img width="1920" height="1080" alt="Screenshot (141)" src="https://github.com/user-attachments/assets/8ef58b17-04fa-4485-877d-8e9bfcd69a9e" />
+
 
 ---
 
@@ -44,7 +50,8 @@ Students often struggle to connect with experienced alumni for career advice, ne
 
 Students receive **alumni recommendations** based on their skills and interests, helping them connect with relevant mentors.
 
-<img width="1920" height="1020" alt="Screenshot 2026-03-10 235345" src="https://github.com/user-attachments/assets/f5f11ef4-06de-4776-85a7-d1ed961c7af9" />
+<img width="1920" height="1080" alt="Screenshot (140)" src="https://github.com/user-attachments/assets/5525b69b-84fd-4962-b0b6-dcee179b4d75" />
+
 
 ---
 
@@ -174,14 +181,6 @@ The platform follows a **client–server architecture**.
 - Opportunity Sharing  
 - Real-Time Chat  
 - Notification System  
-
----
-
-# Live Demo
-
-🔗 https://alumni-nest.onrender.com
-
-Try the platform and explore the mentorship features.
 
 ---
 
